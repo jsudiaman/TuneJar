@@ -13,3 +13,4 @@ gradlew eclipse # Get things going in Eclipse
 You can now import your project in eclipse.
 
 You can use http://search.maven.org[Maven Central] to find libraries to include into your project.
+Also, http://libraries.io/[Find great open source libraries here].
