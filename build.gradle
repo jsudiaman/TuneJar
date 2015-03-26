@@ -1,0 +1,15 @@
+apply plugin: "java"
+apply plugin: "application"
+apply plugin: "eclipse"
+
+mainClassName = "Main"
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    mavenLocal();
+}
+
+dependencies {
+    
+}
