@@ -1,0 +1,15 @@
+= Start up code for using gradle
+
+In your git repository for your project, do:
+
+----
+git remote add prof git@github.com:lawrancej/COMP310starter.git
+git pull prof master
+git mergetool
+gradlew run # Run your application from the command line
+gradlew eclipse # Get things going in Eclipse
+----
+
+You can now import your project in eclipse.
+
+You can use http://search.maven.org[Maven Central] to find libraries to include into your project.
