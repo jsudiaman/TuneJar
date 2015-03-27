@@ -1,5 +1,8 @@
 package viewcontroller;
 
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Song;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -25,12 +29,6 @@ public class MainController implements Initializable {
     @FXML
     TableColumn<Song, String> album;
 
-    // Add songs to the playlist viewer.
-    ObservableList<Song> visiblePlaylist = FXCollections.observableArrayList(
-            // TODO Should fill with all mp3s from each directory in view.
-            new Song("Centuries", "Fall Out Boy", "Idk what album that's from")
-    );
-
     /**
      * Starts the controller after its root element has been completely processed.
      *
@@ -40,9 +38,20 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        title.setCellValueFactory(new PropertyValueFactory<Song, String>("Title"));
-        artist.setCellValueFactory(new PropertyValueFactory<Song, String>("Artist"));
-        album.setCellValueFactory(new PropertyValueFactory<Song, String>("Album"));
+        // Add songs to the playlist viewer.
+        ObservableList<Song> visiblePlaylist = null;
+        try {
+            visiblePlaylist = FXCollections.observableArrayList(
+                    // TODO Should fill with all mp3s from each directory in view.
+                    new Song(new Mp3File("C:\\Users\\Jonathan\\Documents\\Data Structures\\Control.mp3"))
+            );
+        } catch (IOException | UnsupportedTagException | InvalidDataException e) {
+            e.printStackTrace();
+        }
+
+        title.setCellValueFactory(new PropertyValueFactory<>("Title"));
+        artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
+        album.setCellValueFactory(new PropertyValueFactory<>("Album"));
         playlistViewer.setItems(visiblePlaylist);
     }
 

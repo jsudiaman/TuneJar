@@ -11,10 +11,16 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class MainView extends Application {
 
     private static MediaPlayer player;
+    private List<File> directoryList;
 
     public static void main(String[] args) {
         launch(args);
@@ -46,6 +52,7 @@ public class MainView extends Application {
         alert.showAndWait();
 
         // TODO Allow the user to choose a directory, then store it.
+
     }
 
     /**
@@ -68,6 +75,19 @@ public class MainView extends Application {
     public static void setSong(File fileName) {
         String uriString = fileName.toURI().toString();
         player = new MediaPlayer(new Media(uriString));
+    }
+
+    /**
+     * Read in a list of directories from a specified text file.
+     *
+     * @param fileName The file to read directories from
+     * @return The list of directories
+     */
+    public static List directoryList(File fileName) throws FileNotFoundException {
+        List<File> dirList = new ArrayList<>();
+        Scanner fileIn = new Scanner(new FileReader(fileName));
+
+        return dirList;
     }
 
 }
