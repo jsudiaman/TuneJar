@@ -2,7 +2,7 @@ apply plugin: "java"
 apply plugin: "application"
 apply plugin: "eclipse"
 
-mainClassName = "MainView"
+mainClassName = "viewcontroller.MainView"
 
 repositories {
     mavenCentral()
