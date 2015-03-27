@@ -52,7 +52,6 @@ public class MainView extends Application {
         alert.showAndWait();
 
         // TODO Allow the user to choose a directory, then store it.
-
     }
 
     /**

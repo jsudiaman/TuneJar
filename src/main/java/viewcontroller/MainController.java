@@ -43,7 +43,7 @@ public class MainController implements Initializable {
         try {
             visiblePlaylist = FXCollections.observableArrayList(
                     // TODO Should fill with all mp3s from each directory in view.
-                    new Song(new Mp3File("C:\\Users\\Jonathan\\Documents\\Data Structures\\Control.mp3"))
+                    new Song(new Mp3File("C:\\Users\\Jonathan\\Music\\01 - Blank Space.mp3"))
             );
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
             e.printStackTrace();
