@@ -1,0 +1,17 @@
+= JavaMP3Player
+This repo is messy. Just bear with it for now, I'll get to cleaning it up.
+
+= Start up code for using gradle
+
+Run the following in Terminal:
+
+----
+cd <PATH_TO_THIS_FOLDER>
+gradlew run # Run your application from the command line
+gradlew eclipse # Get things going in Eclipse
+----
+
+You can now import your project in eclipse.
+
+You can use http://search.maven.org[Maven Central] to find libraries to include into your project.
+Also, http://libraries.io/[Find great open source libraries here].
