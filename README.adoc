@@ -1,7 +1,6 @@
 = JavaMP3Player
 
-This repo is messy. Just bear with it for now, I'll get to cleaning it up.
-
+A lightweight MP3 player written in Java.
 
 = Start up code for using gradle
 
