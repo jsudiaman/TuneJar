@@ -2,18 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d1a0dcba-1e38-47d1-b151-f55e157bfb33" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_json_json_20141113.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_twitter4j_twitter4j_core_4_0_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/JavaMP3Player.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/viewcontroller/MainController.fxml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/viewcontroller/MainController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/viewcontroller/MainView.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/model/Song.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="DELETED" beforePath="C:\Users\Jonathan\Documents\IntelliJ Projects\JavaMP3Player\README.adoc" afterPath="" />
-      <change type="DELETED" beforePath="C:\Users\Jonathan\Documents\IntelliJ Projects\JavaMP3Player\src\main\java\Main.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/classes/main/viewcontroller/MainController.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/classes/main/viewcontroller/MainView.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/classes/main/viewcontroller/MainController.fxml" />
+      <change type="DELETED" beforePath="C:\Users\Jonathan\Documents\IntelliJ Projects\JavaMP3Player\build\classes\main\.gitignore" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="JavaMP3Player.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -43,49 +38,7 @@
     <favorites_list name="JavaMP3Player" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="MainController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1796#1797#0" expanded="true" />
-                <element signature="e#1827#1828#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainController.fxml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/resources/viewcontroller/MainController.fxml">
-          <provider editor-type-id="JavaFX-Scene-Builder">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.7777777">
-              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainView.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4463895">
-              <caret line="12" column="20" selection-start-line="12" selection-start-column="20" selection-end-line="12" selection-end-column="20" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#473#474#0" expanded="true" />
-                <element signature="e#501#502#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -267,7 +220,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="1427436139148" />
+        <entry key="$PROJECT_DIR$" value="1427439785921" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -289,48 +242,49 @@
               <option name="name" value="JavaMP3Player" />
               <option name="projectBuildClasspath">
                 <list>
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/ant-1.9.2.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/ant-launcher-1.9.2.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-base-services-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-base-services-groovy-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-cli-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-core-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-docs-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-launcher-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-messaging-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-native-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-open-api-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-resources-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-tooling-api-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-ui-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/gradle-wrapper-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/groovy-all-1.8.6.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/ivy-2.2.0.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/ant-antlr-1.9.2.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-announce-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-antlr-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-build-comparison-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-build-setup-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-code-quality-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-core-impl-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-cpp-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-diagnostics-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-ear-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-ide-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-ivy-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-jacoco-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-javascript-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-jetty-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-language-base-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-language-jvm-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-maven-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-osgi-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-plugins-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-publish-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-reporting-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-scala-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-signing-1.8.jar" />
-                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/1vxkbrv8t9fysq5ibie9dfex4/gradle-1.8/lib/plugins/gradle-sonar-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/src" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/ant-1.9.2.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/ant-launcher-1.9.2.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-base-services-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-base-services-groovy-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-cli-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-core-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-docs-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-launcher-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-messaging-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-native-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-open-api-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-resources-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-tooling-api-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-ui-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/gradle-wrapper-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/groovy-all-1.8.6.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/ivy-2.2.0.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/ant-antlr-1.9.2.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-announce-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-antlr-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-build-comparison-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-build-setup-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-code-quality-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-core-impl-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-cpp-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-diagnostics-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-ear-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-ide-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-ivy-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-jacoco-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-javascript-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-jetty-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-language-base-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-language-jvm-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-maven-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-osgi-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-plugins-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-publish-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-reporting-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-scala-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-signing-1.8.jar" />
+                  <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-all/50ohhqtt4chrdcrxtiipz8wit/gradle-1.8/lib/plugins/gradle-sonar-1.8.jar" />
                   <option value="$PROJECT_DIR$/buildSrc/src/main/java" />
                   <option value="$PROJECT_DIR$/buildSrc/src/main/groovy" />
                 </list>
@@ -353,6 +307,7 @@
         <option value="$PROJECT_DIR$/src/main/java/view/MainView.java" />
         <option value="$PROJECT_DIR$/src/main/java/controller/MainView.java" />
         <option value="$PROJECT_DIR$/src/main/java/viewcontroller/MainView.java" />
+        <option value="$PROJECT_DIR$/build.gradle" />
       </list>
     </option>
   </component>
@@ -399,8 +354,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -421,6 +374,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -625,6 +580,15 @@
       <setting name="launchBrowser" value="false" />
       <method />
     </configuration>
+    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$PROJECT_DIR$" />
+      <setting name="debug" value="false" />
+      <method />
+    </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -733,6 +697,12 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <pass-parent-envs>true</pass-parent-envs>
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="uTestRunConfiguration" factoryName="utest">
@@ -776,42 +746,43 @@
       <option name="number" value="Default" />
       <updated>1427437046358</updated>
       <workItem from="1427437050821" duration="1291000" />
+      <workItem from="1427439431391" duration="1603000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1291000" />
+    <option name="totallyTimeSpent" value="2894000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="SBT" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32916668" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24967907" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32916668" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32916668" sideWeight="0.5025674" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32916668" sideWeight="0.49743262" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24967907" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="SBT" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32916668" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -834,6 +805,37 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/viewcontroller/MainController.fxml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/model/Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.87752163">
@@ -856,34 +858,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1796#1797#0" expanded="true" />
-            <element signature="e#1827#1828#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/viewcontroller/MainController.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.7777777">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.project">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -891,18 +869,104 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GradleHelp.adoc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/classes/main/viewcontroller/MainController.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#1380#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/classes/main/viewcontroller/MainView.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#1740#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JavaMP3Player.userlibraries">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gradlew.bat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gradlew">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1487965">
+          <caret line="4" column="25" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4463895">
-          <caret line="12" column="20" selection-start-line="12" selection-start-column="20" selection-end-line="12" selection-end-column="20" />
+        <state vertical-scroll-proportion="1.0787746">
+          <caret line="43" column="54" selection-start-line="43" selection-start-column="54" selection-end-line="43" selection-end-column="54" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#473#474#0" expanded="true" />
-            <element signature="e#501#502#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/viewcontroller/MainController.fxml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2372093">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/viewcontroller/MainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
