@@ -5,7 +5,7 @@
 .gradle
 *.class
 *.jar
+*.dat
 .project
 .classpath
-.settings
 JavaMP3Player.iml

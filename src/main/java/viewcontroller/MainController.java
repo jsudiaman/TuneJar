@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Song;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -42,8 +43,10 @@ public class MainController implements Initializable {
         ObservableList<Song> visiblePlaylist = null;
         try {
             visiblePlaylist = FXCollections.observableArrayList(
-                    // TODO Should fill with all mp3s from each directory in view.
-                    new Song(new Mp3File("C:\\Users\\Jonathan\\Music\\01 - Blank Space.mp3"))
+                // TODO Should fill with all mp3s from each directory in view.
+                new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3"))),
+                new Song(new Mp3File(new File("src/test/resources/The End of Mankind.mp3"))),
+                new Song(new Mp3File(new File("src/test/resources/Sunlight.mp3")))
             );
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
             e.printStackTrace();
