@@ -3,6 +3,7 @@
 .idea
 .settings
 .gradle
+**.mp3
 *.class
 *.jar
 *.dat
