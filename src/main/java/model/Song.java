@@ -4,6 +4,7 @@ import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import javafx.beans.property.SimpleStringProperty;
+import viewcontroller.MainView;
 
 public class Song {
 
@@ -50,7 +51,7 @@ public class Song {
     }
 
     // ------------------- Getters and Setters ------------------- //
-
+    // TODO Setters should change the ID3 tags if able
     public String getAlbum() {
         return album.get();
     }
@@ -74,7 +75,25 @@ public class Song {
     public void setTitle(String title) {
         this.title.set(title);
     }
-
     // ---------------- End Getters and Setters ------------------ //
 
+    public void play() {
+        if(MainView.player != null) MainView.player.stop();
+        MainView.loadMP3(mp3file);
+        MainView.player.play();
+    }
+
+    public void pause() {
+        // TODO Not yet implemented
+    }
+
+    public void stop() {
+        // TODO Not yet implemented
+    }
+
+    @Override
+    public String toString() {
+        // TODO Should return a more meaningful string
+        return mp3file.getFilename();
+    }
 }

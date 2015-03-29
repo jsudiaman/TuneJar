@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
+
 public class SongTest {
 
     Song song;
@@ -17,17 +19,17 @@ public class SongTest {
 
     @Test
     public void testGetAlbum() throws Exception {
-        System.out.println(("Album: " + song.getAlbum()));
+        assertEquals("MachinimaSound 2009", song.getAlbum());
     }
 
     @Test
     public void testGetArtist() throws Exception {
-        System.out.println("Artist: " + song.getArtist());
+        assertEquals("Machinimasound", song.getArtist());
     }
 
     @Test
     public void testGetTitle() throws Exception {
-        System.out.println("Title: " + song.getTitle());
+        assertEquals("Queen of the Night", song.getTitle());
     }
 
 }

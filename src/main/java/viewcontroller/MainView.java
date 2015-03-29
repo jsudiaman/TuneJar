@@ -1,5 +1,6 @@
 package viewcontroller;
 
+import com.mpatric.mp3agic.Mp3File;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,12 +13,22 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainView extends Application {
 
-    private static MediaPlayer player;
+    public final static Logger logger = Logger.getLogger(MainView.class.getName()); // Global logger
+    public static MediaPlayer player;
+
     private Set<File> directorySet;
 
+    /**
+     * Calls Application::launch().
+     *
+     * @param args The command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
@@ -26,10 +37,33 @@ public class MainView extends Application {
      * Starts the program.
      *
      * @param primaryStage The stage that will hold the interface
-     * @throws Exception
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage)  {
+        // Begin logging
+        try {
+            FileHandler fh = new FileHandler("Log.xml");
+            logger.addHandler(fh);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Failed to generate log file. Logs will be written only to the console.", e);
+        }
+
+        // Start the program
+        try {
+            init(primaryStage);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Fatal exception at MainView::start()", e);
+            System.exit(-1);
+        }
+    }
+
+    /**
+     * Handles program initialization.
+     *
+     * @param primaryStage The stage that will hold the interface
+     * @throws IOException
+     */
+    private void init(Stage primaryStage) throws IOException {
         // Load the FXML file and display the interface.
         Parent root = FXMLLoader.load(getClass().getResource("MainController.fxml"));
         primaryStage.setTitle("Java MP3 Player");
@@ -66,19 +100,19 @@ public class MainView extends Application {
      * @param stage The stage that will hold the dialog box
      * @return The directory specified by the user, or null if the user cancels
      */
-    public static File chooseDirectory(Stage stage) {
+    static File chooseDirectory(Stage stage) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Where are your MP3s?");
         return chooser.showDialog(stage);
     }
 
     /**
-     * Loads the file into the media player.
+     * Loads an MP3 file into the media player.
      *
-     * @param fileName The file to load
+     * @param file The MP3 file to load
      */
-    public static void setSong(File fileName) {
-        String uriString = fileName.toURI().toString();
+    public static void loadMP3(Mp3File file) {
+        String uriString = new File(file.getFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
     }
 
@@ -89,7 +123,7 @@ public class MainView extends Application {
      * @return A set containing all of the specified directories
      * @throws FileNotFoundException
      */
-    public static Set<File> readDirectories(File file) throws FileNotFoundException {
+    static Set<File> readDirectories(File file) throws FileNotFoundException {
         Set<File> dirSet = new HashSet<>();
         Scanner fileIn = new Scanner(new FileReader(file));
 
@@ -108,7 +142,7 @@ public class MainView extends Application {
      * @param fileName Where to write the output. The file will be overwritten if it exists.
      * @throws FileNotFoundException
      */
-    public void writeDirectories(String fileName) throws FileNotFoundException {
+    void writeDirectories(String fileName) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(new FileOutputStream(fileName, false));
         for(File f : directorySet) {
             writer.println(f.getAbsoluteFile());

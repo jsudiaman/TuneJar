@@ -17,9 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 public class MainController implements Initializable {
-
     // Define the table.
     @FXML
     TableView<Song> playlistViewer;
@@ -30,26 +30,27 @@ public class MainController implements Initializable {
     @FXML
     TableColumn<Song, String> album;
 
+    ObservableList<Song> visiblePlaylist;
+
     /**
      * Starts the controller after its root element has been completely processed.
      *
-     * @param location The location used to resolve relative paths for the root object, or null if the location is
-     *                 not known.
+     * @param location  The location used to resolve relative paths for the root object, or null if the location is
+     *                  not known.
      * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Add songs to the playlist viewer.
-        ObservableList<Song> visiblePlaylist = null;
         try {
             visiblePlaylist = FXCollections.observableArrayList(
-                // TODO Should fill with all mp3s from each directory in view.
-                new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3"))),
-                new Song(new Mp3File(new File("src/test/resources/The End of Mankind.mp3"))),
-                new Song(new Mp3File(new File("src/test/resources/Sunlight.mp3")))
+                    // TODO Should fill with all mp3s from each directory in view.
+                    new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3"))),
+                    new Song(new Mp3File(new File("src/test/resources/The End of Mankind.mp3"))),
+                    new Song(new Mp3File(new File("src/test/resources/Sunlight.mp3")))
             );
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
-            e.printStackTrace();
+            MainView.logger.log(Level.SEVERE, "Failed to load an MP3.", e);
         }
 
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
@@ -63,6 +64,18 @@ public class MainController implements Initializable {
      */
     public void quit() {
         Platform.exit();
+    }
+
+    /**
+     * Plays the selected song.
+     */
+    public void playSelected() {
+        Song song = playlistViewer.getFocusModel().getFocusedItem();
+        try {
+            song.play();
+        } catch (Exception e) {
+            MainView.logger.log(Level.SEVERE, "Failed to play song: " + song.toString(), e);
+        }
     }
 
 }
