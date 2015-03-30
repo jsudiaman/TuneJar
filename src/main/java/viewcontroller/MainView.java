@@ -8,21 +8,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.*;
-import java.util.*;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.*;
 
 public class MainView extends Application {
 
     public final static Logger logger = Logger.getLogger(MainView.class.getName()); // Global logger
     public static MediaPlayer player;
 
-    private Set<File> directorySet;
+    Set<File> directorySet;
 
     /**
      * Calls Application::launch().
@@ -42,17 +43,42 @@ public class MainView extends Application {
     public void start(Stage primaryStage)  {
         // Begin logging
         try {
-            FileHandler fh = new FileHandler("Log.xml");
-            logger.addHandler(fh);
+            Handler handler = new FileHandler("log.txt");
+            handler.setFormatter(new SimpleFormatter());
+            logger.addHandler(handler);
+            logger.log(Level.INFO, "log.txt initialized successfully.");
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Failed to generate log file. Logs will be written only to the console.", e);
+            logger.log(Level.WARNING, "Failed to generate log.txt. Logs will be written only to the console.", e);
         }
 
         // Start the program
         try {
             init(primaryStage);
         } catch (Exception e) {
+            // Log the error.
             logger.log(Level.SEVERE, "Fatal exception at MainView::start()", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+
+            // In case a log file wasn't generated, store the stack trace in a string.
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+
+            // Create an alert to let the user know what happened.
+            alert.setTitle("Fatal Error!");
+            alert.setHeaderText("Something went wrong. Please send the log.txt file to\n" +
+                    "our developers for analysis.");
+            alert.setContentText("If this program isn't generating a log file for some reason, " +
+                    "you can simply paste the contents of your clipboard in the email body. (The " +
+                    "error details have already been copied.)");
+
+            // Copy the stack trace to the clipboard.
+            StringSelection stringSelection = new StringSelection(sw.toString());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, null);
+
+            // Display the alert, then exit the program.
+            alert.showAndWait();
             System.exit(-1);
         }
     }
@@ -72,7 +98,7 @@ public class MainView extends Application {
 
         // Load the directories. If none are present, prompt the user for one.
         try {
-            directorySet = readDirectories(new File("Directories.dat"));
+            directorySet = FileManipulator.readDirectories(new File("directories.dat"));
         } catch (FileNotFoundException e) {
             // Alert the user that no directories were found
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -85,25 +111,13 @@ public class MainView extends Application {
 
             // Begin building up a data structure to store directories
             directorySet = new HashSet<>();
-            directorySet.add(chooseDirectory(primaryStage));
+            directorySet.add(FileManipulator.chooseDirectory(primaryStage));
 
             // Store the directories in a text file
-            writeDirectories("Directories.dat");
-        } finally {
-            // TODO Create the "master playlist".
+            FileManipulator.writeFileSet("directories.dat", directorySet);
         }
-    }
 
-    /**
-     * Prompts the user for a directory.
-     *
-     * @param stage The stage that will hold the dialog box
-     * @return The directory specified by the user, or null if the user cancels
-     */
-    static File chooseDirectory(Stage stage) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Where are your MP3s?");
-        return chooser.showDialog(stage);
+        // TODO Create the "master playlist".
     }
 
     /**
@@ -114,40 +128,6 @@ public class MainView extends Application {
     public static void loadMP3(Mp3File file) {
         String uriString = new File(file.getFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
-    }
-
-    /**
-     * Read in a list of directories, line by line, from a specified text file.
-     *
-     * @param file The file to read directories from
-     * @return A set containing all of the specified directories
-     * @throws FileNotFoundException
-     */
-    static Set<File> readDirectories(File file) throws FileNotFoundException {
-        Set<File> dirSet = new HashSet<>();
-        Scanner fileIn = new Scanner(new FileReader(file));
-
-        // Read in the directories line by line.
-        while(fileIn.hasNextLine()) {
-            dirSet.add(new File(fileIn.nextLine()));
-        }
-
-        fileIn.close();
-        return dirSet;
-    }
-
-    /**
-     * Output the contents of the directory set, line by line.
-     *
-     * @param fileName Where to write the output. The file will be overwritten if it exists.
-     * @throws FileNotFoundException
-     */
-    void writeDirectories(String fileName) throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new FileOutputStream(fileName, false));
-        for(File f : directorySet) {
-            writer.println(f.getAbsoluteFile());
-        }
-        writer.close();
     }
 
 }

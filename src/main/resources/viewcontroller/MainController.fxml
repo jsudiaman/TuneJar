@@ -29,7 +29,7 @@
                                 <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit"/>
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Control">
+                        <Menu mnemonicParsing="false" text="Playback">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#playSelected" text="Play"/>
                             </items>
