@@ -7,11 +7,11 @@ import java.util.List;
  */
 public class Playlist {
 
-    private int currentSong;
+    private int currentSongIndex;
 
     public Playlist() {
         // TODO Not yet implemented
-        currentSong = 0;
+        currentSongIndex = 0;
     }
 
     /**
