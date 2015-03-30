@@ -1,14 +1,13 @@
 package model;
 
 import com.mpatric.mp3agic.Mp3File;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-
-public class SongTest {
+public class SongTest extends TestCase {
 
     Song song;
 

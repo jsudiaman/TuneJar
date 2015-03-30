@@ -1,12 +1,15 @@
 package viewcontroller;
 
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import model.Song;
 
 import java.io.*;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Helper class for file manipulation within the GUI.
@@ -41,7 +44,7 @@ public final class FileManipulator {
         Scanner fileIn = new Scanner(new FileReader(file));
 
         // Read in the directories line by line.
-        while(fileIn.hasNextLine()) {
+        while (fileIn.hasNextLine()) {
             dirSet.add(new File(fileIn.nextLine()));
         }
 
@@ -53,15 +56,47 @@ public final class FileManipulator {
      * Output the contents of a file set, line by line.
      *
      * @param fileName Where to write the output. The file will be overwritten if it exists.
-     * @param fileSet A set of files
+     * @param fileSet  A set of files
      * @throws FileNotFoundException
      */
     static void writeFileSet(String fileName, Set<File> fileSet) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(new FileOutputStream(fileName, false));
-        for(File f : fileSet) {
+        for (File f : fileSet) {
             writer.println(f.getAbsoluteFile());
         }
         writer.close();
+    }
+
+    /**
+     * Takes in a directory and recursively searches for all mp3 files contained within that directory.
+     * The files are then constructed as Song objects to be wrapped up in an ordered list.
+     *
+     * @param directory A File object that is a directory.
+     * @return A list containing all the Song objects, or null if the File object is not a directory.
+     */
+    static List<Song> mp3List(File directory) {
+        if (directory == null || !directory.isDirectory()) return null;
+        List<Song> songList = new ArrayList<>();
+
+        // Iterate through each file in the directory.
+        for (File f : directory.listFiles()) {
+            // If a directory was found, add the mp3 files in that directory as well.
+            if (f.isDirectory()) {
+                songList.addAll(mp3List(f));
+            } else {
+                // Attempt to construct a song object. If successful, add it to the list.
+                if (!f.toString().endsWith(".mp3")) continue;
+                try {
+                    Song song = new Song(new Mp3File(f));
+                    songList.add(song);
+                } catch (UnsupportedTagException | InvalidDataException | IOException e) {
+                    MainView.logger.log(Level.SEVERE, "Failed to construct a song object from file: " +
+                        f.toString(), e);
+                }
+            }
+        }
+
+        return songList;
     }
 
 }

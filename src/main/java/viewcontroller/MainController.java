@@ -10,11 +10,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Song;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 public class MainController implements Initializable {
+    
     // Define the table.
     @FXML
     TableView<Song> playlistViewer;
@@ -36,9 +38,8 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        visiblePlaylist = FXCollections.observableArrayList(
-                // TODO Should fill with all mp3s from each directory in view.
-        );
+        // TODO The list below should originate from a function call in MainView
+        visiblePlaylist = FXCollections.observableArrayList(FileManipulator.mp3List(new File("src/test/resources/")));
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
         artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
         album.setCellValueFactory(new PropertyValueFactory<>("Album"));

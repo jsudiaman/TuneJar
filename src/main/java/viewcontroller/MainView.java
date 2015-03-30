@@ -9,12 +9,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import model.Song;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.*;
 
@@ -22,6 +25,8 @@ public class MainView extends Application {
 
     public final static Logger logger = Logger.getLogger(MainView.class.getName()); // Global logger
     public static MediaPlayer player;
+    public static List<Song> masterPlaylist; // TODO Use Playlist, not java.util.list
+    public static boolean READY = false;
 
     Set<File> directorySet;
 
@@ -54,6 +59,8 @@ public class MainView extends Application {
         // Start the program
         try {
             init(primaryStage);
+        } catch (NullPointerException e) {
+            e.printStackTrace(); // TODO Proper error handling
         } catch (Exception e) {
             // Log the error.
             logger.log(Level.SEVERE, "Fatal exception at MainView::start()", e);
@@ -88,8 +95,9 @@ public class MainView extends Application {
      *
      * @param primaryStage The stage that will hold the interface
      * @throws IOException
+     * @throws NullPointerException
      */
-    private void init(Stage primaryStage) throws IOException {
+    private void init(Stage primaryStage) throws IOException, NullPointerException {
         // Load the FXML file and display the interface.
         Parent root = FXMLLoader.load(getClass().getResource("MainController.fxml"));
         primaryStage.setTitle("Java MP3 Player");
@@ -117,7 +125,14 @@ public class MainView extends Application {
             FileManipulator.writeFileSet("directories.dat", directorySet);
         }
 
-        // TODO Create the "master playlist".
+        // Create a playlist containing all songs from each directory in the directory set.
+        masterPlaylist = new ArrayList<>();
+        for(File directory : directorySet) {
+            masterPlaylist.addAll(FileManipulator.mp3List(directory));
+        }
+
+        // Finally, display that playlist in MainController.
+        // TODO Implement a way to do this
     }
 
     /**
