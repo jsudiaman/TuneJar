@@ -96,23 +96,23 @@ public class MainView extends Application {
             directorySet = new HashSet<>();
             File chosenDirectory = chooseDirectory(primaryStage);
             if (chosenDirectory == null) {
-                logger.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory. directories.dat"
-                    + " was not generated.");
+                logger.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory.");
             } else {
-                // Store the directories in a text file
                 directorySet.add(chosenDirectory);
-                writeFileSet("directories.dat", directorySet);
             }
         }
 
         // Create a playlist containing all songs from each directory in the directory set.
         masterPlaylist = new Playlist();
         for (File directory : directorySet) {
-            masterPlaylist.addAll(songList(directory));
+            masterPlaylist.addAll(songList(directory)); // TODO Handle the potential NullPointerException
         }
 
-        // Finally, display that playlist in MainController.
+        // Display that playlist in MainController.
         // TODO Implement a way to do this
+
+        // Finally, save the directory set.
+        writeFileSet("directories.dat", directorySet);
     }
 
     /**

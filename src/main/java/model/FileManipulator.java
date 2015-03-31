@@ -41,7 +41,7 @@ public final class FileManipulator {
      */
     public static Set<File> readDirectories(File file) throws FileNotFoundException {
         Set<File> dirSet = new HashSet<>();
-        Scanner fileIn = new Scanner(new FileReader(file));
+        Scanner fileIn = new Scanner(new FileReader(file)); // TODO Improve efficiency by using BufferedReader instead
 
         // Read in the directories line by line.
         while (fileIn.hasNextLine()) {
@@ -61,7 +61,7 @@ public final class FileManipulator {
      */
     public static void writeFileSet(String fileName, Set<File> fileSet) throws IOException {
         FileOutputStream fileOut = new FileOutputStream(fileName, false);
-        PrintWriter writer = new PrintWriter(fileOut);
+        PrintWriter writer = new PrintWriter(fileOut); // TODO Improve efficiency by using BufferedWriter instead
         for (File f : fileSet) {
             writer.println(f.getAbsoluteFile());
         }
@@ -76,7 +76,7 @@ public final class FileManipulator {
      * @param directory A File object that is a directory.
      * @return A list containing all the Song objects, or null if the File object is not a directory.
      */
-    public static List<Song> songList(File directory) {
+    public static List<Song> songList(File directory) throws NullPointerException {
         // Initialize the list or return null if necessary.
         if (directory == null || !directory.isDirectory()) return null;
         List<Song> list = new ArrayList<>();
