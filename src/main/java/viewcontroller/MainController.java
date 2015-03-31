@@ -10,13 +10,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Song;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 public class MainController implements Initializable {
-    
+
     // Define the table.
     @FXML
     TableView<Song> playlistViewer;
@@ -38,19 +37,11 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // TODO The list below should originate from a function call in MainView
-        visiblePlaylist = FXCollections.observableArrayList(FileManipulator.mp3List(new File("src/test/resources/")));
+        visiblePlaylist = FXCollections.observableArrayList();
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
         artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
         album.setCellValueFactory(new PropertyValueFactory<>("Album"));
         playlistViewer.setItems(visiblePlaylist);
-    }
-
-    /**
-     * Ends the program.
-     */
-    public void quit() {
-        Platform.exit();
     }
 
     /**
@@ -60,9 +51,30 @@ public class MainController implements Initializable {
         try {
             Song song = playlistViewer.getFocusModel().getFocusedItem();
             song.play();
+            MainView.logger.log(Level.INFO, "Now Playing: " + song.toString());
+        } catch (NullPointerException e) {
+            // Log the failure to play the song and indicate whether the playlist was empty.
+            MainView.logger.log(Level.SEVERE, "Failed to play song. " +
+                    (visiblePlaylist.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
         } catch (Exception e) {
+            // Log the failure to play the song.
             MainView.logger.log(Level.SEVERE, "Failed to play song.", e);
         }
+    }
+
+    /**
+     * Changes the visible playlist to MainView::masterPlaylist.
+     */
+    public void setVisiblePlaylist() {
+        visiblePlaylist = FXCollections.observableArrayList(MainView.masterPlaylist);
+        playlistViewer.setItems(visiblePlaylist);
+    }
+
+    /**
+     * Ends the program.
+     */
+    public void quit() {
+        Platform.exit();
     }
 
 }

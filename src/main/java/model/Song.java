@@ -27,27 +27,30 @@ public class Song {
      */
     public Song(Mp3File mp3file) {
         // Find out which version of ID3 tag is used by the MP3.
-        if (mp3file.hasId3v1Tag()) ID3TagVersion = ID3_V1;
-        else if (mp3file.hasId3v2Tag()) ID3TagVersion = ID3_V2;
+        if (mp3file.hasId3v2Tag()) ID3TagVersion = ID3_V2;
+        else if (mp3file.hasId3v1Tag()) ID3TagVersion = ID3_V1;
         else ID3TagVersion = CUSTOM_TAG;
 
         // Read metadata by extracting its tags.
-        if (ID3TagVersion == ID3_V1) {
-            ID3v1 id3v1tag = mp3file.getId3v1Tag();
-            title = new SimpleStringProperty(id3v1tag.getTitle());
-            artist = new SimpleStringProperty(id3v1tag.getArtist());
-            album = new SimpleStringProperty(id3v1tag.getAlbum());
-        } else if (ID3TagVersion == ID3_V2) {
+        if (ID3TagVersion == ID3_V2) {
             ID3v2 id3v2tag = mp3file.getId3v2Tag();
             title = new SimpleStringProperty(id3v2tag.getTitle());
             artist = new SimpleStringProperty(id3v2tag.getArtist());
             album = new SimpleStringProperty(id3v2tag.getAlbum());
+        } else if (ID3TagVersion == ID3_V1) {
+            if (mp3file.getFilename().endsWith("Keep up.mp3")) System.out.println("Lock 2 achieved");
+            ID3v1 id3v1tag = mp3file.getId3v1Tag();
+            title = new SimpleStringProperty(id3v1tag.getTitle());
+            artist = new SimpleStringProperty(id3v1tag.getArtist());
+            album = new SimpleStringProperty(id3v1tag.getAlbum());
         } else {
+            if (mp3file.getFilename().endsWith("Keep up.mp3")) System.out.println("Lock 3 achieved");
             title = new SimpleStringProperty(mp3file.getFilename());
             artist = new SimpleStringProperty("");
             album = new SimpleStringProperty("");
         }
         this.mp3file = mp3file;
+        nullFix();
     }
 
     // ------------------- Getters and Setters ------------------- //
@@ -78,7 +81,7 @@ public class Song {
     // ---------------- End Getters and Setters ------------------ //
 
     public void play() {
-        if(MainView.player != null) MainView.player.stop();
+        if (MainView.player != null) MainView.player.stop();
         MainView.loadMP3(mp3file);
         MainView.player.play();
     }
@@ -91,9 +94,24 @@ public class Song {
         // TODO Not yet implemented
     }
 
+    /**
+     * Corrects null title, artist, and/or album values.
+     */
+    public void nullFix() {
+        if (title.get() == null) {
+            title = new SimpleStringProperty(mp3file.getFilename());
+        }
+        if (artist.get() == null) {
+            artist = new SimpleStringProperty("Unknown");
+        }
+        if (album.get() == null) {
+            album = new SimpleStringProperty("Unknown");
+        }
+    }
+
     @Override
     public String toString() {
-        // TODO Should return a more meaningful string
-        return mp3file.getFilename();
+        return "\"" + title.get() + "\" - \"" + artist.get() + "\" - \"" + album.get() + "\"";
     }
+
 }

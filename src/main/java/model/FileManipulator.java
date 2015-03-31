@@ -1,11 +1,11 @@
-package viewcontroller;
+package model;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import model.Song;
+import viewcontroller.MainView;
 
 import java.io.*;
 import java.util.*;
@@ -26,7 +26,7 @@ public final class FileManipulator {
      * @param stage The stage that will hold the dialog box
      * @return The directory specified by the user, or null if the user cancels
      */
-    static File chooseDirectory(Stage stage) {
+    public static File chooseDirectory(Stage stage) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Where are your MP3s?");
         return chooser.showDialog(stage);
@@ -39,7 +39,7 @@ public final class FileManipulator {
      * @return A set containing all of the specified directories
      * @throws FileNotFoundException
      */
-    static Set<File> readDirectories(File file) throws FileNotFoundException {
+    public static Set<File> readDirectories(File file) throws FileNotFoundException {
         Set<File> dirSet = new HashSet<>();
         Scanner fileIn = new Scanner(new FileReader(file));
 
@@ -59,12 +59,14 @@ public final class FileManipulator {
      * @param fileSet  A set of files
      * @throws FileNotFoundException
      */
-    static void writeFileSet(String fileName, Set<File> fileSet) throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new FileOutputStream(fileName, false));
+    public static void writeFileSet(String fileName, Set<File> fileSet) throws IOException {
+        FileOutputStream fileOut = new FileOutputStream(fileName, false);
+        PrintWriter writer = new PrintWriter(fileOut);
         for (File f : fileSet) {
             writer.println(f.getAbsoluteFile());
         }
         writer.close();
+        fileOut.close();
     }
 
     /**
@@ -74,21 +76,22 @@ public final class FileManipulator {
      * @param directory A File object that is a directory.
      * @return A list containing all the Song objects, or null if the File object is not a directory.
      */
-    static List<Song> mp3List(File directory) {
+    public static List<Song> songList(File directory) {
+        // Initialize the list or return null if necessary.
         if (directory == null || !directory.isDirectory()) return null;
-        List<Song> songList = new ArrayList<>();
+        List<Song> list = new ArrayList<>();
 
         // Iterate through each file in the directory.
         for (File f : directory.listFiles()) {
             // If a directory was found, add the mp3 files in that directory as well.
             if (f.isDirectory()) {
-                songList.addAll(mp3List(f));
+                list.addAll(songList(f));
             } else {
                 // Attempt to construct a song object. If successful, add it to the list.
                 if (!f.toString().endsWith(".mp3")) continue;
                 try {
                     Song song = new Song(new Mp3File(f));
-                    songList.add(song);
+                    list.add(song);
                 } catch (UnsupportedTagException | InvalidDataException | IOException e) {
                     MainView.logger.log(Level.SEVERE, "Failed to construct a song object from file: " +
                         f.toString(), e);
@@ -96,7 +99,7 @@ public final class FileManipulator {
             }
         }
 
-        return songList;
+        return list;
     }
 
 }

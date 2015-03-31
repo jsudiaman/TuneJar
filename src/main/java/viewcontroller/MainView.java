@@ -6,27 +6,26 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import model.Song;
+import model.Playlist;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.*;
+
+import static model.FileManipulator.*;
 
 public class MainView extends Application {
 
     public final static Logger logger = Logger.getLogger(MainView.class.getName()); // Global logger
     public static MediaPlayer player;
-    public static List<Song> masterPlaylist; // TODO Use Playlist, not java.util.list
-    public static boolean READY = false;
+    public static Playlist masterPlaylist;
 
     Set<File> directorySet;
 
@@ -45,7 +44,7 @@ public class MainView extends Application {
      * @param primaryStage The stage that will hold the interface
      */
     @Override
-    public void start(Stage primaryStage)  {
+    public void start(Stage primaryStage) {
         // Begin logging
         try {
             Handler handler = new FileHandler("log.txt");
@@ -60,33 +59,9 @@ public class MainView extends Application {
         try {
             init(primaryStage);
         } catch (NullPointerException e) {
-            e.printStackTrace(); // TODO Proper error handling
+            logger.log(Level.SEVERE, "NullPointerException thrown to MainView::start()", e);
         } catch (Exception e) {
-            // Log the error.
-            logger.log(Level.SEVERE, "Fatal exception at MainView::start()", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-
-            // In case a log file wasn't generated, store the stack trace in a string.
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-
-            // Create an alert to let the user know what happened.
-            alert.setTitle("Fatal Error!");
-            alert.setHeaderText("Something went wrong. Please send the log.txt file to\n" +
-                    "our developers for analysis.");
-            alert.setContentText("If this program isn't generating a log file for some reason, " +
-                    "you can simply paste the contents of your clipboard in the email body. (The " +
-                    "error details have already been copied.)");
-
-            // Copy the stack trace to the clipboard.
-            StringSelection stringSelection = new StringSelection(sw.toString());
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(stringSelection, null);
-
-            // Display the alert, then exit the program.
-            alert.showAndWait();
-            System.exit(-1);
+            handleFatalException(e);
         }
     }
 
@@ -106,7 +81,7 @@ public class MainView extends Application {
 
         // Load the directories. If none are present, prompt the user for one.
         try {
-            directorySet = FileManipulator.readDirectories(new File("directories.dat"));
+            directorySet = readDirectories(new File("directories.dat"));
         } catch (FileNotFoundException e) {
             // Alert the user that no directories were found
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -119,16 +94,21 @@ public class MainView extends Application {
 
             // Begin building up a data structure to store directories
             directorySet = new HashSet<>();
-            directorySet.add(FileManipulator.chooseDirectory(primaryStage));
-
-            // Store the directories in a text file
-            FileManipulator.writeFileSet("directories.dat", directorySet);
+            File chosenDirectory = chooseDirectory(primaryStage);
+            if (chosenDirectory == null) {
+                logger.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory. directories.dat"
+                    + " was not generated.");
+            } else {
+                // Store the directories in a text file
+                directorySet.add(chosenDirectory);
+                writeFileSet("directories.dat", directorySet);
+            }
         }
 
         // Create a playlist containing all songs from each directory in the directory set.
-        masterPlaylist = new ArrayList<>();
-        for(File directory : directorySet) {
-            masterPlaylist.addAll(FileManipulator.mp3List(directory));
+        masterPlaylist = new Playlist();
+        for (File directory : directorySet) {
+            masterPlaylist.addAll(songList(directory));
         }
 
         // Finally, display that playlist in MainController.
@@ -143,6 +123,46 @@ public class MainView extends Application {
     public static void loadMP3(Mp3File file) {
         String uriString = new File(file.getFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
+    }
+
+    /**
+     * Logs the error and displays a dialog box explaining what happened.
+     * Once the dialog box is closed, the program exits with exit code -1.
+     *
+     * @param e An exception that should end the program
+     */
+    private void handleFatalException(Exception e) {
+        // Log the error.
+        logger.log(Level.SEVERE, "Fatal exception thrown to MainView::start()", e);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        // Store the stack trace in a string.
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+
+        // Create an alert to let the user know what happened.
+        alert.setTitle("Fatal Error!");
+        alert.setHeaderText(e.getClass().toString().substring(6) + ": " + e.getMessage());
+        alert.setContentText("Please send the log.txt file to our developers for analysis.");
+
+        // Store the stack trace string in a textarea hidden by a "Show/Hide Details" button.
+        TextArea textArea = new TextArea(sw.toString());
+        textArea.setEditable(false);
+        textArea.setWrapText(false);
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+        GridPane gridPane = new GridPane();
+        gridPane.setMaxWidth(Double.MAX_VALUE);
+        gridPane.add(textArea, 0, 0);
+
+        // Display the alert, then exit the program.
+        alert.getDialogPane().setExpandableContent(gridPane);
+        alert.showAndWait();
+        System.exit(-1);
     }
 
 }
