@@ -111,7 +111,7 @@ public class Song {
 
     @Override
     public String toString() {
-        return "\"" + title.get() + "\" - \"" + artist.get() + "\" - \"" + album.get() + "\"";
+        return title.get() + " - " + artist.get();
     }
 
 }
