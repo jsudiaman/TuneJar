@@ -1,7 +1,7 @@
 = JavaMP3Player
 
 A lightweight MP3 player written in Java.
-image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[How it looks so far]
+image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
 
 = Start up code for using gradle
 
