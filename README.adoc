@@ -20,4 +20,4 @@ You can use http://search.maven.org[Maven Central] to find libraries to include 
 Also, http://libraries.io/[find great open source libraries here].
 
 = Suggestion box!
-Questions, comments, or concerns? http://goo.gl/forms/RB3EcUC61c[Tell us everything!]
+Questions, comments, or concerns? http://goo.gl/forms/RB3EcUC61c[Let us know!]
