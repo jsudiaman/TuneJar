@@ -1,6 +1,5 @@
 package viewcontroller;
 
-import junit.framework.TestCase;
 import model.FileManipulator;
 import model.Song;
 import org.junit.Test;
@@ -8,14 +7,17 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
-public class FileManipulatorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class FileManipulatorTest {
 
     @Test
-    public void testMp3Set() throws Exception {
+    public void testSongList() throws Exception {
         List<Song> songList = FileManipulator.songList(new File("src/test/resources/"));
         assertNotNull(songList);
         assertEquals(3, songList.size());
-        System.out.println("testMp3Set created a song list with the following contents: ");
+        System.out.println("testSongList created a song list with the following contents: ");
         songList.forEach(System.out::println);
     }
 

@@ -38,13 +38,11 @@ public class Song {
             artist = new SimpleStringProperty(id3v2tag.getArtist());
             album = new SimpleStringProperty(id3v2tag.getAlbum());
         } else if (ID3TagVersion == ID3_V1) {
-            if (mp3file.getFilename().endsWith("Keep up.mp3")) System.out.println("Lock 2 achieved");
             ID3v1 id3v1tag = mp3file.getId3v1Tag();
             title = new SimpleStringProperty(id3v1tag.getTitle());
             artist = new SimpleStringProperty(id3v1tag.getArtist());
             album = new SimpleStringProperty(id3v1tag.getAlbum());
         } else {
-            if (mp3file.getFilename().endsWith("Keep up.mp3")) System.out.println("Lock 3 achieved");
             title = new SimpleStringProperty(mp3file.getFilename());
             artist = new SimpleStringProperty("");
             album = new SimpleStringProperty("");

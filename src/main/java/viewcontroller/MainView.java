@@ -69,8 +69,9 @@ public class MainView extends Application {
      * Handles program initialization.
      *
      * @param primaryStage The stage that will hold the interface
-     * @throws IOException
-     * @throws NullPointerException
+     *
+     * @throws IOException Failed to load the FXML, or could not load/save a file.
+     * @throws NullPointerException Thrown by Playlist::addAll().
      */
     private void init(Stage primaryStage) throws IOException, NullPointerException {
         // Load the FXML file and display the interface.
