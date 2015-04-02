@@ -1,6 +1,8 @@
 = JavaMP3Player
 
-A lightweight MP3 player written in Java.
+A lightweight MP3 player written in Java.  
+
+image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
 
 = Start up code for using gradle
 
@@ -8,11 +10,14 @@ Run the following in Terminal:
 
 ----
 cd <PATH_TO_THIS_FOLDER>
-gradlew run # Run your application from the command line
-gradlew eclipse # Get things going in Eclipse
+gradlew run
+gradlew eclipse
 ----
 
-You can now import your project in eclipse.
+After doing so, you should be able to import this project in Eclipse.
 
-You can use http://search.maven.org[Maven Central] to find libraries to include into your project.
-Also, http://libraries.io/[Find great open source libraries here].
+You can use http://search.maven.org[Maven Central] to find libraries to include into the project.
+Also, http://libraries.io/[find great open source libraries here].
+
+= Suggestion box
+Questions, comments, or concerns? http://goo.gl/forms/RB3EcUC61c[Let us know!]

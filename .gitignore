@@ -1,11 +1,14 @@
+/src/test/resources/MUSIC_LICENSES.txt
 /build/
 /bin/
 .idea
 .settings
 .gradle
+**.mp3
 *.class
 *.jar
+*.dat
 .project
 .classpath
-.settings
 JavaMP3Player.iml
+log.txt

@@ -1,41 +1,61 @@
 package model;
 
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
 import javafx.beans.property.SimpleStringProperty;
+import viewcontroller.MainView;
 
-import java.io.File;
-
+/**
+* Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
+*/
 public class Song {
 
-    private File songFile;
+    // Assign ID3 tag versions to ints
+    public final static int ID3_V1 = 1;
+    public final static int ID3_V2 = 2;
+    public final static int CUSTOM_TAG = 3;
 
+    // Instance members
     private SimpleStringProperty title;
     private SimpleStringProperty artist;
     private SimpleStringProperty album;
+    private int ID3TagVersion;
+    private Mp3File mp3file;
 
     /**
      * Creates a new song by extracting metadata from the specified file.
      *
-     * @param songFile The mp3 file containing the song
+     * @param mp3file The mp3 file containing the song
      */
-    public Song(File songFile) {
-        // TODO Implement this constructor
-    }
+    public Song(Mp3File mp3file) {
+        // Find out which version of ID3 tag is used by the MP3.
+        if (mp3file.hasId3v2Tag()) ID3TagVersion = ID3_V2;
+        else if (mp3file.hasId3v1Tag()) ID3TagVersion = ID3_V1;
+        else ID3TagVersion = CUSTOM_TAG;
 
-    /**
-     * Creates a new song.
-     *
-     * @param title
-     * @param artist
-     * @param album
-     */
-    public Song(String title, String artist, String album) {
-        this.title = new SimpleStringProperty(title);
-        this.artist = new SimpleStringProperty(artist);
-        this.album = new SimpleStringProperty(album);
+        // Read metadata by extracting its tags.
+        if (ID3TagVersion == ID3_V2) {
+            ID3v2 id3v2tag = mp3file.getId3v2Tag();
+            title = new SimpleStringProperty(id3v2tag.getTitle());
+            artist = new SimpleStringProperty(id3v2tag.getArtist());
+            album = new SimpleStringProperty(id3v2tag.getAlbum());
+        } else if (ID3TagVersion == ID3_V1) {
+            ID3v1 id3v1tag = mp3file.getId3v1Tag();
+            title = new SimpleStringProperty(id3v1tag.getTitle());
+            artist = new SimpleStringProperty(id3v1tag.getArtist());
+            album = new SimpleStringProperty(id3v1tag.getAlbum());
+        } else {
+            title = new SimpleStringProperty(mp3file.getFilename());
+            artist = new SimpleStringProperty("?");
+            album = new SimpleStringProperty("?");
+        }
+        this.mp3file = mp3file;
+        nullFix();
     }
 
     // ------------------- Getters and Setters ------------------- //
-
+    // TODO Setters should change the ID3 tags if able
     public String getAlbum() {
         return album.get();
     }
@@ -60,6 +80,48 @@ public class Song {
         this.title.set(title);
     }
 
-    // ---------------- End Getters and Setters ------------------ //
+    // ---------------- Media Control ------------------ //
+
+    public void play() {
+        MainView.stopPlayback();
+        MainView.playMP3(mp3file);
+    }
+
+    public void pause() {
+        // TODO The song should be playing in order to gain this privilege
+        MainView.pausePlayback();
+    }
+
+    public void stop() {
+        // TODO The song should be playing in order to gain this privilege
+        MainView.stopPlayback();
+    }
+
+    // ---------------- Utilities ------------------ //
+
+    /**
+     * Corrects null title, artist, and/or album values.
+     */
+    public void nullFix() {
+        if (title.get() == null) {
+            title = new SimpleStringProperty(mp3file.getFilename());
+        }
+        if (artist.get() == null) {
+            artist = new SimpleStringProperty("?");
+        }
+        if (album.get() == null) {
+            album = new SimpleStringProperty("?");
+        }
+    }
+
+    /**
+     * A string representation of the song object.
+     *
+     * @return "Song Title - Artist"
+     */
+    @Override
+    public String toString() {
+        return title.get() + " - " + artist.get();
+    }
 
 }

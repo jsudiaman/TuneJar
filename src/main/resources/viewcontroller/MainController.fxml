@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -25,12 +24,25 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit" />
+                                <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
                             </items>
                         </Menu>
+                        <Menu mnemonicParsing="false" text="Playback">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#playSelected" text="Play" />
+                            </items>
+                        </Menu>
+                  <Menu mnemonicParsing="false" text="Library">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#loadMasterPlaylist" text="Reload" />
+                    </items>
+                  </Menu>
                     </menus>
                 </MenuBar>
             </top>
+         <bottom>
+            <Label fx:id="statusBar" BorderPane.alignment="CENTER_LEFT" />
+         </bottom>
         </BorderPane>
     </children>
 </AnchorPane>
