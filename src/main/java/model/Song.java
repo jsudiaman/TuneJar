@@ -6,6 +6,9 @@ import com.mpatric.mp3agic.Mp3File;
 import javafx.beans.property.SimpleStringProperty;
 import viewcontroller.MainView;
 
+/**
+* Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
+*/
 public class Song {
 
     // Assign ID3 tag versions to ints
