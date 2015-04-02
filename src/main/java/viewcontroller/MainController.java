@@ -66,7 +66,7 @@ public class MainController implements Initializable {
      * Changes the visible playlist to MainView::masterPlaylist.
      */
     public void setVisiblePlaylist() {
-        visiblePlaylist = FXCollections.observableArrayList(MainView.masterPlaylist);
+        visiblePlaylist = FXCollections.observableArrayList(MainView.getMasterPlaylist());
         playlistViewer.setItems(visiblePlaylist);
     }
 

@@ -44,8 +44,8 @@ public class Song {
             album = new SimpleStringProperty(id3v1tag.getAlbum());
         } else {
             title = new SimpleStringProperty(mp3file.getFilename());
-            artist = new SimpleStringProperty("");
-            album = new SimpleStringProperty("");
+            artist = new SimpleStringProperty("?");
+            album = new SimpleStringProperty("?");
         }
         this.mp3file = mp3file;
         nullFix();
@@ -76,12 +76,12 @@ public class Song {
     public void setTitle(String title) {
         this.title.set(title);
     }
-    // ---------------- End Getters and Setters ------------------ //
+
+    // ---------------- Media Control ------------------ //
 
     public void play() {
-        if (MainView.player != null) MainView.player.stop();
-        MainView.loadMP3(mp3file);
-        MainView.player.play();
+        MainView.stopPlayback();
+        MainView.playMP3(mp3file);
     }
 
     public void pause() {
@@ -92,6 +92,8 @@ public class Song {
         // TODO Not yet implemented
     }
 
+    // ---------------- Utilities ------------------ //
+
     /**
      * Corrects null title, artist, and/or album values.
      */
@@ -100,13 +102,18 @@ public class Song {
             title = new SimpleStringProperty(mp3file.getFilename());
         }
         if (artist.get() == null) {
-            artist = new SimpleStringProperty("Unknown");
+            artist = new SimpleStringProperty("?");
         }
         if (album.get() == null) {
-            album = new SimpleStringProperty("Unknown");
+            album = new SimpleStringProperty("?");
         }
     }
 
+    /**
+     * A string representation of the song object.
+     *
+     * @return "Song Title - Artist"
+     */
     @Override
     public String toString() {
         return title.get() + " - " + artist.get();

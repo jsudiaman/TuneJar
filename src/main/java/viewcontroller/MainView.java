@@ -24,9 +24,9 @@ import static model.FileManipulator.*;
 public class MainView extends Application {
 
     public final static Logger logger = Logger.getLogger(MainView.class.getName()); // Global logger
-    public static MediaPlayer player;
-    public static Playlist masterPlaylist;
 
+    private static MediaPlayer player;
+    private static Playlist masterPlaylist;
     Set<File> directorySet;
 
     /**
@@ -116,15 +116,35 @@ public class MainView extends Application {
         writeFileSet("directories.dat", directorySet);
     }
 
+    // ------------------- Media Player Controls ------------------- //
+
     /**
-     * Loads an MP3 file into the media player.
+     * Loads an MP3 file into the media player, then plays it.
      *
-     * @param file The MP3 file to load
+     * @param file The MP3 file to play
      */
-    public static void loadMP3(Mp3File file) {
+    public static void playMP3(Mp3File file) {
         String uriString = new File(file.getFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
+        player.play();
     }
+
+    /**
+     * Stops the media player.
+     */
+    public static void stopPlayback() {
+        if (player != null) {
+            player.stop();
+        }
+    }
+
+    // ------------------- Getters and Setters ------------------- //
+
+    public static Playlist getMasterPlaylist() {
+        return masterPlaylist;
+    }
+
+    // ------------------- Exception Handling ------------------- //
 
     /**
      * Logs the error and displays a dialog box explaining what happened.

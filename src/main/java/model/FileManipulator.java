@@ -44,18 +44,15 @@ public final class FileManipulator {
      */
     public static Set<File> readDirectories(File file) throws IOException {
         Set<File> dirSet = new HashSet<>();
-        FileReader fileIn = new FileReader(file);
-        BufferedReader reader = new BufferedReader(fileIn);
 
         // Read in the directories line by line.
-        String nextLine;
-        while ((nextLine = reader.readLine()) != null) {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        for (String nextLine; (nextLine = reader.readLine()) != null; ) {
             dirSet.add(new File(nextLine));
         }
 
         // Close the text file.
         reader.close();
-        fileIn.close();
         return dirSet;
     }
 
@@ -68,14 +65,12 @@ public final class FileManipulator {
      * @throws IOException Unable to write the output to the file
      */
     public static void writeFileSet(String fileName, Set<File> fileSet) throws IOException {
-        FileWriter fileOut = new FileWriter(fileName, false);
-        BufferedWriter writer = new BufferedWriter(fileOut);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, false));
         for (File f : fileSet) {
             writer.write(f.getAbsoluteFile().toString());
             writer.newLine();
         }
         writer.close();
-        fileOut.close();
     }
 
     /**
