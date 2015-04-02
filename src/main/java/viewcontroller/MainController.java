@@ -5,9 +5,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.Playlist;
 import model.Song;
 
 import java.net.URL;
@@ -27,6 +29,9 @@ public class MainController implements Initializable {
     TableColumn<Song, String> album;
 
     ObservableList<Song> visiblePlaylist;
+
+    @FXML
+    Label statusBar = new Label();
 
     /**
      * Sets up the playlist viewer.
@@ -52,6 +57,7 @@ public class MainController implements Initializable {
             Song song = playlistViewer.getFocusModel().getFocusedItem();
             song.play();
             MainView.logger.log(Level.INFO, "Now Playing: " + song.toString());
+            statusBar.setText("Now Playing: " + song.toString());
         } catch (NullPointerException e) {
             // Log the failure to play the song and indicate whether the playlist was empty.
             MainView.logger.log(Level.SEVERE, "Failed to play song. " +
@@ -63,11 +69,14 @@ public class MainController implements Initializable {
     }
 
     /**
-     * Changes the visible playlist to MainView::masterPlaylist.
+     * Refreshes and displays the master playlist.
      */
-    public void setVisiblePlaylist() {
+    public void loadMasterPlaylist() {
+        statusBar.setText("Loading your music, please be patient...");
+        MainView.refresh();
         visiblePlaylist = FXCollections.observableArrayList(MainView.getMasterPlaylist());
         playlistViewer.setItems(visiblePlaylist);
+        statusBar.setText("Loading complete!");
     }
 
     /**

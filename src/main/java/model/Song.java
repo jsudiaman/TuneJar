@@ -85,11 +85,13 @@ public class Song {
     }
 
     public void pause() {
-        // TODO Not yet implemented
+        // TODO The song should be playing in order to gain this privilege
+        MainView.pausePlayback();
     }
 
     public void stop() {
-        // TODO Not yet implemented
+        // TODO The song should be playing in order to gain this privilege
+        MainView.stopPlayback();
     }
 
     // ---------------- Utilities ------------------ //

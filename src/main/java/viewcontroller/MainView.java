@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import model.Playlist;
 
 import java.io.*;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.*;
@@ -27,7 +28,7 @@ public class MainView extends Application {
 
     private static MediaPlayer player;
     private static Playlist masterPlaylist;
-    Set<File> directorySet;
+    private static Set<File> directorySet;
 
     /**
      * Calls Application::launch().
@@ -75,7 +76,10 @@ public class MainView extends Application {
      */
     private void init(Stage primaryStage) throws IOException, NullPointerException {
         // Load the FXML file and display the interface.
-        Parent root = FXMLLoader.load(getClass().getResource("MainController.fxml"));
+        URL location = getClass().getResource("MainController.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent root = (Parent) fxmlLoader.load(location.openStream());
+
         primaryStage.setTitle("Java MP3 Player");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
@@ -103,21 +107,25 @@ public class MainView extends Application {
             }
         }
 
-        // Create a playlist containing all songs from each directory in the directory set.
-        masterPlaylist = new Playlist();
-        for (File directory : directorySet) {
-            masterPlaylist.addAll(songList(directory)); // TODO Handle the potential NullPointerException
-        }
-
-        // Display that playlist in MainController.
-        // TODO Implement a way to do this
+        // Create and display a playlist containing all songs from each directory in the directory set.
+        MainController controller = fxmlLoader.getController();
+        controller.loadMasterPlaylist();
 
         // Finally, save the directory set.
         writeFileSet("directories.dat", directorySet);
     }
 
-    // ------------------- Media Player Controls ------------------- //
+    /**
+     * The master playlist takes in all MP3 files that can be found in available directories.
+     */
+    public static void refresh () {
+        masterPlaylist = new Playlist();
+        for (File directory : directorySet) {
+            masterPlaylist.addAll(songList(directory)); // TODO Handle the potential NullPointerException
+        }
+    }
 
+    // ------------------- Media Player Controls ------------------- //
     /**
      * Loads an MP3 file into the media player, then plays it.
      *
@@ -127,6 +135,15 @@ public class MainView extends Application {
         String uriString = new File(file.getFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
         player.play();
+    }
+
+    /**
+     * Pauses the media player.
+     */
+    public static void pausePlayback() {
+        if (player != null) {
+            player.pause();
+        }
     }
 
     /**

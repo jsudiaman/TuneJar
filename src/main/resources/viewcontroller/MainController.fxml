@@ -34,12 +34,15 @@
                         </Menu>
                   <Menu mnemonicParsing="false" text="Library">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#setVisiblePlaylist" text="Reload" />
+                      <MenuItem mnemonicParsing="false" onAction="#loadMasterPlaylist" text="Reload" />
                     </items>
                   </Menu>
                     </menus>
                 </MenuBar>
             </top>
+         <bottom>
+            <Label fx:id="statusBar" BorderPane.alignment="CENTER_LEFT" />
+         </bottom>
         </BorderPane>
     </children>
 </AnchorPane>

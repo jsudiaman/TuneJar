@@ -36,6 +36,10 @@ public class Playlist extends ArrayList<Song> {
         // TODO Playlist::playNextSong() not yet implemented
     }
 
+    public void setCurrentSongIndex(int index) {
+        currentSongIndex = index;
+    }
+
     /*
      * Good reference for the following two methods:
      * http://support.microsoft.com/en-us/kb/249234
