@@ -1,14 +1,16 @@
 package model;
 
-import com.mpatric.mp3agic.ID3v1;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.*;
 import javafx.beans.property.SimpleStringProperty;
 import viewcontroller.MainView;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+
 /**
-* Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
-*/
+ * Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
+ */
 public class Song {
 
     // Assign ID3 tag versions to ints
@@ -51,17 +53,39 @@ public class Song {
             album = new SimpleStringProperty("?");
         }
         this.mp3file = mp3file;
-        nullFix();
+
+        // Correct null title, artist, and/or album values.
+        if (title.get() == null) title = new SimpleStringProperty(mp3file.getFilename());
+        if (artist.get() == null) artist = new SimpleStringProperty("?");
+        if (album.get() == null) album = new SimpleStringProperty("?");
     }
 
     // ------------------- Getters and Setters ------------------- //
-    // TODO Setters should change the ID3 tags if able
     public String getAlbum() {
         return album.get();
     }
 
+    /**
+     * Renames the album. Note that changes will not be reflected in the
+     * MP3 itself unless Song::save() is called.
+     *
+     * @param album New album name
+     */
     public void setAlbum(String album) {
         this.album.set(album);
+        switch (ID3TagVersion) {
+            case ID3_V2:
+                mp3file.getId3v2Tag().setAlbum(album);
+                break;
+            case ID3_V1:
+                mp3file.getId3v1Tag().setAlbum(album);
+                break;
+            default:
+                ID3v2 tag = new ID3v24Tag();
+                mp3file.setId3v2Tag(tag);
+                tag.setAlbum(album);
+                break;
+        }
     }
 
     public String getArtist() {
@@ -70,6 +94,7 @@ public class Song {
 
     public void setArtist(String artist) {
         this.artist.set(artist);
+        // TODO Setters should change the ID3 tags if able
     }
 
     public String getTitle() {
@@ -78,6 +103,7 @@ public class Song {
 
     public void setTitle(String title) {
         this.title.set(title);
+        // TODO Setters should change the ID3 tags if able
     }
 
     // ---------------- Media Control ------------------ //
@@ -100,21 +126,6 @@ public class Song {
     // ---------------- Utilities ------------------ //
 
     /**
-     * Corrects null title, artist, and/or album values.
-     */
-    public void nullFix() {
-        if (title.get() == null) {
-            title = new SimpleStringProperty(mp3file.getFilename());
-        }
-        if (artist.get() == null) {
-            artist = new SimpleStringProperty("?");
-        }
-        if (album.get() == null) {
-            album = new SimpleStringProperty("?");
-        }
-    }
-
-    /**
      * A string representation of the song object.
      *
      * @return "Song Title - Artist"
@@ -122,6 +133,24 @@ public class Song {
     @Override
     public String toString() {
         return title.get() + " - " + artist.get();
+    }
+
+    /**
+     * Saves changes to the MP3 file.
+     */
+    public void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
+        String fileName = mp3file.getFilename();
+        mp3file.save(fileName + ".tmp"); // Save the new file by appending ".tmp"
+
+        if(!new File(fileName).delete()) { // Delete the old file
+            MainView.logger.log(Level.SEVERE, "Failed to delete file: " + fileName);
+        }
+
+        if(!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
+            MainView.logger.log(Level.SEVERE, "Failed to rename file: " + fileName);
+        }
+
+        mp3file = new Mp3File(new File(fileName)); // Update the mp3file reference
     }
 
 }

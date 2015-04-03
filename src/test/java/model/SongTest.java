@@ -18,8 +18,8 @@ public class SongTest {
     }
 
     @Test
-    public void testGetAlbum() throws Exception {
-        assertEquals("MachinimaSound 2009", song.getAlbum());
+    public void testGetTitle() throws Exception {
+        assertEquals("Queen of the Night", song.getTitle());
     }
 
     @Test
@@ -28,8 +28,18 @@ public class SongTest {
     }
 
     @Test
-    public void testGetTitle() throws Exception {
-        assertEquals("Queen of the Night", song.getTitle());
+    public void testGetAlbum() throws Exception {
+        assertEquals("Machinimasound 2009", song.getAlbum());
+    }
+
+    @Test
+    public void testSave() throws Exception {
+        song.setAlbum("TEMPORARY NAME");
+        song.save();
+        Song temp = new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3")));
+        assertEquals("TEMPORARY NAME", temp.getAlbum());
+        temp.setAlbum("Machinimasound 2009");
+        temp.save();
     }
 
 }

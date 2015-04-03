@@ -72,11 +72,10 @@ public class MainController implements Initializable {
      * Refreshes and displays the master playlist.
      */
     public void loadMasterPlaylist() {
-        statusBar.setText("Loading your music, please be patient...");
         MainView.refresh();
         visiblePlaylist = FXCollections.observableArrayList(MainView.getMasterPlaylist());
         playlistViewer.setItems(visiblePlaylist);
-        statusBar.setText("Loading complete!");
+        statusBar.setText("Loading successful");
     }
 
     /**
