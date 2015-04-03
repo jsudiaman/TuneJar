@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import viewcontroller.MainView;
 
 /**
  * An ordered collection of Song objects.
@@ -21,64 +22,61 @@ public class Playlist extends ArrayList<Song> {
     private String name;
 
     public Playlist() {
+        this("Untitled");
+    }
+
+    public Playlist(String name) {
         super();
         currentSongIndex = 0;
-        String name = "playlistman";
+        this.name = name;
     }
 
     public void play() {
-        // TODO Playlist::play() not yet implemented
     	this.get(currentSongIndex).play();
     }
 
     public void pause() {
-        // TODO Playlist::pause() not yet implemented
     	this.get(currentSongIndex).pause();
     }
 
     public void stop() {
-        // TODO Playlist::stop() not yet implemented
     	this.get(currentSongIndex).stop();
     }
 
     public void playPrevSong() {
-    	if(currentSongIndex != 0){
+    	if(currentSongIndex <= 0) {
     		currentSongIndex--;
-    	}
-        // TODO Playlist::playPrevSong() not yet implemented
+    	} else {
+            MainView.stopPlayback();
+        }
     }
 
     public void playNextSong() {
-    	if(currentSongIndex+1 != this.size()){
-    		currentSongIndex ++;
-    	}
-        // TODO Playlist::playNextSong() not yet implemented
+    	if(currentSongIndex + 1 >= this.size()) {
+    		currentSongIndex++;
+    	} else {
+            MainView.stopPlayback();
+        }
     }
 
     public void setCurrentSongIndex(int index) {
         currentSongIndex = index;
     }
 
-    /*
-     * Good reference for the following two methods:
-     * http://support.microsoft.com/en-us/kb/249234
-     */
     public void loadInM3U(File m3uFile) throws UnsupportedTagException, InvalidDataException, IOException {
-        // TODO Playlist::loadInM3U() not yet implemented
         BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
         for (String nextLine; (nextLine = reader.readLine()) != null; ) {
             this.add(new Song(new Mp3File(new File(nextLine))));
-           }
+        }
         reader.close();
     }
 
     public void saveAsM3U() throws IOException {
-        // TODO Playlist::saveAsM3U() not yet implemented
-    	BufferedWriter writer = new BufferedWriter(new FileWriter(name+".m3u", false));
-    	for(int i = 0; i < this.size(); i++){
-    		writer.write(this.get(i).getFilename());
-    		writer.newLine();
-    	}
+    	BufferedWriter writer = new BufferedWriter(new FileWriter(name + ".m3u", false));
+        for (Song song : this) {
+            writer.write(song.getAbsoluteFilename());
+            writer.newLine();
+        }
     	writer.close();
     }
 

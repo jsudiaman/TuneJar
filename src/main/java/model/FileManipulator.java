@@ -3,13 +3,18 @@ package model;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import viewcontroller.MainView;
 
 import java.io.*;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static model.DebugUtils.exception;
+import static model.DebugUtils.warning;
 
 /**
  * Helper class for file manipulation within the GUI.
@@ -31,6 +36,39 @@ public final class FileManipulator {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Where are your MP3s?");
         return chooser.showDialog(stage);
+    }
+
+    /**
+     * Prompts the user for a directory and initializes a data structure
+     * to store directories.
+     *
+     * @param stage The stage that will hold the dialog box
+     *
+     * @return A set that holds one directory chosen by the user, or an
+     * empty set if the user cancels
+     */
+    public static Set<File> initialSetup(Stage stage) {
+        Set<File> set = new HashSet<>();
+
+        // Alert the user that no directories were found
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Welcome!");
+        alert.setHeaderText(null);
+        alert.setContentText("Hi there! It seems like you don't have any directories set up." +
+                "\nThat usually happens when you run this for the first time." +
+                "\nIf that's the case, let's find your MP3s!");
+        alert.showAndWait();
+
+        // Begin building up a data structure to store directories
+        set = new HashSet<>();
+        File chosenDirectory = chooseDirectory(stage);
+        if (chosenDirectory == null) {
+            warning(FileManipulator.class, "User pressed 'cancel' when asked to choose a directory.");
+        } else {
+            set.add(chosenDirectory);
+        }
+
+        return set;
     }
 
     /**
@@ -101,8 +139,7 @@ public final class FileManipulator {
                     Song song = new Song(new Mp3File(f));
                     list.add(song);
                 } catch (UnsupportedTagException | InvalidDataException | IOException e) {
-                    MainView.logger.log(Level.SEVERE, "Failed to construct a song object from file: " +
-                        f.toString(), e);
+                    exception(FileManipulator.class, "Failed to construct a song object from file: " + f.toString(), e);
                 }
             }
         }

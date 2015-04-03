@@ -6,7 +6,8 @@ import viewcontroller.MainView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
+
+import static model.DebugUtils.error;
 
 /**
  * Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
@@ -61,6 +62,7 @@ public class Song {
     }
 
     // ------------------- Getters and Setters ------------------- //
+
     public String getAlbum() {
         return album.get();
     }
@@ -92,6 +94,12 @@ public class Song {
         return artist.get();
     }
 
+    /**
+     * Renames the artist. Note that changes will not be reflected in the
+     * MP3 itself unless Song::save() is called.
+     *
+     * @param artist New artist name
+     */
     public void setArtist(String artist) {
         this.artist.set(artist);
         switch (ID3TagVersion) {
@@ -113,6 +121,12 @@ public class Song {
         return title.get();
     }
 
+    /**
+     * Renames the title. Note that changes will not be reflected in the
+     * MP3 itself unless Song::save() is called.
+     *
+     * @param title New title name
+     */
     public void setTitle(String title) {
         this.title.set(title);
         switch (ID3TagVersion) {
@@ -129,28 +143,11 @@ public class Song {
                 break;
         }
     }
-    public String getFilename(){
-    	return mp3file.getFilename();
+
+    public String getAbsoluteFilename() {
+        File file = new File(mp3file.getFilename());
+    	return file.getAbsolutePath();
     }
-
-    // ---------------- Media Control ------------------ //
-
-    public void play() {
-        MainView.stopPlayback();
-        MainView.playMP3(mp3file);
-    }
-
-    public void pause() {
-        // TODO The song should be playing in order to gain this privilege
-        MainView.pausePlayback();
-    }
-
-    public void stop() {
-        // TODO The song should be playing in order to gain this privilege
-        MainView.stopPlayback();
-    }
-
-    // ---------------- Utilities ------------------ //
 
     /**
      * A string representation of the song object.
@@ -162,6 +159,23 @@ public class Song {
         return title.get() + " - " + artist.get();
     }
 
+    // ---------------- Media Control ------------------ //
+
+    public void play() {
+        MainView.stopPlayback();
+        MainView.playMP3(mp3file);
+    }
+
+    public void pause() {
+        MainView.pausePlayback();
+    }
+
+    public void stop() {
+        MainView.stopPlayback();
+    }
+
+    // ---------------- Utilities ------------------ //
+
     /**
      * Saves changes to the MP3 file.
      */
@@ -170,11 +184,11 @@ public class Song {
         mp3file.save(fileName + ".tmp"); // Save the new file by appending ".tmp"
 
         if(!new File(fileName).delete()) { // Delete the old file
-            MainView.logger.log(Level.SEVERE, "Failed to delete file: " + fileName);
+            error(Song.class, "Failed to delete file: " + fileName);
         }
 
         if(!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
-            MainView.logger.log(Level.SEVERE, "Failed to rename file: " + fileName);
+            error(Song.class, "Failed to rename file: " + fileName);
         }
 
         mp3file = new Mp3File(new File(fileName)); // Update the mp3file reference

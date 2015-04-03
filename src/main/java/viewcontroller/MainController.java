@@ -1,5 +1,6 @@
 package viewcontroller;
 
+import com.sun.istack.internal.NotNull;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +15,9 @@ import model.Song;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
+
+import static model.DebugUtils.exception;
+import static model.DebugUtils.info;
 
 public class MainController implements Initializable {
 
@@ -56,26 +59,26 @@ public class MainController implements Initializable {
         try {
             Song song = playlistViewer.getFocusModel().getFocusedItem();
             song.play();
-            MainView.logger.log(Level.INFO, "Now Playing: " + song.toString());
-            statusBar.setText("Now Playing: " + song.toString());
+
+            String infoString = "Now Playing: " + song.toString();
+            info(MainController.class, infoString);
+            statusBar.setText(infoString);
         } catch (NullPointerException e) {
-            // Log the failure to play the song and indicate whether the playlist was empty.
-            MainView.logger.log(Level.SEVERE, "Failed to play song. " +
+            exception(MainController.class, "Failed to play song. " +
                     (visiblePlaylist.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
         } catch (Exception e) {
-            // Log the failure to play the song.
-            MainView.logger.log(Level.SEVERE, "Failed to play song.", e);
+            exception(MainController.class, "Failed to play song.", e);
         }
     }
 
     /**
-     * Refreshes and displays the master playlist.
+     * Displays the playlist in the table.
+     *
+     * @param p A playlist
      */
-    public void loadMasterPlaylist() {
-        MainView.refresh();
-        visiblePlaylist = FXCollections.observableArrayList(MainView.getMasterPlaylist());
+    public void loadPlaylist(@NotNull Playlist p)  {
+        visiblePlaylist = FXCollections.observableArrayList(p);
         playlistViewer.setItems(visiblePlaylist);
-        statusBar.setText("Loading successful");
     }
 
     /**
