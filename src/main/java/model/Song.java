@@ -88,13 +88,25 @@ public class Song {
         }
     }
 
-    public String getArtist() {
+    public String getArtist() { 	
         return artist.get();
     }
 
     public void setArtist(String artist) {
         this.artist.set(artist);
-        // TODO Setters should change the ID3 tags if able
+        switch (ID3TagVersion) {
+            case ID3_V2:
+                mp3file.getId3v2Tag().setArtist(artist);
+                break;
+            case ID3_V1:
+                mp3file.getId3v1Tag().setArtist(artist);
+                break;
+            default:
+                ID3v2 tag = new ID3v24Tag();
+                mp3file.setId3v2Tag(tag);
+                tag.setArtist(artist);
+                break;
+        }
     }
 
     public String getTitle() {
@@ -103,7 +115,22 @@ public class Song {
 
     public void setTitle(String title) {
         this.title.set(title);
-        // TODO Setters should change the ID3 tags if able
+        switch (ID3TagVersion) {
+            case ID3_V2:
+                mp3file.getId3v2Tag().setTitle(title);
+                break;
+            case ID3_V1:
+                mp3file.getId3v1Tag().setTitle(title);
+                break;
+            default:
+                ID3v2 tag = new ID3v24Tag();
+                mp3file.setId3v2Tag(tag);
+                tag.setTitle(title);
+                break;
+        }
+    }
+    public String getFilename(){
+    	return mp3file.getFilename();
     }
 
     // ---------------- Media Control ------------------ //
