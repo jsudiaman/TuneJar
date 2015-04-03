@@ -8,13 +8,14 @@ import java.io.File;
 import java.io.IOException;
 
 import static model.DebugUtils.error;
+import static model.DebugUtils.fatalException;
 
 /**
  * Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
  */
 public class Song {
 
-    // Assign ID3 tag versions to ints
+    // Assign ID3 tag versions to integers
     public final static int ID3_V1 = 1;
     public final static int ID3_V2 = 2;
     public final static int CUSTOM_TAG = 3;
@@ -67,54 +68,8 @@ public class Song {
         return album.get();
     }
 
-    /**
-     * Renames the album. Note that changes will not be reflected in the
-     * MP3 itself unless Song::save() is called.
-     *
-     * @param album New album name
-     */
-    public void setAlbum(String album) {
-        this.album.set(album);
-        switch (ID3TagVersion) {
-            case ID3_V2:
-                mp3file.getId3v2Tag().setAlbum(album);
-                break;
-            case ID3_V1:
-                mp3file.getId3v1Tag().setAlbum(album);
-                break;
-            default:
-                ID3v2 tag = new ID3v24Tag();
-                mp3file.setId3v2Tag(tag);
-                tag.setAlbum(album);
-                break;
-        }
-    }
-
     public String getArtist() { 	
         return artist.get();
-    }
-
-    /**
-     * Renames the artist. Note that changes will not be reflected in the
-     * MP3 itself unless Song::save() is called.
-     *
-     * @param artist New artist name
-     */
-    public void setArtist(String artist) {
-        this.artist.set(artist);
-        switch (ID3TagVersion) {
-            case ID3_V2:
-                mp3file.getId3v2Tag().setArtist(artist);
-                break;
-            case ID3_V1:
-                mp3file.getId3v1Tag().setArtist(artist);
-                break;
-            default:
-                ID3v2 tag = new ID3v24Tag();
-                mp3file.setId3v2Tag(tag);
-                tag.setArtist(artist);
-                break;
-        }
     }
 
     public String getTitle() {
@@ -122,25 +77,47 @@ public class Song {
     }
 
     /**
-     * Renames the title. Note that changes will not be reflected in the
-     * MP3 itself unless Song::save() is called.
+     * Alters the ID3 tag of the song, or creates a new one if
+     * it does not exist.
      *
-     * @param title New title name
+     * @param title New title
+     * @param artist New artist
+     * @param album New album
      */
-    public void setTitle(String title) {
+    public void setTag(String title, String artist, String album) {
+        // Set the instance members
         this.title.set(title);
+        this.artist.set(artist);
+        this.album.set(album);
+
+        // Change the tag data
         switch (ID3TagVersion) {
             case ID3_V2:
-                mp3file.getId3v2Tag().setTitle(title);
+                ID3v2 ID3v2Tag = mp3file.getId3v2Tag();
+                ID3v2Tag.setTitle(title);
+                ID3v2Tag.setArtist(artist);
+                ID3v2Tag.setAlbum(album);
                 break;
             case ID3_V1:
-                mp3file.getId3v1Tag().setTitle(title);
+                ID3v1 ID3v1Tag = mp3file.getId3v1Tag();
+                ID3v1Tag.setTitle(title);
+                ID3v1Tag.setArtist(artist);
+                ID3v1Tag.setAlbum(album);
                 break;
             default:
                 ID3v2 tag = new ID3v24Tag();
                 mp3file.setId3v2Tag(tag);
                 tag.setTitle(title);
+                tag.setArtist(artist);
+                tag.setAlbum(album);
                 break;
+        }
+
+        // Save changes to the mp3 file
+        try {
+            save();
+        } catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
+            fatalException(Song.class, e);
         }
     }
 
@@ -179,7 +156,7 @@ public class Song {
     /**
      * Saves changes to the MP3 file.
      */
-    public void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
+    private void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
         String fileName = mp3file.getFilename();
         mp3file.save(fileName + ".tmp"); // Save the new file by appending ".tmp"
 
