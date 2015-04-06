@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-            prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="viewcontroller.MainController">
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewcontroller.MainController">
     <children>
-        <BorderPane prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <BorderPane prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <center>
-                <TableView fx:id="playlistViewer" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true"
-                           BorderPane.alignment="CENTER">
+                <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
                     <columns>
-                        <TableColumn fx:id="title" prefWidth="266.0" text="Title"/>
-                        <TableColumn fx:id="artist" prefWidth="266.0" text="Artist"/>
-                        <TableColumn fx:id="album" prefWidth="266.0" text="Album"/>
+                        <TableColumn fx:id="title" prefWidth="266.0" text="Title" />
+                        <TableColumn fx:id="artist" prefWidth="266.0" text="Artist" />
+                        <TableColumn fx:id="album" prefWidth="266.0" text="Album" />
                     </columns>
                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
             </center>
@@ -26,20 +24,23 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit"/>
+                                <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Playback">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#playSelected" text="Play"/>
+                                <MenuItem mnemonicParsing="false" onAction="#play" text="Play" />
+                        <MenuItem mnemonicParsing="false" onAction="#pause" text="Pause" />
+                        <MenuItem mnemonicParsing="false" text="Stop" />
+                        <MenuItem mnemonicParsing="false" text="Next Song" />
+                        <MenuItem mnemonicParsing="false" text="Previous Song" />
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Library"/>
                     </menus>
                 </MenuBar>
             </top>
             <bottom>
-                <Label fx:id="statusBar" BorderPane.alignment="CENTER_LEFT"/>
+                <Label fx:id="statusBar" BorderPane.alignment="CENTER_LEFT" />
             </bottom>
         </BorderPane>
     </children>

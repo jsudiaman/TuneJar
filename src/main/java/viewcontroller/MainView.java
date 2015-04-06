@@ -9,12 +9,14 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import model.Playlist;
+import model.Song;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
+import java.util.logging.Level;
 
 import static model.DebugUtils.*;
 import static model.FileManipulator.*;
@@ -23,7 +25,7 @@ public class MainView extends Application {
 
     // GUI
     private static MediaPlayer player;
-    private static MainController controller;
+    private static Song nowPlaying;
 
     // Data Structures
     private static Playlist masterPlaylist;
@@ -49,7 +51,7 @@ public class MainView extends Application {
         try {
             init(primaryStage);
         } catch (Exception e) {
-            fatalException(MainView.class, e);
+            fatalException(e);
         }
     }
 
@@ -80,7 +82,7 @@ public class MainView extends Application {
 
         // Create and display a playlist containing all songs from each directory.
         refresh();
-        controller = fxmlLoader.getController();
+        MainController controller = fxmlLoader.getController();
         controller.loadPlaylist(masterPlaylist);
 
         // Finally, save the directory set.
@@ -95,35 +97,51 @@ public class MainView extends Application {
      */
     public static void refresh() throws NullPointerException {
         masterPlaylist = new Playlist("All Music");
-        info(MainView.class, "\ndirectorySet: " + (directorySet != null ? directorySet.toString() : null));
+        LOGGER.log(Level.INFO, "directorySet: " + (directorySet != null ? directorySet.toString() : null));
         try {
             for (File directory : directorySet) {
-                info(MainView.class, "Now adding songs from directory " + directory.toString());
+                LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
                 masterPlaylist.addAll(songList(directory));
             }
         }
         catch (NullPointerException e) {
-            fatalException(MainView.class, new NullPointerException("An unusable directory is in the directory set."));
+            fatalException(new NullPointerException("An unusable directory is in the directory set."));
         }
     }
 
     // ------------------- Media Player Controls ------------------- //
     /**
-     * Loads an MP3 file into the media player, then plays it.
+     * Loads a song into the media player, then plays it.
      *
-     * @param file The MP3 file to play
+     * @param song The song to play
      */
-    public static void playMP3(Mp3File file) {
-        String uriString = new File(file.getFilename()).toURI().toString();
+    public static void playSong(Song song) {
+        if(nowPlaying != null) {
+            nowPlaying.stop();
+        }
+        nowPlaying = song;
+        LOGGER.log(Level.INFO, "Playing: " + nowPlaying.toString());
+        String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
         player.play();
+    }
+
+    /**
+     * Resumes the media player.
+     */
+    public static void resumePlayback() {
+        if (player != null && nowPlaying != null) {
+            LOGGER.log(Level.INFO, "Resuming: " + nowPlaying.toString());
+            player.play();
+        }
     }
 
     /**
      * Pauses the media player.
      */
     public static void pausePlayback() {
-        if (player != null) {
+        if (player != null && nowPlaying != null) {
+            LOGGER.log(Level.INFO, "Pausing: " + nowPlaying.toString());
             player.pause();
         }
     }
@@ -132,15 +150,23 @@ public class MainView extends Application {
      * Stops the media player.
      */
     public static void stopPlayback() {
-        if (player != null) {
+        if (player != null && nowPlaying != null) {
+            LOGGER.log(Level.INFO, "Stopping: " + nowPlaying.toString());
             player.stop();
         }
+        nowPlaying = null;
     }
 
     // ------------------- Getters and Setters ------------------- //
 
-    public static Playlist getMasterPlaylist() {
-        return masterPlaylist;
+    /**
+     * Sets up the media player to perform a specified action at the end
+     * of every song.
+     *
+     * @param action An action wrapped in a Runnable
+     */
+    public static void setEndOfSongAction(Runnable action) {
+        player.setOnEndOfMedia(action);
     }
 
 }

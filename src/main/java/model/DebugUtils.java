@@ -17,13 +17,13 @@ import java.util.logging.*;
  */
 public final class DebugUtils {
 
-    private final static Logger LOGGER = initialize();
+    public static final Logger LOGGER = initLogger(); // Global logger
 
     private DebugUtils() {
         throw new AssertionError();
     }
 
-    private static Logger initialize() {
+    private static Logger initLogger() {
         Logger log = Logger.getLogger(MainView.class.getName());
         try {
             Handler handler = new FileHandler("log.txt");
@@ -36,31 +36,13 @@ public final class DebugUtils {
         return log;
     }
 
-    public static void info(Class c, String message) {
-        LOGGER.log(Level.INFO, c.toString() + "  " + message);
-    }
-
-    public static void warning(Class c, String message) {
-        LOGGER.log(Level.WARNING, c.toString() + "  " + message);
-    }
-
-    public static void error(Class c, String message) {
-        LOGGER.log(Level.SEVERE, c.toString() + "  " + message);
-    }
-
-    public static void exception(Class c, String message, Exception e) {
-        LOGGER.log(Level.SEVERE, message, c.toString() + "  " + e);
-    }
-
     /**
-     * Logs the exception and displays a dialog box explaining what happened.
+     * Displays a dialog box explaining what happened.
      * Once the dialog box is closed, the program exits with exit code -1.
      *
      * @param e An exception that should end the program
      */
-    public static void fatalException(Class c, Exception e) {
-        // Log the exception.
-        LOGGER.log(Level.SEVERE, "Fatal exception thrown by " + c.toString(), e);
+    public static void fatalException(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
 
         // Store the stack trace in a string.

@@ -15,24 +15,22 @@ import model.Song;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
-import static model.DebugUtils.exception;
-import static model.DebugUtils.info;
+import static model.DebugUtils.*;
 
 public class MainController implements Initializable {
 
-    // Define the table.
+    Playlist loadedPlaylist;
+    ObservableList<Song> visiblePlaylist;
     @FXML
-    TableView<Song> playlistViewer;
+    TableView<Song> table;
     @FXML
     TableColumn<Song, String> title;
     @FXML
     TableColumn<Song, String> artist;
     @FXML
     TableColumn<Song, String> album;
-
-    ObservableList<Song> visiblePlaylist;
-
     @FXML
     Label statusBar = new Label();
 
@@ -49,27 +47,36 @@ public class MainController implements Initializable {
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
         artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
         album.setCellValueFactory(new PropertyValueFactory<>("Album"));
-        playlistViewer.setItems(visiblePlaylist);
+        table.setItems(visiblePlaylist);
     }
+
+    // --------------- File --------------- //
 
     /**
-     * Plays the selected song.
+     * Ends the program.
      */
-    public void playSelected() {
-        try {
-            Song song = playlistViewer.getFocusModel().getFocusedItem();
-            song.play();
-
-            String infoString = "Now Playing: " + song.toString();
-            info(MainController.class, infoString);
-            statusBar.setText(infoString);
-        } catch (NullPointerException e) {
-            exception(MainController.class, "Failed to play song. " +
-                    (visiblePlaylist.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
-        } catch (Exception e) {
-            exception(MainController.class, "Failed to play song.", e);
-        }
+    public void quit() {
+        Platform.exit();
     }
+
+    // --------------- Playback --------------- //
+
+    /**
+     * Plays the selected song. If the media player is paused and
+     * the selected song is the same as the one that was playing
+     * before the pause, the song will be resumed instead.
+     *
+     * // TODO This will not work if the list is resorted.
+     */
+    public void play() {
+        play(table.getFocusModel().getFocusedIndex());
+    }
+
+    public void pause() {
+        loadedPlaylist.pause();
+    }
+
+    // --------------- Behind the Scenes --------------- //
 
     /**
      * Displays the playlist in the table.
@@ -77,15 +84,32 @@ public class MainController implements Initializable {
      * @param p A playlist
      */
     public void loadPlaylist(@NotNull Playlist p)  {
-        visiblePlaylist = FXCollections.observableArrayList(p);
-        playlistViewer.setItems(visiblePlaylist);
+        loadedPlaylist = p;
+        visiblePlaylist = FXCollections.observableArrayList(loadedPlaylist);
+        table.setItems(visiblePlaylist);
     }
 
     /**
-     * Ends the program.
+     * Plays the song at the specified row of the playlist.
+     *
+     * @param row The row that the song is located in
      */
-    public void quit() {
-        Platform.exit();
+    public void play(int row) {
+        try {
+            // Have the playlist point to the appropriate song, then play it
+            table.getSelectionModel().select(row);
+            loadedPlaylist.setCurrentSongIndex(row);
+            loadedPlaylist.play();
+            MainView.setEndOfSongAction(() -> play(loadedPlaylist.nextSong()));
+
+            // Update the status bar accordingly
+            statusBar.setText("Now Playing: " + loadedPlaylist.get(row).toString());
+        } catch (NullPointerException e) {
+            LOGGER.log(Level.SEVERE, "Failed to play song. " +
+                    (visiblePlaylist.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to play song.", e);
+        }
     }
 
 }

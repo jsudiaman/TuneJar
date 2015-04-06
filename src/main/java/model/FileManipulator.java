@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
-import static model.DebugUtils.exception;
-import static model.DebugUtils.warning;
+import static model.DebugUtils.LOGGER;
 
 /**
  * Helper class for file manipulation within the GUI.
@@ -63,7 +63,7 @@ public final class FileManipulator {
         set = new HashSet<>();
         File chosenDirectory = chooseDirectory(stage);
         if (chosenDirectory == null) {
-            warning(FileManipulator.class, "User pressed 'cancel' when asked to choose a directory.");
+            LOGGER.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory.");
         } else {
             set.add(chosenDirectory);
         }
@@ -139,7 +139,7 @@ public final class FileManipulator {
                     Song song = new Song(new Mp3File(f));
                     list.add(song);
                 } catch (UnsupportedTagException | InvalidDataException | IOException e) {
-                    exception(FileManipulator.class, "Failed to construct a song object from file: " + f.toString(), e);
+                    LOGGER.log(Level.SEVERE, "Failed to construct a song object from file: " + f.toString(), e);
                 }
             }
         }

@@ -1,17 +1,11 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import viewcontroller.MainView;
+
+import java.io.*;
+import java.util.ArrayList;
 
 /**
  * An ordered collection of Song objects.
@@ -43,24 +37,28 @@ public class Playlist extends ArrayList<Song> {
     	this.get(currentSongIndex).stop();
     }
 
-    public void playPrevSong() {
-    	if(currentSongIndex <= 0) {
+    public int prevSong() {
+    	if(currentSongIndex != 0) {
     		currentSongIndex--;
-    	} else {
-            MainView.stopPlayback();
-        }
+    	}
+        return currentSongIndex;
     }
 
-    public void playNextSong() {
-    	if(currentSongIndex + 1 >= this.size()) {
-    		currentSongIndex++;
+    public int nextSong() {
+        if(currentSongIndex == this.size() - 1) {
+            currentSongIndex = 0;
     	} else {
-            MainView.stopPlayback();
+            currentSongIndex++;
         }
+        return currentSongIndex;
     }
 
     public void setCurrentSongIndex(int index) {
         currentSongIndex = index;
+    }
+
+    public int getCurrentSongIndex() {
+        return currentSongIndex;
     }
 
     public void loadInM3U(File m3uFile) throws UnsupportedTagException, InvalidDataException, IOException {
