@@ -9,7 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import static model.DebugUtils.*;
+import static model.DebugUtils.LOGGER;
+import static model.DebugUtils.fatalException;
 
 /**
  * Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
@@ -72,7 +73,7 @@ public class Song {
         return album.get();
     }
 
-    public String getArtist() { 	
+    public String getArtist() {
         return artist.get();
     }
 
@@ -84,9 +85,9 @@ public class Song {
      * Alters the ID3 tag of the song, or creates a new one if
      * it does not exist.
      *
-     * @param title New title
+     * @param title  New title
      * @param artist New artist
-     * @param album New album
+     * @param album  New album
      */
     public void setTag(String title, String artist, String album) {
         // Set the instance members
@@ -134,8 +135,8 @@ public class Song {
      */
     public String getFilename() {
         StringBuilder sb = new StringBuilder(mp3file.getFilename());
-        for(int i = 0; i < sb.length(); i++) {
-            if(sb.charAt(i) == '/' || sb.charAt(i) == '\\') {
+        for (int i = 0; i < sb.length(); i++) {
+            if (sb.charAt(i) == '/' || sb.charAt(i) == '\\') {
                 sb.delete(0, i + 1);
                 i = 0;
             }
@@ -152,7 +153,7 @@ public class Song {
      */
     public String getAbsoluteFilename() {
         File file = new File(mp3file.getFilename());
-    	return file.getAbsolutePath();
+        return file.getAbsolutePath();
     }
 
     /**
@@ -168,7 +169,7 @@ public class Song {
     // ---------------- Media Control ------------------ //
 
     public void play() {
-        if(paused) {
+        if (paused) {
             paused = false;
             MainView.resumePlayback();
         } else {
@@ -195,11 +196,11 @@ public class Song {
         String fileName = mp3file.getFilename();
         mp3file.save(fileName + ".tmp"); // Save the new file by appending ".tmp"
 
-        if(!new File(fileName).delete()) { // Delete the old file
+        if (!new File(fileName).delete()) { // Delete the old file
             LOGGER.log(Level.SEVERE, "Failed to delete file: " + fileName);
         }
 
-        if(!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
+        if (!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
             LOGGER.log(Level.SEVERE, "Failed to rename file: " + fileName);
         }
 

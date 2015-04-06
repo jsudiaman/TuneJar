@@ -1,6 +1,6 @@
 package viewcontroller;
 
-import com.mpatric.mp3agic.Mp3File;
+import com.sun.istack.internal.Nullable;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,7 +18,8 @@ import java.net.URL;
 import java.util.Set;
 import java.util.logging.Level;
 
-import static model.DebugUtils.*;
+import static model.DebugUtils.LOGGER;
+import static model.DebugUtils.fatalException;
 import static model.FileManipulator.*;
 
 public class MainView extends Application {
@@ -59,8 +60,7 @@ public class MainView extends Application {
      * Handles program initialization.
      *
      * @param primaryStage The stage that will hold the interface
-     *
-     * @throws IOException Failed to load the FXML, or could not load/save a file.
+     * @throws IOException          Failed to load the FXML, or could not load/save a file.
      * @throws NullPointerException An unusable directory is in the directory set
      */
     private void init(Stage primaryStage) throws IOException, NullPointerException {
@@ -103,20 +103,21 @@ public class MainView extends Application {
                 LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
                 masterPlaylist.addAll(songList(directory));
             }
-        }
-        catch (NullPointerException e) {
+            LOGGER.log(Level.INFO, "Refresh successful!");
+        } catch (NullPointerException e) {
             fatalException(new NullPointerException("An unusable directory is in the directory set."));
         }
     }
 
     // ------------------- Media Player Controls ------------------- //
+
     /**
      * Loads a song into the media player, then plays it.
      *
      * @param song The song to play
      */
     public static void playSong(Song song) {
-        if(nowPlaying != null) {
+        if (nowPlaying != null) {
             nowPlaying.stop();
         }
         nowPlaying = song;
@@ -169,4 +170,8 @@ public class MainView extends Application {
         player.setOnEndOfMedia(action);
     }
 
+    @Nullable
+    public static Song getNowPlaying() {
+        return nowPlaying;
+    }
 }

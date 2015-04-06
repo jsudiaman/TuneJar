@@ -3,6 +3,8 @@ package model;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -29,7 +31,6 @@ public final class FileManipulator {
      * Prompts the user for a directory.
      *
      * @param stage The stage that will hold the dialog box
-     *
      * @return The directory specified by the user, or null if the user cancels
      */
     public static File chooseDirectory(Stage stage) {
@@ -43,12 +44,11 @@ public final class FileManipulator {
      * to store directories.
      *
      * @param stage The stage that will hold the dialog box
-     *
      * @return A set that holds one directory chosen by the user, or an
      * empty set if the user cancels
      */
     public static Set<File> initialSetup(Stage stage) {
-        Set<File> set = new HashSet<>();
+        Set<File> set;
 
         // Alert the user that no directories were found
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -75,9 +75,7 @@ public final class FileManipulator {
      * Read in a list of directories, line by line, from a specified text file.
      *
      * @param file The file to read directories from
-     *
      * @return A set containing all of the specified directories
-     *
      * @throws IOException The file cannot be found or accessed
      */
     public static Set<File> readDirectories(File file) throws IOException {
@@ -99,7 +97,6 @@ public final class FileManipulator {
      *
      * @param fileName Where to write the output. The file will be overwritten if it exists.
      * @param fileSet  A set of files
-     *
      * @throws IOException Unable to write the output to the file
      */
     public static void writeFileSet(String fileName, Set<File> fileSet) throws IOException {
@@ -116,13 +113,10 @@ public final class FileManipulator {
      * The files are then constructed as Song objects to be wrapped up in an ordered list.
      *
      * @param directory A File object that is a directory.
-     *
      * @return A list containing all the Song objects, or null if the File object is not a directory.
-     *
-     * @throws NullPointerException The File object is not a directory or is a directory that cannot
-     * be accessed
      */
-    public static List<Song> songList(File directory) throws NullPointerException {
+    @Nullable
+    public static List<Song> songList(@NotNull File directory) {
         // Initialize the list or return null if necessary.
         if (directory == null || !directory.isDirectory()) return null;
         List<Song> list = new ArrayList<>();
