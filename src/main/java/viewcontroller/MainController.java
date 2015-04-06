@@ -94,24 +94,24 @@ public class MainController implements Initializable {
      * If it says "Resume", it will resume the currently playing song,
      * then change to "Pause".
      * <br><br>
-     * If it says anything else, or if a pause is attempted without a
-     * song playing, the error will be logged.
+     * If it says anything else, the error will be logged.
      */
     public void pause() {
-        try {
-            if (pauseButton.getText().equals("Pause")) {
-                statusBar.setText("Paused: " + MainView.getNowPlaying().toString());
-                MainView.getNowPlaying().pause();
-                pauseButton.setText("Resume");
-            } else if (pauseButton.getText().equals("Resume")) {
-                statusBar.setText("Now Playing: " + MainView.getNowPlaying().toString());
-                MainView.getNowPlaying().play();
-                pauseButton.setText("Pause");
-            } else {
-                LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: " + pauseButton.getText());
-            }
-        } catch (NullPointerException e) {
-            LOGGER.log(Level.WARNING, "An attempt was made to pause a song without one playing.");
+        if (MainView.getNowPlaying() == null) {
+            LOGGER.log(Level.WARNING, "No song is currently playing.");
+            return;
+        }
+
+        if (pauseButton.getText().equals("Pause")) {
+            statusBar.setText("Paused: " + MainView.getNowPlaying().toString());
+            MainView.getNowPlaying().pause();
+            pauseButton.setText("Resume");
+        } else if (pauseButton.getText().equals("Resume")) {
+            statusBar.setText("Now Playing: " + MainView.getNowPlaying().toString());
+            MainView.getNowPlaying().play();
+            pauseButton.setText("Pause");
+        } else {
+            LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: " + pauseButton.getText());
         }
     }
 
@@ -119,7 +119,10 @@ public class MainController implements Initializable {
      * Stops the currently playing song.
      */
     public void stop() {
-        if (MainView.getNowPlaying() == null) return;
+        if (MainView.getNowPlaying() == null) {
+            LOGGER.log(Level.WARNING, "No song is currently playing.");
+            return;
+        }
 
         statusBar.setText("");
         pauseButton.setText("Pause");
