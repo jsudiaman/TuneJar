@@ -1,7 +1,5 @@
-package viewcontroller;
+package model;
 
-import model.FileManipulator;
-import model.Song;
 import org.junit.Test;
 
 import java.io.File;

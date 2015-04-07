@@ -2,10 +2,10 @@ package viewcontroller;
 
 import com.sun.istack.internal.Nullable;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -53,6 +53,7 @@ public class MainView extends Application {
         try {
             init(primaryStage);
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             fatalException(e);
         }
     }
@@ -70,10 +71,10 @@ public class MainView extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(location.openStream());
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("DarkTheme.css").toString());
 
-        primaryStage.setTitle("Java MP3 Player");
+        primaryStage.setTitle("JVMP3");
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -84,14 +85,25 @@ public class MainView extends Application {
             directorySet = initialSetup(primaryStage);
         }
 
-        // Create and display a playlist containing all songs from each directory.
-        refresh();
         MainController controller = fxmlLoader.getController();
-        controller.loadPlaylist(masterPlaylist);
+        controller.setStatus("Loading your songs, please be patient...");
 
-        // Finally, save the directory set.
-        // If the load method above threw NullPointerException, this statement will not be reached.
-        writeFileSet("directories.dat", directorySet);
+        // Multithreading this task since it takes a while
+        Thread initPlaylist = new Thread(() -> {
+            // Create and display a playlist containing all songs from each directory.
+            refresh();
+            controller.loadPlaylist(masterPlaylist);
+
+            // Finally, save the directory set.
+            try {
+                writeFileSet("directories.dat", directorySet);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to save the directory set.", e);
+            }
+
+            Platform.runLater(() -> controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully."));
+        });
+        initPlaylist.start();
     }
 
     /**

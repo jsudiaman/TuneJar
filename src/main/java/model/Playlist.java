@@ -3,6 +3,7 @@ package model;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Playlist extends ArrayList<Song> {
 
-    private String name;
+    private SimpleStringProperty name;
 
     public Playlist() {
         this("Untitled");
@@ -20,11 +21,15 @@ public class Playlist extends ArrayList<Song> {
 
     public Playlist(String name) {
         super();
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
+    }
+
+    public String getName() {
+        return name.get();
     }
 
     public void saveAsM3U() throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(name + ".m3u", false));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(name.get() + ".m3u", false));
         for (Song song : this) {
             writer.write(song.getAbsoluteFilename());
             writer.newLine();

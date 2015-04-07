@@ -48,6 +48,7 @@ public final class DebugUtils {
         // Store the stack trace in a string.
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
+        pw.println("STACK TRACE:");
         e.printStackTrace(pw);
 
         // Create an alert to let the user know what happened.

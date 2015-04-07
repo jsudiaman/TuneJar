@@ -12,31 +12,33 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
 import model.Playlist;
 import model.Song;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 
 import static model.DebugUtils.LOGGER;
 
 public class MainController implements Initializable {
 
-    Playlist loadedPlaylist;
-    ObservableList<Song> visiblePlaylist;
+    ObservableList<Song> songList;
     @FXML
-    TableView<Song> table;
+    TableView<Song> songTable;
     @FXML
     TableColumn<Song, String> title;
     @FXML
     TableColumn<Song, String> artist;
     @FXML
     TableColumn<Song, String> album;
+
+    ObservableList<Playlist> playlistList;
+    @FXML
+    TableView<Playlist> playlistTable;
+    @FXML
+    TableColumn<Playlist, String> name;
+
     @FXML
     Label statusBar = new Label();
     @FXML
@@ -51,14 +53,20 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        visiblePlaylist = FXCollections.observableArrayList();
+        // Initialize the song table.
+        songList = FXCollections.observableArrayList();
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
         artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
         album.setCellValueFactory(new PropertyValueFactory<>("Album"));
-        table.setItems(visiblePlaylist);
+        songTable.setItems(songList);
+
+        // Initialize the playlist table.
+        playlistList = FXCollections.observableArrayList();
+        name.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        playlistTable.setItems(playlistList);
 
         // When a song is double clicked, play it.
-        table.setRowFactory(tv -> {
+        songTable.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(click -> {
                 if (click.getClickCount() == 2 && !row.isEmpty() && click.getButton().equals(MouseButton.PRIMARY)) {
@@ -69,7 +77,7 @@ public class MainController implements Initializable {
         });
 
         // When enter is pressed, play the selected song.
-        table.setOnKeyPressed(event -> {
+        songTable.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 play();
             }
@@ -79,10 +87,17 @@ public class MainController implements Initializable {
     // --------------- File --------------- //
 
     /**
-     * Ends the program.
+     * Asks the user if it is okay to end the program. If so,
+     * end the program.
      */
     public void quit() {
-        Platform.exit();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Exit JMP3");
+        alert.setHeaderText("Confirm Exit");
+        alert.setContentText("Are you sure you would like to exit?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) Platform.exit();
     }
 
     // --------------- Playback --------------- //
@@ -92,7 +107,7 @@ public class MainController implements Initializable {
      */
     public void play() {
         pauseButton.setText("Pause");
-        play(table.getFocusModel().getFocusedIndex());
+        play(songTable.getFocusModel().getFocusedIndex());
     }
 
     /**
@@ -146,7 +161,7 @@ public class MainController implements Initializable {
             return;
         }
 
-        int row = visiblePlaylist.indexOf(MainView.getNowPlaying());
+        int row = songList.indexOf(MainView.getNowPlaying());
         if (row <= 0) {
             play(0);
         } else {
@@ -163,8 +178,8 @@ public class MainController implements Initializable {
             return;
         }
 
-        int row = visiblePlaylist.indexOf(MainView.getNowPlaying());
-        if (row + 1 >= visiblePlaylist.size()) {
+        int row = songList.indexOf(MainView.getNowPlaying());
+        if (row + 1 >= songList.size()) {
             play(0);
         } else {
             play(row + 1);
@@ -172,8 +187,13 @@ public class MainController implements Initializable {
     }
 
     // --------------- Song --------------- //
+
+    /**
+     * Creates a user dialog that allows modification of the selected
+     * song's ID3 tags.
+     */
     public void edit() {
-        Song songToEdit = table.getSelectionModel().getSelectedItem();
+        Song songToEdit = songTable.getSelectionModel().getSelectedItem();
         if (songToEdit == null) {
             LOGGER.log(Level.WARNING, "No song selected.");
             return;
@@ -231,45 +251,73 @@ public class MainController implements Initializable {
         if(newParams.isPresent()) {
             songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
 
-            // Get the table to refresh the data
-            table.getColumns().get(0).setVisible(false);
-            table.getColumns().get(0).setVisible(true);
+            // Get the song table to refresh the data
+            songTable.getColumns().get(0).setVisible(false);
+            songTable.getColumns().get(0).setVisible(true);
         }
+    }
+
+    // --------------- Playlist --------------- //
+
+    /**
+     * Shuffles the song table. If a song is currently playing, it will
+     * be moved to the top of the table and playback will continue.
+     */
+    public void shuffle() {
+        Collections.shuffle(songList);
+        if (MainView.getNowPlaying() != null) {
+            Collections.swap(songList, 0, songList.indexOf(MainView.getNowPlaying()));
+            songTable.getSelectionModel().select(0);
+        } else {
+            play(0);
+        }
+        songTable.scrollTo(0);
     }
 
     // --------------- Behind the Scenes --------------- //
 
     /**
-     * Plays the song at the specified row of the playlist.
+     * Plays the song at the specified row of the song table.
      *
      * @param row The row that the song is located in
      */
     public void play(int row) {
         try {
             // Have the playlist point to the appropriate song, then play it
-            table.getSelectionModel().select(row);
-            visiblePlaylist.get(row).play();
+            songTable.getSelectionModel().select(row);
+            songList.get(row).play();
             MainView.setEndOfSongAction(this::playNext);
 
             // Update the status bar accordingly
             statusBar.setText("Now Playing: " + MainView.getNowPlaying().toString());
         } catch (NullPointerException e) {
             LOGGER.log(Level.SEVERE, "Failed to play song. " +
-                    (visiblePlaylist.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
+                    (songList.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to play song.", e);
         }
     }
 
     /**
-     * Displays the playlist in the table.
+     * Adds a playlist to the playlist table, then loads it into the song table.
      *
      * @param p A playlist
      */
     public void loadPlaylist(@NotNull Playlist p) {
-        loadedPlaylist = p;
-        visiblePlaylist = FXCollections.observableArrayList(loadedPlaylist);
-        table.setItems(visiblePlaylist);
+        songList = FXCollections.observableArrayList(p);
+        playlistList.add(p);
+        songTable.setItems(songList);
+        playlistTable.setItems(playlistList);
+        playlistTable.getSelectionModel().select(p);
+    }
+
+    /**
+     * The status bar displays the desired message.
+     *
+     * @param message A status bar message
+     */
+    public void setStatus(String message) {
+        statusBar.setText(message);
     }
 
 }

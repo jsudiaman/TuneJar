@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewcontroller.MainController">
+<BorderPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewcontroller.MainController">
    <center>
-      <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="title" prefWidth="266.0" text="Title" />
             <TableColumn fx:id="artist" prefWidth="266.0" text="Artist" />
@@ -32,8 +33,9 @@
                   <MenuItem mnemonicParsing="false" onAction="#play" text="Play" />
                   <MenuItem fx:id="pauseButton" mnemonicParsing="false" onAction="#pause" text="Pause" />
                   <MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
-                  <MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
                   <MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
+                  <MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
+                  <MenuItem mnemonicParsing="false" onAction="#shuffle" text="Shuffle" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Song">
@@ -41,6 +43,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Playlist" />
          </menus>
       </MenuBar>
    </top>
@@ -55,4 +58,14 @@
         </menus>
       </MenuBar>
    </bottom>
+   <left>
+      <TableView fx:id="playlistTable" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="name" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Playlists" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </left>
 </BorderPane>
