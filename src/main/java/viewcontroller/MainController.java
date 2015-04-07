@@ -6,16 +6,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 import model.Playlist;
 import model.Song;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
@@ -54,10 +58,14 @@ public class MainController implements Initializable {
         table.setItems(visiblePlaylist);
 
         // When a song is double clicked, play it.
-        table.setOnMouseClicked(click -> {
-            if (click.getClickCount() == 2) {
-                play();
-            }
+        table.setRowFactory(tv -> {
+            TableRow<Song> row = new TableRow<>();
+            row.setOnMouseClicked(click -> {
+                if (click.getClickCount() == 2 && !row.isEmpty() && click.getButton().equals(MouseButton.PRIMARY)) {
+                    play();
+                }
+            });
+            return row;
         });
 
         // When enter is pressed, play the selected song.
@@ -160,6 +168,72 @@ public class MainController implements Initializable {
             play(0);
         } else {
             play(row + 1);
+        }
+    }
+
+    // --------------- Song --------------- //
+    public void edit() {
+        Song songToEdit = table.getSelectionModel().getSelectedItem();
+        if (songToEdit == null) {
+            LOGGER.log(Level.WARNING, "No song selected.");
+            return;
+        }
+
+        // Create the editor dialog.
+        Dialog<List<String>> editor = new Dialog<>();
+        editor.setTitle("Song Editor");
+        editor.setHeaderText("Editing " + songToEdit.toString());
+
+        // Set the button types.
+        ButtonType saveButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        editor.getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
+
+        // Create the labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField title = new TextField();
+        title.setPromptText("Title");
+        title.setText(songToEdit.getTitle());
+
+        TextField artist = new TextField();
+        artist.setPromptText("Artist");
+        artist.setText(songToEdit.getArtist());
+
+        TextField album = new TextField();
+        album.setPromptText("Album");
+        album.setText(songToEdit.getAlbum());
+
+        grid.add(new Label("Title:"), 0, 0);
+        grid.add(title, 1, 0);
+        grid.add(new Label("Artist:"), 0, 1);
+        grid.add(artist, 1, 1);
+        grid.add(new Label("Album:"), 0, 2);
+        grid.add(album, 1, 2);
+
+        editor.getDialogPane().setContent(grid);
+
+        // Convert the result to an ArrayList of type String.
+        editor.setResultConverter(param -> {
+            if (param == saveButton) {
+                List<String> list = new ArrayList<>();
+                list.add(title.getText());
+                list.add(artist.getText());
+                list.add(album.getText());
+                return list;
+            }
+            return null;
+        });
+
+        Optional<List<String>> newParams = editor.showAndWait();
+        if(newParams.isPresent()) {
+            songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
+
+            // Get the table to refresh the data
+            table.getColumns().get(0).setVisible(false);
+            table.getColumns().get(0).setVisible(true);
         }
     }
 

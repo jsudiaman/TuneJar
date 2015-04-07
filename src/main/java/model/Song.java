@@ -54,67 +54,77 @@ public class Song {
             album = new SimpleStringProperty(id3v1tag.getAlbum());
         } else {
             title = new SimpleStringProperty(getFilename());
-            artist = new SimpleStringProperty("?");
-            album = new SimpleStringProperty("?");
+            artist = new SimpleStringProperty("");
+            album = new SimpleStringProperty("");
         }
         this.mp3file = mp3file;
 
         // Correct null title, artist, and/or album values.
         if (title.get() == null) title = new SimpleStringProperty(getFilename());
-        if (artist.get() == null) artist = new SimpleStringProperty("?");
-        if (album.get() == null) album = new SimpleStringProperty("?");
+        if (artist.get() == null) artist = new SimpleStringProperty("");
+        if (album.get() == null) album = new SimpleStringProperty("");
 
         paused = false;
     }
 
     // ------------------- Getters and Setters ------------------- //
 
-    public String getAlbum() {
-        return album.get();
+    public String getTitle() {
+        return title.get();
     }
 
     public String getArtist() {
         return artist.get();
     }
 
-    public String getTitle() {
-        return title.get();
+    public String getAlbum() {
+        return album.get();
     }
 
     /**
      * Alters the ID3 tag of the song, or creates a new one if
      * it does not exist.
      *
-     * @param title  New title
-     * @param artist New artist
-     * @param album  New album
+     * @param newTitle  New title
+     * @param newArtist New artist
+     * @param newAlbum  New album
      */
-    public void setTag(String title, String artist, String album) {
+    public void setTag(String newTitle, String newArtist, String newAlbum) {
+        // Remove leading and trailing whitespace
+        newTitle = newTitle.trim();
+        newArtist = newArtist.trim();
+        newAlbum = newAlbum.trim();
+
+        // Replace empty parameters with the old ones
+        if(newTitle.equals("")) newTitle = getTitle();
+        if(newArtist.equals("")) newArtist = getArtist();
+        if(newAlbum.equals("")) newAlbum = getAlbum();
+
         // Set the instance members
-        this.title.set(title);
-        this.artist.set(artist);
-        this.album.set(album);
+        this.title.set(newTitle);
+        this.artist.set(newArtist);
+        this.album.set(newAlbum);
 
         // Change the tag data
         switch (ID3TagVersion) {
             case ID3_V2:
                 ID3v2 ID3v2Tag = mp3file.getId3v2Tag();
-                ID3v2Tag.setTitle(title);
-                ID3v2Tag.setArtist(artist);
-                ID3v2Tag.setAlbum(album);
+                ID3v2Tag.setTitle(newTitle);
+                ID3v2Tag.setArtist(newArtist);
+                ID3v2Tag.setAlbum(newAlbum);
                 break;
             case ID3_V1:
                 ID3v1 ID3v1Tag = mp3file.getId3v1Tag();
-                ID3v1Tag.setTitle(title);
-                ID3v1Tag.setArtist(artist);
-                ID3v1Tag.setAlbum(album);
+                ID3v1Tag.setTitle(newTitle);
+                ID3v1Tag.setArtist(newArtist);
+                ID3v1Tag.setAlbum(newAlbum);
                 break;
             default:
                 ID3v2 tag = new ID3v24Tag();
                 mp3file.setId3v2Tag(tag);
-                tag.setTitle(title);
-                tag.setArtist(artist);
-                tag.setAlbum(album);
+                tag.setTitle(newTitle);
+                tag.setArtist(newArtist);
+                tag.setAlbum(newAlbum);
                 break;
         }
 
@@ -128,7 +138,7 @@ public class Song {
 
     /**
      * Finds the file name of the MP3 without any directory information.
-     * Ex. If the MP3 is located in 'C:\Users\Joe\Music\B.mp3', 'B.mp3' will
+     * Ex. If the MP3 is located in 'C:\Users\Joe\Music\B.mp3', 'B' will
      * be returned.
      *
      * @return The file name
@@ -141,7 +151,7 @@ public class Song {
                 i = 0;
             }
         }
-        return sb.toString();
+        return sb.substring(0, sb.length() - 4);
     }
 
     /**
@@ -201,7 +211,7 @@ public class Song {
         }
 
         if (!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
-            LOGGER.log(Level.SEVERE, "Failed to rename file: " + fileName);
+            LOGGER.log(Level.SEVERE, "Failed to rename file: " + fileName + ".tmp");
         }
 
         mp3file = new Mp3File(new File(fileName)); // Update the mp3file reference
