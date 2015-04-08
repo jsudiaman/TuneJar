@@ -141,4 +141,18 @@ public final class FileManipulator {
         return list;
     }
 
+    /**
+     * Recursively searches the directory for .m3u files and creates a playlist
+     * out of each one. All of the created playlists are then wrapped in a list and
+     * returned.
+     *
+     * @param directory The directory in which playlists should be searched for
+     * @return All of the created playlists, or null if <i>directory</i> is not
+     * a directory.
+     */
+    public static List<Playlist> allPlaylists(File directory) {
+        // TODO Not yet implemented
+        return null;
+    }
+
 }

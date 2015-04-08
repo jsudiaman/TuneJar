@@ -1,71 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewcontroller.MainController">
-   <center>
-      <TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <columns>
-            <TableColumn fx:id="title" prefWidth="266.0" text="Title" />
-            <TableColumn fx:id="artist" prefWidth="266.0" text="Artist" />
-            <TableColumn fx:id="album" prefWidth="266.0" text="Album" />
-         </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-   </center>
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-         <menus>
-            <Menu mnemonicParsing="false" text="File">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Playback">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#play" text="Play" />
-                  <MenuItem fx:id="pauseButton" mnemonicParsing="false" onAction="#pause" text="Pause" />
-                  <MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
-                  <MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
-                  <MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
-                  <MenuItem mnemonicParsing="false" onAction="#shuffle" text="Shuffle" />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Song">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />
-              </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Playlist" />
-         </menus>
-      </MenuBar>
-   </top>
-   <bottom>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu disable="true" mnemonicParsing="false">
-               <graphic>
-                  <Label fx:id="statusBar" />
-               </graphic>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </bottom>
-   <left>
-      <TableView fx:id="playlistTable" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <columns>
-          <TableColumn fx:id="name" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Playlists" />
-        </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-   </left>
+    <center>
+        <TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="title" prefWidth="266.0" text="Title" />
+                <TableColumn fx:id="artist" prefWidth="266.0" text="Artist" />
+                <TableColumn fx:id="album" prefWidth="266.0" text="Album" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </center>
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <Menu mnemonicParsing="false" text="New...">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#createPlaylist" text="Playlist" />
+                            </items>
+                        </Menu>
+                        <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Playback">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#play" text="Play" />
+                        <MenuItem fx:id="pauseButton" mnemonicParsing="false" onAction="#pause" text="Pause" />
+                        <MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
+                        <MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
+                        <MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
+                        <MenuItem mnemonicParsing="false" onAction="#shuffle" text="Shuffle" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Song">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <left>
+        <TableView fx:id="playlistTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="name" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Playlists" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </left>
+    <bottom>
+        <ToolBar BorderPane.alignment="CENTER">
+            <items>
+                <Label fx:id="status" focusTraversable="false" />
+            </items>
+        </ToolBar>
+    </bottom>
 </BorderPane>

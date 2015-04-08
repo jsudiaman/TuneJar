@@ -23,7 +23,11 @@ import static model.DebugUtils.LOGGER;
 
 public class MainController implements Initializable {
 
+    // Lists
     ObservableList<Song> songList;
+    ObservableList<Playlist> playlistList;
+
+    // FXML Injections
     @FXML
     TableView<Song> songTable;
     @FXML
@@ -32,15 +36,12 @@ public class MainController implements Initializable {
     TableColumn<Song, String> artist;
     @FXML
     TableColumn<Song, String> album;
-
-    ObservableList<Playlist> playlistList;
     @FXML
     TableView<Playlist> playlistTable;
     @FXML
     TableColumn<Playlist, String> name;
-
     @FXML
-    Label statusBar = new Label();
+    Label status = new Label();
     @FXML
     MenuItem pauseButton = new MenuItem();
 
@@ -66,25 +67,48 @@ public class MainController implements Initializable {
         playlistTable.setItems(playlistList);
 
         // When a song is double clicked, play it.
-        songTable.setRowFactory(tv -> {
+        songTable.setRowFactory(param -> {
             TableRow<Song> row = new TableRow<>();
-            row.setOnMouseClicked(click -> {
-                if (click.getClickCount() == 2 && !row.isEmpty() && click.getButton().equals(MouseButton.PRIMARY)) {
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty() && event.getButton().equals(MouseButton.PRIMARY)) {
                     play();
                 }
             });
             return row;
         });
 
-        // When enter is pressed, play the selected song.
+        // When ENTER is pressed and a song is focused, play the focused song.
         songTable.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 play();
             }
         });
+
+        // When a playlist is selected, display it.
+        playlistTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
+            songTable.setItems(songList);
+        });
+
+        // Disable multi-selections.
+        songTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        playlistTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     // --------------- File --------------- //
+
+    /**
+     * Creates a new playlist.
+     */
+    public void createPlaylist() {
+        TextInputDialog dialog = new TextInputDialog("Untitled Playlist");
+        dialog.setTitle("New Playlist");
+        dialog.setHeaderText("Create a new playlist");
+        dialog.setContentText("Playlist name:");
+
+        Optional<String> playlistName = dialog.showAndWait();
+        playlistName.ifPresent(s -> loadPlaylist(new Playlist(playlistName.get())));
+    }
 
     /**
      * Asks the user if it is okay to end the program. If so,
@@ -92,7 +116,7 @@ public class MainController implements Initializable {
      */
     public void quit() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit JMP3");
+        alert.setTitle("Exit JVMP3");
         alert.setHeaderText("Confirm Exit");
         alert.setContentText("Are you sure you would like to exit?");
 
@@ -111,6 +135,28 @@ public class MainController implements Initializable {
     }
 
     /**
+     * Plays the song at the specified row of the song table.
+     *
+     * @param row The row that the song is located in
+     */
+    public void play(int row) {
+        try {
+            // Have the playlist point to the appropriate song, then play it
+            songTable.getSelectionModel().select(row);
+            songList.get(row).play();
+            MainView.setEndOfSongAction(this::playNext);
+
+            // Update the status bar accordingly
+            status.setText("Now Playing: " + MainView.getNowPlaying().toString());
+        } catch (NullPointerException e) {
+            LOGGER.log(Level.SEVERE, "Failed to play song. " +
+                    (songList.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to play song.", e);
+        }
+    }
+
+    /**
      * Handling for the pause button. If the pause button says "Pause", it
      * will pause the currently playing song, then change to "Resume".
      * <br><br>
@@ -126,11 +172,11 @@ public class MainController implements Initializable {
         }
 
         if (pauseButton.getText().equals("Pause")) {
-            statusBar.setText("Paused: " + MainView.getNowPlaying().toString());
+            status.setText("Paused: " + MainView.getNowPlaying().toString());
             MainView.getNowPlaying().pause();
             pauseButton.setText("Resume");
         } else if (pauseButton.getText().equals("Resume")) {
-            statusBar.setText("Now Playing: " + MainView.getNowPlaying().toString());
+            status.setText("Now Playing: " + MainView.getNowPlaying().toString());
             MainView.getNowPlaying().play();
             pauseButton.setText("Pause");
         } else {
@@ -147,7 +193,7 @@ public class MainController implements Initializable {
             return;
         }
 
-        statusBar.setText("");
+        status.setText("");
         pauseButton.setText("Pause");
         MainView.getNowPlaying().stop();
     }
@@ -167,6 +213,7 @@ public class MainController implements Initializable {
         } else {
             play(row - 1);
         }
+        focusNowPlaying();
     }
 
     /**
@@ -184,6 +231,7 @@ public class MainController implements Initializable {
         } else {
             play(row + 1);
         }
+        focusNowPlaying();
     }
 
     // --------------- Song --------------- //
@@ -248,7 +296,7 @@ public class MainController implements Initializable {
         });
 
         Optional<List<String>> newParams = editor.showAndWait();
-        if(newParams.isPresent()) {
+        if (newParams.isPresent()) {
             songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
 
             // Get the song table to refresh the data
@@ -260,6 +308,20 @@ public class MainController implements Initializable {
     // --------------- Playlist --------------- //
 
     /**
+     * Adds a playlist to the playlist table, then loads it into the song table.
+     *
+     * @param p A playlist
+     */
+    public void loadPlaylist(@NotNull Playlist p) {
+        playlistList.add(p);
+        playlistTable.setItems(playlistList);
+        select(playlistTable, playlistList.size() - 1);
+
+        songList = FXCollections.observableArrayList(p);
+        songTable.setItems(songList);
+    }
+
+    /**
      * Shuffles the song table. If a song is currently playing, it will
      * be moved to the top of the table and playback will continue.
      */
@@ -267,49 +329,13 @@ public class MainController implements Initializable {
         Collections.shuffle(songList);
         if (MainView.getNowPlaying() != null) {
             Collections.swap(songList, 0, songList.indexOf(MainView.getNowPlaying()));
-            songTable.getSelectionModel().select(0);
         } else {
             play(0);
         }
-        songTable.scrollTo(0);
+        select(songTable, 0);
     }
 
-    // --------------- Behind the Scenes --------------- //
-
-    /**
-     * Plays the song at the specified row of the song table.
-     *
-     * @param row The row that the song is located in
-     */
-    public void play(int row) {
-        try {
-            // Have the playlist point to the appropriate song, then play it
-            songTable.getSelectionModel().select(row);
-            songList.get(row).play();
-            MainView.setEndOfSongAction(this::playNext);
-
-            // Update the status bar accordingly
-            statusBar.setText("Now Playing: " + MainView.getNowPlaying().toString());
-        } catch (NullPointerException e) {
-            LOGGER.log(Level.SEVERE, "Failed to play song. " +
-                    (songList.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to play song.", e);
-        }
-    }
-
-    /**
-     * Adds a playlist to the playlist table, then loads it into the song table.
-     *
-     * @param p A playlist
-     */
-    public void loadPlaylist(@NotNull Playlist p) {
-        songList = FXCollections.observableArrayList(p);
-        playlistList.add(p);
-        songTable.setItems(songList);
-        playlistTable.setItems(playlistList);
-        playlistTable.getSelectionModel().select(p);
-    }
+    // --------------- Utilities --------------- //
 
     /**
      * The status bar displays the desired message.
@@ -317,7 +343,26 @@ public class MainController implements Initializable {
      * @param message A status bar message
      */
     public void setStatus(String message) {
-        statusBar.setText(message);
+        status.setText(message);
+    }
+
+    /**
+     * If a song is currently playing, focus it. Otherwise,
+     * do nothing.
+     */
+    public void focusNowPlaying() {
+        if (!(MainView.getNowPlaying() == null)) {
+            select(songTable, songList.indexOf(MainView.getNowPlaying()));
+        }
+    }
+
+    public void select(TableView t, int index) {
+        Platform.runLater(() -> {
+            t.requestFocus();
+            t.getSelectionModel().select(index);
+            t.getFocusModel().focus(index);
+            t.scrollTo(index);
+        });
     }
 
 }
