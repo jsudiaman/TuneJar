@@ -44,6 +44,8 @@ public class MainController implements Initializable {
     Label status = new Label();
     @FXML
     MenuItem pauseButton = new MenuItem();
+    @FXML
+    Menu addToPlaylist = new Menu();
 
     /**
      * Sets up the playlist viewer.
@@ -107,7 +109,21 @@ public class MainController implements Initializable {
         dialog.setContentText("Playlist name:");
 
         Optional<String> playlistName = dialog.showAndWait();
-        playlistName.ifPresent(s -> loadPlaylist(new Playlist(playlistName.get())));
+        playlistName.ifPresent(s -> {
+            // Load the new playlist.
+            Playlist p = new Playlist(playlistName.get());
+            loadPlaylist(p);
+
+            // Give the user the ability to add songs to the playlist via Song -> Add To...
+            MenuItem m = new MenuItem(p.getName());
+            addToPlaylist.getItems().add(m);
+            m.setOnAction(event -> {
+                Song songToAdd = songTable.getSelectionModel().getSelectedItem();
+                p.add(songToAdd);
+                status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
+                event.consume();
+            });
+        });
     }
 
     /**
@@ -213,7 +229,7 @@ public class MainController implements Initializable {
         } else {
             play(row - 1);
         }
-        focusNowPlaying();
+        // TODO focusNowPlaying();
     }
 
     /**
@@ -231,7 +247,7 @@ public class MainController implements Initializable {
         } else {
             play(row + 1);
         }
-        focusNowPlaying();
+        // TODO focusNowPlaying();
     }
 
     // --------------- Song --------------- //
@@ -305,6 +321,21 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Creates a new playlist and adds the selected song to it.
+     */
+    public void addSongNewPlaylist() {
+        Song songToAdd = songTable.getSelectionModel().getSelectedItem();
+        int size = playlistList.size();
+        createPlaylist();
+
+        // If the playlistList's size increased by 1, we know that a playlist was created.
+        // Therefore, we should add the selected song to it.
+        if(size + 1 == playlistList.size()) {
+            playlistList.get(size).add(songToAdd);
+        }
+    }
+
     // --------------- Playlist --------------- //
 
     /**
@@ -344,16 +375,6 @@ public class MainController implements Initializable {
      */
     public void setStatus(String message) {
         status.setText(message);
-    }
-
-    /**
-     * If a song is currently playing, focus it. Otherwise,
-     * do nothing.
-     */
-    public void focusNowPlaying() {
-        if (!(MainView.getNowPlaying() == null)) {
-            select(songTable, songList.indexOf(MainView.getNowPlaying()));
-        }
     }
 
     public void select(TableView t, int index) {
