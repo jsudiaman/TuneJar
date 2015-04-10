@@ -45,6 +45,7 @@
                   <Menu fx:id="addToPlaylist" mnemonicParsing="false" text="Add To...">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#addSongNewPlaylist" text="New Playlist" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
                      </items>
                   </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />

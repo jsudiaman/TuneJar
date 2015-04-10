@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import model.Playlist;
 import model.Song;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -123,6 +124,15 @@ public class MainController implements Initializable {
                 status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
                 event.consume();
             });
+
+            // Save the playlist.
+            try {
+                p.saveAsM3U();
+            } catch (IOException e) {
+                String message = "Failed to save playlist: " + p.getName();
+                LOGGER.log(Level.SEVERE, message, e);
+
+            }
         });
     }
 

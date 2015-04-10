@@ -28,6 +28,11 @@ public class Playlist extends ArrayList<Song> {
         return name.get();
     }
 
+    /**
+     * Save the playlist as a .m3u file.
+     *
+     * @throws IOException The file is inaccessible
+     */
     public void saveAsM3U() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(name.get() + ".m3u", false));
         for (Song song : this) {
