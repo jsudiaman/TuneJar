@@ -33,13 +33,14 @@ public class SongTest {
     }
 
     @Test
-    public void testSave() throws Exception {
-        song.setAlbum("TEMPORARY NAME");
-        song.save();
+    public void testSetTag() throws Exception {
+        song.setTag("TempTitle", "TempArtist", "TempAlbum");
         Song temp = new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3")));
-        assertEquals("TEMPORARY NAME", temp.getAlbum());
-        temp.setAlbum("Machinimasound 2009");
-        temp.save();
+        assertEquals("TempTitle", temp.getTitle());
+        assertEquals("TempArtist", temp.getArtist());
+        assertEquals("TempAlbum", temp.getAlbum());
+
+        temp.setTag("Queen of the Night", "Machinimasound", "Machinimasound 2009"); // Reset the tags
     }
 
 }

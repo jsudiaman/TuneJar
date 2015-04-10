@@ -1,32 +1,35 @@
 package viewcontroller;
 
-import com.mpatric.mp3agic.Mp3File;
+import com.sun.istack.internal.Nullable;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import model.Playlist;
+import model.Song;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.*;
+import java.util.logging.Level;
 
+import static model.DebugUtils.LOGGER;
+import static model.DebugUtils.fatalException;
 import static model.FileManipulator.*;
 
 public class MainView extends Application {
 
-    public final static Logger logger = Logger.getLogger(MainView.class.getName()); // Global logger
-
+    // GUI
     private static MediaPlayer player;
+    private static Song nowPlaying;
+
+    // Data Structures
     private static Playlist masterPlaylist;
     private static Set<File> directorySet;
 
@@ -46,23 +49,12 @@ public class MainView extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        // Begin logging
-        try {
-            Handler handler = new FileHandler("log.txt");
-            handler.setFormatter(new SimpleFormatter());
-            logger.addHandler(handler);
-            logger.log(Level.INFO, "log.txt initialized successfully.");
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Failed to generate log.txt. Logs will be written only to the console.", e);
-        }
-
         // Start the program
         try {
             init(primaryStage);
-        } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "NullPointerException thrown to MainView::start()", e);
         } catch (Exception e) {
-            handleFatalException(e);
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            fatalException(e);
         }
     }
 
@@ -70,78 +62,103 @@ public class MainView extends Application {
      * Handles program initialization.
      *
      * @param primaryStage The stage that will hold the interface
-     *
-     * @throws IOException Failed to load the FXML, or could not load/save a file.
-     * @throws NullPointerException Thrown by Playlist::addAll().
+     * @throws IOException          Failed to load the FXML, or could not load/save a file.
+     * @throws NullPointerException An unusable directory is in the directory set
      */
     private void init(Stage primaryStage) throws IOException, NullPointerException {
         // Load the FXML file and display the interface.
         URL location = getClass().getResource("MainController.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = (Parent) fxmlLoader.load(location.openStream());
+        Parent root = fxmlLoader.load(location.openStream());
 
-        primaryStage.setTitle("Java MP3 Player");
-        primaryStage.setScene(new Scene(root, 800, 600));
+        Scene scene = new Scene(root, 1000, 600);
+        scene.getStylesheets().add(getClass().getResource("DarkTheme.css").toString());
+
+        primaryStage.setTitle("JVMP3");
+        primaryStage.setScene(scene);
         primaryStage.show();
 
         // Load the directories. If none are present, prompt the user for one.
         try {
             directorySet = readDirectories(new File("directories.dat"));
         } catch (FileNotFoundException e) {
-            // Alert the user that no directories were found
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Welcome!");
-            alert.setHeaderText(null);
-            alert.setContentText("Hi there! It seems like you don't have any directories set up." +
-                    "\nThat usually happens when you run this for the first time." +
-                    "\nIf that's the case, let's find your MP3s!");
-            alert.showAndWait();
-
-            // Begin building up a data structure to store directories
-            directorySet = new HashSet<>();
-            File chosenDirectory = chooseDirectory(primaryStage);
-            if (chosenDirectory == null) {
-                logger.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory.");
-            } else {
-                directorySet.add(chosenDirectory);
-            }
+            directorySet = initialSetup(primaryStage);
         }
 
-        // Create and display a playlist containing all songs from each directory in the directory set.
         MainController controller = fxmlLoader.getController();
-        controller.loadMasterPlaylist();
+        controller.setStatus("Loading your songs, please be patient...");
 
-        // Finally, save the directory set.
-        writeFileSet("directories.dat", directorySet);
+        // Multithreading this task since it takes a while
+        Thread initPlaylist = new Thread(() -> {
+            // Create and display a playlist containing all songs from each directory.
+            refresh();
+            controller.loadPlaylist(masterPlaylist);
+
+            // Finally, save the directory set.
+            try {
+                writeFileSet("directories.dat", directorySet);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to save the directory set.", e);
+            }
+
+            Platform.runLater(() -> controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully."));
+        });
+        initPlaylist.start();
     }
 
     /**
      * The master playlist takes in all MP3 files that can be found in available directories.
+     *
+     * @throws NullPointerException An unusable directory is in the directory set
      */
-    public static void refresh () {
-        masterPlaylist = new Playlist();
-        for (File directory : directorySet) {
-            masterPlaylist.addAll(songList(directory)); // TODO Handle the potential NullPointerException
+    public static void refresh() throws NullPointerException {
+        masterPlaylist = new Playlist("All Music");
+        LOGGER.log(Level.INFO, "directorySet: " + (directorySet != null ? directorySet.toString() : null));
+        try {
+            for (File directory : directorySet) {
+                LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
+                masterPlaylist.addAll(songList(directory));
+            }
+            LOGGER.log(Level.INFO, "Refresh successful!");
+        } catch (NullPointerException e) {
+            fatalException(new NullPointerException("An unusable directory is in the directory set."));
         }
     }
 
     // ------------------- Media Player Controls ------------------- //
+
     /**
-     * Loads an MP3 file into the media player, then plays it.
+     * Loads a song into the media player, then plays it.
      *
-     * @param file The MP3 file to play
+     * @param song The song to play
      */
-    public static void playMP3(Mp3File file) {
-        String uriString = new File(file.getFilename()).toURI().toString();
+    public static void playSong(Song song) {
+        if (nowPlaying != null) {
+            nowPlaying.stop();
+        }
+        nowPlaying = song;
+        LOGGER.log(Level.INFO, "Playing: " + nowPlaying.toString());
+        String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
         player.play();
+    }
+
+    /**
+     * Resumes the media player.
+     */
+    public static void resumePlayback() {
+        if (player != null && nowPlaying != null) {
+            LOGGER.log(Level.INFO, "Resuming: " + nowPlaying.toString());
+            player.play();
+        }
     }
 
     /**
      * Pauses the media player.
      */
     public static void pausePlayback() {
-        if (player != null) {
+        if (player != null && nowPlaying != null) {
+            LOGGER.log(Level.INFO, "Pausing: " + nowPlaying.toString());
             player.pause();
         }
     }
@@ -150,57 +167,27 @@ public class MainView extends Application {
      * Stops the media player.
      */
     public static void stopPlayback() {
-        if (player != null) {
+        if (player != null && nowPlaying != null) {
+            LOGGER.log(Level.INFO, "Stopping: " + nowPlaying.toString());
             player.stop();
         }
+        nowPlaying = null;
     }
 
     // ------------------- Getters and Setters ------------------- //
 
-    public static Playlist getMasterPlaylist() {
-        return masterPlaylist;
-    }
-
-    // ------------------- Exception Handling ------------------- //
-
     /**
-     * Logs the error and displays a dialog box explaining what happened.
-     * Once the dialog box is closed, the program exits with exit code -1.
+     * Sets up the media player to perform a specified action at the end
+     * of every song.
      *
-     * @param e An exception that should end the program
+     * @param action An action wrapped in a Runnable
      */
-    private void handleFatalException(Exception e) {
-        // Log the error.
-        logger.log(Level.SEVERE, "Fatal exception thrown to MainView::start()", e);
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-
-        // Store the stack trace in a string.
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-
-        // Create an alert to let the user know what happened.
-        alert.setTitle("Fatal Error!");
-        alert.setHeaderText(e.getClass().toString().substring(6) + ": " + e.getMessage());
-        alert.setContentText("Please send the log.txt file to our developers for analysis.");
-
-        // Store the stack trace string in a textarea hidden by a "Show/Hide Details" button.
-        TextArea textArea = new TextArea(sw.toString());
-        textArea.setEditable(false);
-        textArea.setWrapText(false);
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-        GridPane gridPane = new GridPane();
-        gridPane.setMaxWidth(Double.MAX_VALUE);
-        gridPane.add(textArea, 0, 0);
-
-        // Display the alert, then exit the program.
-        alert.getDialogPane().setExpandableContent(gridPane);
-        alert.showAndWait();
-        System.exit(-1);
+    public static void setEndOfSongAction(Runnable action) {
+        player.setOnEndOfMedia(action);
     }
 
+    @Nullable
+    public static Song getNowPlaying() {
+        return nowPlaying;
+    }
 }

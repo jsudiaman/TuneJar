@@ -8,6 +8,7 @@
 *.class
 *.jar
 *.dat
+*.m3u
 .project
 .classpath
 JavaMP3Player.iml
