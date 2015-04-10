@@ -62,10 +62,9 @@ public class MainView extends Application {
      * Handles program initialization.
      *
      * @param primaryStage The stage that will hold the interface
-     * @throws IOException          Failed to load the FXML, or could not load/save a file.
-     * @throws NullPointerException An unusable directory is in the directory set
+     * @throws IOException Failed to load the FXML, or could not load/save a file.
      */
-    private void init(Stage primaryStage) throws IOException, NullPointerException {
+    private void init(Stage primaryStage) throws IOException {
         // Load the FXML file and display the interface.
         URL location = getClass().getResource("MainController.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -96,7 +95,7 @@ public class MainView extends Application {
 
             // Save the directory set.
             try {
-                writeFileSet("directories.dat", directorySet);
+                writeFileSet(directorySet);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Failed to save the directory set.", e);
             }
@@ -104,15 +103,17 @@ public class MainView extends Application {
             // Finally, load in all playlists from the working directory.
             Platform.runLater(() -> {
                 controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully.");
-                Set<Playlist> playlistSet = allPlaylists();
+                Set<Playlist> playlistSet = null;
+                try {
+                    playlistSet = allPlaylists();
+                } catch (IOException | NullPointerException e) {
+                    LOGGER.log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
+                }
                 if (playlistSet != null) {
-                    try {
-                        allPlaylists().forEach(controller::loadPlaylist);
-                    } catch (NullPointerException e) {
-                        LOGGER.log(Level.SEVERE, "FileManipulator::allPlaylists() threw NullPointerException", e);
-                    }
+                    playlistSet.forEach(controller::loadPlaylist);
                 }
                 controller.selectFromPlaylistTable(0);
+                controller.enableTopMenuBar();
             });
         });
         initPlaylist.start();
@@ -120,11 +121,12 @@ public class MainView extends Application {
 
     /**
      * The master playlist takes in all MP3 files that can be found in available directories.
-     *
-     * @throws NullPointerException An unusable directory is in the directory set
      */
-    public static void refresh() throws NullPointerException {
-        masterPlaylist = new Playlist("All Music", false);
+    public static void refresh()  {
+        // Initialize the master playlist.
+        masterPlaylist = new Playlist("All Music");
+
+        // Then add all songs found in the directory set to the master playlist.
         LOGGER.log(Level.INFO, "directorySet: " + (directorySet != null ? directorySet.toString() : null));
         try {
             for (File directory : directorySet) {
@@ -133,7 +135,8 @@ public class MainView extends Application {
             }
             LOGGER.log(Level.INFO, "Refresh successful!");
         } catch (NullPointerException e) {
-            fatalException(new NullPointerException("An unusable directory is in the directory set."));
+            LOGGER.log(Level.SEVERE, "An unusable directory is in the directory set.", e);
+            fatalException(e);
         }
     }
 

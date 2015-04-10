@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import model.Playlist;
 import model.Song;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -36,16 +37,23 @@ public class MainController implements Initializable {
     TableColumn<Song, String> artist;
     @FXML
     TableColumn<Song, String> album;
+
     @FXML
     TableView<Playlist> playlistTable;
     @FXML
     TableColumn<Playlist, String> name;
+
     @FXML
-    Label status = new Label();
-    @FXML
-    MenuItem pauseButton = new MenuItem();
+    MenuBar topMenuBar = new MenuBar();
+
     @FXML
     Menu addToPlaylist = new Menu();
+
+    @FXML
+    MenuItem pauseButton = new MenuItem();
+
+    @FXML
+    Label status = new Label();
 
     /**
      * Sets up the playlist viewer.
@@ -56,6 +64,11 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Disable the top menu bar.
+        for(Menu m : topMenuBar.getMenus()) {
+            m.setDisable(true);
+        }
+
         // Initialize the song table.
         songList = FXCollections.observableArrayList();
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
@@ -97,25 +110,58 @@ public class MainController implements Initializable {
         playlistTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
+    public void enableTopMenuBar() {
+        for(Menu m : topMenuBar.getMenus()) {
+            m.setDisable(false);
+        }
+    }
+
     // --------------- File --------------- //
 
     /**
      * Creates a new playlist.
      */
-    public void createPlaylist() {
+    public boolean createPlaylist() {
+        // Prompt the user for a playlist name.
         TextInputDialog dialog = new TextInputDialog("Untitled Playlist");
         dialog.setTitle("New Playlist");
         dialog.setHeaderText("Create a new playlist");
         dialog.setContentText("Playlist name:");
 
         Optional<String> playlistName = dialog.showAndWait();
-        playlistName.ifPresent(s -> {
-            // TODO If a playlist named playlistName already exists, warn the user that it may be overwritten
+        if(playlistName.isPresent()) {
+            String pName = playlistName.get();
 
-            // Load the new playlist.
-            Playlist p = new Playlist(playlistName.get(), true);
-            loadPlaylist(p);
-        });
+            // Playlist creation fails if a playlist with the specified name already exists.
+            for(Playlist p : playlistList) {
+                if(p.getName().equals(pName)) {
+                    Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
+                    conflictAlert.setTitle("Playlist Conflict");
+                    conflictAlert.setHeaderText("A playlist named " + pName + " already exists.");
+                    conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
+                    conflictAlert.showAndWait();
+                    return false;
+                }
+            }
+
+            try {
+                // Create the playlist, then load it in.
+                Playlist p = new Playlist(pName, true);
+                loadPlaylist(p);
+                return true;
+            } catch (IOException e) {
+                // Playlist creation fails if it cannot be successfully saved.
+                Alert failAlert = new Alert(Alert.AlertType.ERROR);
+                failAlert.setTitle("Playlist Write Error");
+                failAlert.setHeaderText("Failed to create playlist: " + pName);
+                failAlert.setContentText("The playlist failed to save. Make sure the name does not contain any " +
+                        "illegal characters.");
+                failAlert.showAndWait();
+                LOGGER.log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -175,7 +221,7 @@ public class MainController implements Initializable {
      */
     public void pause() {
         if (MainView.getNowPlaying() == null) {
-            LOGGER.log(Level.WARNING, "No song is currently playing.");
+            status.setText("No song is currently playing.");
             return;
         }
 
@@ -197,7 +243,7 @@ public class MainController implements Initializable {
      */
     public void stop() {
         if (MainView.getNowPlaying() == null) {
-            LOGGER.log(Level.WARNING, "No song is currently playing.");
+            status.setText("No song is currently playing.");
             return;
         }
 
@@ -211,17 +257,14 @@ public class MainController implements Initializable {
      */
     public void playPrev() {
         if (MainView.getNowPlaying() == null) {
-            LOGGER.log(Level.WARNING, "No song is currently playing.");
+            status.setText("No song is currently playing.");
             return;
         }
 
         int row = songList.indexOf(MainView.getNowPlaying());
-        if (row <= 0) {
-            play(0);
-        } else {
-            play(row - 1);
-        }
-        // TODO focusNowPlaying();
+        row = (row <= 0) ? 0 : row - 1;
+        play(row);
+        select(songTable, row);
     }
 
     /**
@@ -229,17 +272,14 @@ public class MainController implements Initializable {
      */
     public void playNext() {
         if (MainView.getNowPlaying() == null) {
-            LOGGER.log(Level.WARNING, "No song is currently playing.");
+            status.setText("No song is currently playing.");
             return;
         }
 
         int row = songList.indexOf(MainView.getNowPlaying());
-        if (row + 1 >= songList.size()) {
-            play(0);
-        } else {
-            play(row + 1);
-        }
-        // TODO focusNowPlaying();
+        row = (row + 1 >= songList.size()) ? 0 : row + 1;
+        play(row);
+        select(songTable, row);
     }
 
     // --------------- Song --------------- //
@@ -251,7 +291,7 @@ public class MainController implements Initializable {
     public void edit() {
         Song songToEdit = songTable.getSelectionModel().getSelectedItem();
         if (songToEdit == null) {
-            LOGGER.log(Level.WARNING, "No song selected.");
+            status.setText("No song selected.");
             return;
         }
 
@@ -318,13 +358,12 @@ public class MainController implements Initializable {
      */
     public void selectedSongToNewPlaylist() {
         Song songToAdd = songTable.getSelectionModel().getSelectedItem();
-        int size = playlistList.size();
-        createPlaylist();
-
-        // If the playlistList's size increased by 1, we know that a playlist was created.
-        // Therefore, we should add the selected song to it.
-        if(size + 1 == playlistList.size()) {
-            playlistList.get(size).add(songToAdd);
+        if (songToAdd == null) {
+            status.setText("No song was selected.");
+            return;
+        }
+        if(createPlaylist()) {
+            playlistList.get(playlistList.size() - 1).add(songToAdd);
         }
     }
 
@@ -344,7 +383,8 @@ public class MainController implements Initializable {
         songTable.setItems(songList);
         LOGGER.log(Level.INFO, "Loaded playlist: " + p.getName());
 
-        // Enable the user to add songs to the playlist.
+        // Enable the user to add songs to the playlist (unless the playlist is MainView::masterPlaylist).
+        if(p.getName().equals("All Music")) return;
         MenuItem m = new MenuItem(p.getName());
         addToPlaylist.getItems().add(m);
         m.setOnAction(event -> {
@@ -361,7 +401,7 @@ public class MainController implements Initializable {
      */
     public void shuffle() {
         Collections.shuffle(songList);
-        if (MainView.getNowPlaying() != null) {
+        if (MainView.getNowPlaying() != null && songList.indexOf(MainView.getNowPlaying()) >= 0) {
             Collections.swap(songList, 0, songList.indexOf(MainView.getNowPlaying()));
         } else {
             play(0);
@@ -390,7 +430,7 @@ public class MainController implements Initializable {
     }
 
     public void selectFromPlaylistTable(int index) {
-        select(playlistTable, 0);
+        select(playlistTable, index);
     }
 
 }

@@ -132,6 +132,7 @@ public class Song {
         try {
             save();
         } catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             fatalException(e);
         }
     }
@@ -166,16 +167,6 @@ public class Song {
         return file.getAbsolutePath();
     }
 
-    /**
-     * A string representation of the song object.
-     *
-     * @return "Song Title - Artist"
-     */
-    @Override
-    public String toString() {
-        return title.get() + " - " + artist.get();
-    }
-
     // ---------------- Media Control ------------------ //
 
     public void play() {
@@ -197,7 +188,7 @@ public class Song {
         MainView.stopPlayback();
     }
 
-    // ---------------- Utilities ------------------ //
+    // ---------------- Saving ------------------ //
 
     /**
      * Saves changes to the MP3 file.
@@ -215,6 +206,44 @@ public class Song {
         }
 
         mp3file = new Mp3File(new File(fileName)); // Update the mp3file reference
+    }
+
+    // ---------------- Overriding Methods ------------------ //
+
+    /**
+     * A string representation of the song object.
+     *
+     * @return "Song Title - Artist"
+     */
+    @Override
+    public String toString() {
+        return title.get() + " - " + artist.get();
+    }
+
+    /**
+     * A song object is equal to another object iff the following is true:
+     * <ul>
+     *     <li>The other object is also a Song.</li>
+     *     <li>The two songs have the same title, artist, and album.</li>
+     * </ul>
+     *
+     * @param otherObject Another object
+     * @return True iff this object is equal to otherObject
+     */
+    @Override
+    public boolean equals(Object otherObject) {
+        if(otherObject instanceof Song) {
+            Song otherSong = (Song) otherObject;
+            return this.getTitle().equals(otherSong.getTitle()) && this.getArtist().equals(otherSong.getArtist())
+                    && this.getAlbum().equals(otherSong.getAlbum());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return getTitle().hashCode() + getArtist().hashCode() + getAlbum().hashCode();
     }
 
 }

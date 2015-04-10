@@ -21,6 +21,8 @@ import static model.DebugUtils.LOGGER;
  */
 public final class FileManipulator {
 
+    private static final String DIRECTORY_FILENAME = "directories.dat";
+
     private FileManipulator() {
         throw new AssertionError();
     }
@@ -93,14 +95,11 @@ public final class FileManipulator {
     /**
      * Output the contents of a file set, line by line.
      *
-     * @param fileName Where to write the output. The file will be overwritten if it
-     *                 exists.
      * @param fileSet  A set of files
      * @throws IOException Unable to write the output to the file
      */
-    public static void writeFileSet(String fileName, Set<File> fileSet)
-            throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, false));
+    public static void writeFileSet(Set<File> fileSet) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(DIRECTORY_FILENAME, false));
         for (File f : fileSet) {
             writer.write(f.getAbsoluteFile().toString());
             writer.newLine();
@@ -149,8 +148,11 @@ public final class FileManipulator {
      * and returned.
      *
      * @return All of the created playlists
+     *
+     * @throws IOException Unable to access the working directory
+     * @throws NullPointerException NullPointerException thrown by dereference of the working directory
      */
-    public static Set<Playlist> allPlaylists() {
+    public static Set<Playlist> allPlaylists() throws IOException, NullPointerException {
         Set<Playlist> set = new HashSet<>();
 
         // Iterate through each file in the working directory.

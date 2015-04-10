@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <BorderPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewcontroller.MainController">
     <center>
         <TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -16,7 +18,7 @@
         </TableView>
     </center>
     <top>
-        <MenuBar BorderPane.alignment="CENTER">
+        <MenuBar fx:id="topMenuBar" BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
