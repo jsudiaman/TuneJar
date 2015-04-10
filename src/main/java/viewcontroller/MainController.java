@@ -15,7 +15,6 @@ import javafx.scene.layout.GridPane;
 import model.Playlist;
 import model.Song;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -111,28 +110,11 @@ public class MainController implements Initializable {
 
         Optional<String> playlistName = dialog.showAndWait();
         playlistName.ifPresent(s -> {
+            // TODO If a playlist named playlistName already exists, warn the user that it may be overwritten
+
             // Load the new playlist.
-            Playlist p = new Playlist(playlistName.get());
+            Playlist p = new Playlist(playlistName.get(), true);
             loadPlaylist(p);
-
-            // Give the user the ability to add songs to the playlist via Song -> Add To...
-            MenuItem m = new MenuItem(p.getName());
-            addToPlaylist.getItems().add(m);
-            m.setOnAction(event -> {
-                Song songToAdd = songTable.getSelectionModel().getSelectedItem();
-                p.add(songToAdd);
-                status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
-                event.consume();
-            });
-
-            // Save the playlist.
-            try {
-                p.saveAsM3U();
-            } catch (IOException e) {
-                String message = "Failed to save playlist: " + p.getName();
-                LOGGER.log(Level.SEVERE, message, e);
-
-            }
         });
     }
 
@@ -334,7 +316,7 @@ public class MainController implements Initializable {
     /**
      * Creates a new playlist and adds the selected song to it.
      */
-    public void addSongNewPlaylist() {
+    public void selectedSongToNewPlaylist() {
         Song songToAdd = songTable.getSelectionModel().getSelectedItem();
         int size = playlistList.size();
         createPlaylist();
@@ -360,6 +342,17 @@ public class MainController implements Initializable {
 
         songList = FXCollections.observableArrayList(p);
         songTable.setItems(songList);
+        LOGGER.log(Level.INFO, "Loaded playlist: " + p.getName());
+
+        // Enable the user to add songs to the playlist.
+        MenuItem m = new MenuItem(p.getName());
+        addToPlaylist.getItems().add(m);
+        m.setOnAction(event -> {
+            Song songToAdd = songTable.getSelectionModel().getSelectedItem();
+            p.add(songToAdd);
+            status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
+            event.consume();
+        });
     }
 
     /**
@@ -394,6 +387,10 @@ public class MainController implements Initializable {
             t.getFocusModel().focus(index);
             t.scrollTo(index);
         });
+    }
+
+    public void selectFromPlaylistTable(int index) {
+        select(playlistTable, 0);
     }
 
 }

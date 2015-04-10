@@ -94,14 +94,26 @@ public class MainView extends Application {
             refresh();
             controller.loadPlaylist(masterPlaylist);
 
-            // Finally, save the directory set.
+            // Save the directory set.
             try {
                 writeFileSet("directories.dat", directorySet);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Failed to save the directory set.", e);
             }
 
-            Platform.runLater(() -> controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully."));
+            // Finally, load in all playlists from the working directory.
+            Platform.runLater(() -> {
+                controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully.");
+                Set<Playlist> playlistSet = allPlaylists();
+                if (playlistSet != null) {
+                    try {
+                        allPlaylists().forEach(controller::loadPlaylist);
+                    } catch (NullPointerException e) {
+                        LOGGER.log(Level.SEVERE, "FileManipulator::allPlaylists() threw NullPointerException", e);
+                    }
+                }
+                controller.selectFromPlaylistTable(0);
+            });
         });
         initPlaylist.start();
     }
@@ -112,12 +124,12 @@ public class MainView extends Application {
      * @throws NullPointerException An unusable directory is in the directory set
      */
     public static void refresh() throws NullPointerException {
-        masterPlaylist = new Playlist("All Music");
+        masterPlaylist = new Playlist("All Music", false);
         LOGGER.log(Level.INFO, "directorySet: " + (directorySet != null ? directorySet.toString() : null));
         try {
             for (File directory : directorySet) {
                 LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
-                masterPlaylist.addAll(songList(directory));
+                masterPlaylist.addAll(songSet(directory));
             }
             LOGGER.log(Level.INFO, "Refresh successful!");
         } catch (NullPointerException e) {

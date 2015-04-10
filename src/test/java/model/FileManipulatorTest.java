@@ -3,7 +3,7 @@ package model;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,12 +11,12 @@ import static org.junit.Assert.assertNotNull;
 public class FileManipulatorTest {
 
     @Test
-    public void testSongList() throws Exception {
-        List<Song> songList = FileManipulator.songList(new File("src/test/resources/"));
-        assertNotNull(songList);
-        assertEquals(3, songList.size());
-        System.out.println("testSongList created a song list with the following contents: ");
-        songList.forEach(System.out::println);
+    public void testSongSet() throws Exception {
+        Set<Song> songSet = FileManipulator.songSet(new File("src/test/resources/"));
+        assertNotNull(songSet);
+        assertEquals(3, songSet.size());
+        System.out.println("testSongSet created a song set with the following contents: ");
+        songSet.forEach(System.out::println);
     }
 
 }

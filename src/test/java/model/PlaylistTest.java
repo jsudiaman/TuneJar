@@ -18,7 +18,7 @@ public class PlaylistTest {
     @Before
     public void setUp() throws Exception {
         testPlaylist = new Playlist();
-        testPlaylist.addAll(FileManipulator.songList(new File("src/test/resources")));
+        testPlaylist.addAll(FileManipulator.songSet(new File("src/test/resources")));
     }
 
     @After
@@ -28,7 +28,7 @@ public class PlaylistTest {
 
     @Test
     public void testSaveAsM3U() throws Exception {
-        testPlaylist.saveAsM3U();
+        testPlaylist.save();
         BufferedReader reader = new BufferedReader(new FileReader("Untitled.m3u"));
         int i = 0;
         for (String nextLine; (nextLine = reader.readLine()) != null; ) {
