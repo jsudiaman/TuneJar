@@ -26,7 +26,7 @@ public class Song {
     private SimpleStringProperty title;
     private SimpleStringProperty artist;
     private SimpleStringProperty album;
-    private int ID3TagVersion;
+    private final int ID3TagVersion;
     private Mp3File mp3file;
     private boolean paused;
 
@@ -145,14 +145,9 @@ public class Song {
      * @return The file name
      */
     public String getFilename() {
-        StringBuilder sb = new StringBuilder(mp3file.getFilename());
-        for (int i = 0; i < sb.length(); i++) {
-            if (sb.charAt(i) == '/' || sb.charAt(i) == '\\') {
-                sb.delete(0, i + 1);
-                i = 0;
-            }
-        }
-        return sb.substring(0, sb.length() - 4);
+        String filename = new File(mp3file.getFilename()).getName();
+        filename = filename.substring(0, filename.indexOf(".mp3"));
+        return filename;
     }
 
     /**

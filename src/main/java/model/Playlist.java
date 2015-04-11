@@ -16,43 +16,24 @@ import static model.DebugUtils.LOGGER;
  */
 public class Playlist extends ArrayList<Song> {
 
-    private SimpleStringProperty name;
-    private boolean savable;
+    private final SimpleStringProperty name;
 
     // --------------- Constructors --------------- //
 
     /**
-     * Creates a new instance of Playlist that is not savable
-     * and is named "Untitled".
+     * Creates a new instance of Playlist that is named "Untitled".
      */
     public Playlist() {
         this.name = new SimpleStringProperty("Untitled");
-        this.savable = false;
-    }
-
-    /**
-     * Creates a new instance of Playlist that is not savable.
-     *
-     * @param name The name of the playlist
-     */
-    public Playlist(String name) {
-        this.name = new SimpleStringProperty(name);
-        this.savable = false;
     }
 
     /**
      * Creates a new instance of Playlist.
      *
      * @param name The name of the playlist
-     * @param savable If enabled, the playlist will be saved as a .m3u file in the local directory.
-     *
-     * @throws IOException The playlist could not be saved successfully
      */
-    public Playlist(String name, boolean savable) throws IOException {
-        super();
+    public Playlist(String name) {
         this.name = new SimpleStringProperty(name);
-        this.savable = savable;
-        if (savable) save();
     }
 
     /**
@@ -63,7 +44,10 @@ public class Playlist extends ArrayList<Song> {
      * @throws IOException Failed to read the .m3u file
      */
     public Playlist(File m3uFile) throws IOException {
-        this(m3uFile.getName().substring(0, m3uFile.getName().indexOf(".m3u")), false);
+        // Take the filename to be the name of the playlist.
+        this.name = new SimpleStringProperty(m3uFile.getName().substring(0, m3uFile.getName().indexOf(".m3u")));
+
+        // Add each song line by line.
         BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
         for (String nextLine; (nextLine = reader.readLine()) != null; ) {
             try {
@@ -72,9 +56,8 @@ public class Playlist extends ArrayList<Song> {
                 LOGGER.log(Level.SEVERE, "Failed to add song: " + nextLine, e);
             }
         }
-        reader.close();
 
-        savable = true;
+        reader.close();
     }
 
     // --------------- Getters and Setters --------------- //
@@ -87,6 +70,8 @@ public class Playlist extends ArrayList<Song> {
 
     /**
      * Save the playlist as a .m3u file.
+     *
+     * @throws IOException Failed to save the playlist
      */
     public void save() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(name.get() + ".m3u", false));
@@ -96,22 +81,6 @@ public class Playlist extends ArrayList<Song> {
         }
         writer.close();
         LOGGER.log(Level.INFO, "Successfully saved playlist: " + name.get() + ".m3u");
-    }
-
-    // --------------- Overriding Methods --------------- //
-
-    @Override
-    public boolean add(Song s) {
-        boolean successful = super.add(s);
-        if(successful && savable) {
-            LOGGER.log(Level.INFO, "Adding \"" + s.toString() + "\" to playlist: " + name.get());
-            try {
-                save();
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to add song: " + s.toString(), e);
-            }
-        }
-        return successful;
     }
 
 }

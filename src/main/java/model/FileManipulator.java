@@ -21,7 +21,7 @@ import static model.DebugUtils.LOGGER;
  */
 public final class FileManipulator {
 
-    private static final String DIRECTORY_FILENAME = "directories.dat";
+    private static final String DIRECTORY_FILENAME = "directories.dat"; // Where to save the directory set.
 
     private FileManipulator() {
         throw new AssertionError();

@@ -112,7 +112,7 @@ public class MainView extends Application {
                 if (playlistSet != null) {
                     playlistSet.forEach(controller::loadPlaylist);
                 }
-                controller.selectFromPlaylistTable(0);
+                controller.focusMasterPlaylist();
                 controller.enableTopMenuBar();
             });
         });

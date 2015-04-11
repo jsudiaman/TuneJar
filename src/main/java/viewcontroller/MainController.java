@@ -64,7 +64,7 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Disable the top menu bar.
+        // Disable the top menu bar. It will be re-enabled once MainView::init() completes.
         for(Menu m : topMenuBar.getMenus()) {
             m.setDisable(true);
         }
@@ -118,6 +118,10 @@ public class MainController implements Initializable {
 
     // --------------- File --------------- //
 
+    public void createPlaylistButton() {
+        createPlaylist();
+    }
+
     /**
      * Creates a new playlist.
      */
@@ -144,9 +148,9 @@ public class MainController implements Initializable {
                 }
             }
 
+            Playlist p = new Playlist(pName);
             try {
-                // Create the playlist, then load it in.
-                Playlist p = new Playlist(pName, true);
+                p.save();
                 loadPlaylist(p);
                 return true;
             } catch (IOException e) {
@@ -160,7 +164,6 @@ public class MainController implements Initializable {
                 LOGGER.log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
             }
         }
-
         return false;
     }
 
@@ -264,7 +267,7 @@ public class MainController implements Initializable {
         int row = songList.indexOf(MainView.getNowPlaying());
         row = (row <= 0) ? 0 : row - 1;
         play(row);
-        select(songTable, row);
+        focus(songTable, row);
     }
 
     /**
@@ -279,7 +282,7 @@ public class MainController implements Initializable {
         int row = songList.indexOf(MainView.getNowPlaying());
         row = (row + 1 >= songList.size()) ? 0 : row + 1;
         play(row);
-        select(songTable, row);
+        focus(songTable, row);
     }
 
     // --------------- Song --------------- //
@@ -346,10 +349,7 @@ public class MainController implements Initializable {
         Optional<List<String>> newParams = editor.showAndWait();
         if (newParams.isPresent()) {
             songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
-
-            // Get the song table to refresh the data
-            songTable.getColumns().get(0).setVisible(false);
-            songTable.getColumns().get(0).setVisible(true);
+            refreshSongTable();
         }
     }
 
@@ -377,7 +377,7 @@ public class MainController implements Initializable {
     public void loadPlaylist(@NotNull Playlist p) {
         playlistList.add(p);
         playlistTable.setItems(playlistList);
-        select(playlistTable, playlistList.size() - 1);
+        focus(playlistTable, playlistList.size() - 1);
 
         songList = FXCollections.observableArrayList(p);
         songTable.setItems(songList);
@@ -390,8 +390,16 @@ public class MainController implements Initializable {
         m.setOnAction(event -> {
             Song songToAdd = songTable.getSelectionModel().getSelectedItem();
             p.add(songToAdd);
-            status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
-            event.consume();
+            try {
+                p.save();
+                status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
+            } catch (IOException e) {
+                status.setText("Playlist \"" + p.getName() + "\" save unsuccessful. See log.txt for details.");
+                LOGGER.log(Level.SEVERE, "Failed to save the playlist.", e);
+            } finally {
+                refreshSongTable();
+                event.consume();
+            }
         });
     }
 
@@ -406,7 +414,7 @@ public class MainController implements Initializable {
         } else {
             play(0);
         }
-        select(songTable, 0);
+        focus(songTable, 0);
     }
 
     // --------------- Utilities --------------- //
@@ -420,7 +428,13 @@ public class MainController implements Initializable {
         status.setText(message);
     }
 
-    public void select(TableView t, int index) {
+    /**
+     * Scrolls to and focuses the specified row in the specified table.
+     *
+     * @param t The table in which the selection occurs
+     * @param index The row that should be selected
+     */
+    public void focus(TableView t, int index) {
         Platform.runLater(() -> {
             t.requestFocus();
             t.getSelectionModel().select(index);
@@ -429,8 +443,27 @@ public class MainController implements Initializable {
         });
     }
 
-    public void selectFromPlaylistTable(int index) {
-        select(playlistTable, index);
+    public void focusMasterPlaylist() {
+        focus(playlistTable, 0);
+    }
+
+    /**
+     * Refreshes the song table, allowing the user to see changes to the currently
+     * selected playlist.
+     */
+    public void refreshSongTable() {
+        // Keep tabs on what was selected before.
+        int playlistIndex = playlistTable.getFocusModel().getFocusedIndex();
+        int songIndex = songTable.getFocusModel().getFocusedIndex();
+
+        // Where the actual "refreshing" is done
+        songTable.getColumns().get(0).setVisible(false);
+        songTable.getColumns().get(0).setVisible(true);
+        playlistTable.getSelectionModel().select(0);
+
+        // Re-select what was selected before.
+        if(playlistIndex >= 0) playlistTable.getSelectionModel().select(playlistIndex);
+        if(songIndex >= 0) songTable.getSelectionModel().select(songIndex);
     }
 
 }
