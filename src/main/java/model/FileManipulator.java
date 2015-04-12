@@ -1,21 +1,18 @@
 package model;
 
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import static model.DebugUtils.LOGGER;
+
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
+
 import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-
-import static model.DebugUtils.LOGGER;
+import com.mpatric.mp3agic.*;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Helper class for file manipulation within the GUI.

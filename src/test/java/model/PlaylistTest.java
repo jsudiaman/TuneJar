@@ -1,13 +1,12 @@
 package model;
 
-import com.mpatric.mp3agic.Mp3File;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import org.junit.*;
+
+import com.mpatric.mp3agic.Mp3File;
 
 public class PlaylistTest {
 

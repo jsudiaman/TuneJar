@@ -1,16 +1,17 @@
 package model;
 
-import com.mpatric.mp3agic.*;
-import com.sun.istack.internal.NotNull;
-import javafx.beans.property.SimpleStringProperty;
-import viewcontroller.MainView;
+import static model.DebugUtils.LOGGER;
+import static model.DebugUtils.fatalException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import static model.DebugUtils.LOGGER;
-import static model.DebugUtils.fatalException;
+import javafx.beans.property.SimpleStringProperty;
+import viewcontroller.MainView;
+
+import com.mpatric.mp3agic.*;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic

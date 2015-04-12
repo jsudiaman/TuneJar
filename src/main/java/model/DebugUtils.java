@@ -1,15 +1,13 @@
 package model;
 
+import java.io.*;
+import java.util.logging.*;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import viewcontroller.MainView;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.logging.*;
 
 /**
  * Class for logging information to the console and log.txt.

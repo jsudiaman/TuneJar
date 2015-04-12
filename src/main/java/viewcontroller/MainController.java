@@ -1,6 +1,13 @@
 package viewcontroller;
 
-import com.sun.istack.internal.NotNull;
+import static model.DebugUtils.LOGGER;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,13 +23,7 @@ import javafx.scene.layout.GridPane;
 import model.Playlist;
 import model.Song;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import java.util.logging.Level;
-
-import static model.DebugUtils.LOGGER;
+import com.sun.istack.internal.NotNull;
 
 public class MainController implements Initializable {
 
@@ -574,7 +575,7 @@ public class MainController implements Initializable {
      * @param t The table in which the selection occurs
      * @param index The row that should be selected
      */
-    private void focus(TableView t, int index) {
+    private void focus(TableView<?> t, int index) {
         Platform.runLater(() -> {
             t.requestFocus();
             t.getSelectionModel().select(index);

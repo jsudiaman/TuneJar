@@ -1,6 +1,14 @@
 package viewcontroller;
 
-import com.sun.istack.internal.Nullable;
+import static model.DebugUtils.LOGGER;
+import static model.DebugUtils.fatalException;
+import static model.FileManipulator.*;
+
+import java.io.*;
+import java.net.URL;
+import java.util.Collection;
+import java.util.logging.Level;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,16 +20,7 @@ import javafx.stage.Stage;
 import model.Playlist;
 import model.Song;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.logging.Level;
-
-import static model.DebugUtils.LOGGER;
-import static model.DebugUtils.fatalException;
-import static model.FileManipulator.*;
+import com.sun.istack.internal.Nullable;
 
 public class MainView extends Application {
 

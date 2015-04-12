@@ -1,19 +1,19 @@
 package model;
 
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
-import javafx.beans.property.SimpleStringProperty;
+import static model.DebugUtils.LOGGER;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import static model.DebugUtils.LOGGER;
+import javafx.beans.property.SimpleStringProperty;
+
+import com.mpatric.mp3agic.*;
 
 /**
  * An ordered collection of Song objects.
  */
+@SuppressWarnings("serial")
 public class Playlist extends ArrayList<Song> {
 
     private final SimpleStringProperty name;

@@ -1,15 +1,13 @@
 package model;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.logging.Level;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.*;
+import java.util.logging.Level;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class DebugUtilsTest {
 
