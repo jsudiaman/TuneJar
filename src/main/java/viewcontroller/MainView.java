@@ -93,7 +93,7 @@ public class MainView extends Application {
         final MainController controller = fxmlLoader.getController();
         controller.status.setText("Loading your songs, please be patient...");
 
-        Thread loadSongs = new Thread (()-> {
+        Thread loadSongs = new Thread(() -> {
             Platform.runLater(() -> {
                 // Create and display a playlist containing all songs from each directory.
                 refresh();
@@ -138,7 +138,7 @@ public class MainView extends Application {
         for (File directory : directories) {
             LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
             Collection<Song> songs = getSongs(directory);
-            
+
             if (songs == null) {
                 LOGGER.log(Level.SEVERE, "Failed to load songs from " + directory.toString() + ", skipping...");
             } else {

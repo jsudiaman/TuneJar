@@ -40,12 +40,9 @@ public class Song {
      */
     public Song(@NotNull Mp3File mp3file) {
         // Find out which version of ID3 tag is used by the MP3.
-        if (mp3file.hasId3v2Tag())
-            ID3TagVersion = ID3_V2;
-        else if (mp3file.hasId3v1Tag())
-            ID3TagVersion = ID3_V1;
-        else
-            ID3TagVersion = CUSTOM_TAG;
+        if (mp3file.hasId3v2Tag()) ID3TagVersion = ID3_V2;
+        else if (mp3file.hasId3v1Tag()) ID3TagVersion = ID3_V1;
+        else ID3TagVersion = CUSTOM_TAG;
 
         // Read metadata by extracting its tags.
         if (ID3TagVersion == ID3_V2) {
