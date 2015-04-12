@@ -93,36 +93,33 @@ public class MainView extends Application {
         final MainController controller = fxmlLoader.getController();
         controller.status.setText("Loading your songs, please be patient...");
 
-        Thread loadSongs = new Thread(() -> {
-            Platform.runLater(() -> {
-                // Create and display a playlist containing all songs from each directory.
-                refresh();
-                controller.loadPlaylist(masterPlaylist);
+        Platform.runLater(() -> {
+            // Create and display a playlist containing all songs from each directory.
+            refresh();
+            controller.loadPlaylist(masterPlaylist);
 
-                // Save the directories.
-                try {
-                    writeFiles(directories);
-                } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "Failed to save directories.", e);
-                    controller.status.setText("Failed to save directories.");
-                }
+            // Save the directories.
+            try {
+                writeFiles(directories);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to save directories.", e);
+                controller.status.setText("Failed to save directories.");
+            }
 
-                // Finally, load in all playlists from the working directory.
-                controller.status.setText("");
-                Collection<Playlist> playlistSet = null;
-                try {
-                    playlistSet = getPlaylists();
-                } catch (IOException | NullPointerException e) {
-                    LOGGER.log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
-                    fatalException(e);
-                }
-                if (playlistSet != null) {
-                    playlistSet.forEach(controller::loadPlaylist);
-                }
-                controller.focusMasterPlaylist();
-            });
+            // Finally, load in all playlists from the working directory.
+            controller.status.setText("");
+            Collection<Playlist> playlistSet = null;
+            try {
+                playlistSet = getPlaylists();
+            } catch (IOException | NullPointerException e) {
+                LOGGER.log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
+                fatalException(e);
+            }
+            if (playlistSet != null) {
+                playlistSet.forEach(controller::loadPlaylist);
+            }
+            controller.focus(controller.playlistTable, 0);
         });
-        loadSongs.start();
     }
 
     /**

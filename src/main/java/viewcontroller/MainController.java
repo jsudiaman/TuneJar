@@ -1,24 +1,17 @@
 package viewcontroller;
 
-import static model.DebugUtils.LOGGER;
-
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.GridPane;
 import model.Playlist;
 import model.Song;
 
@@ -27,8 +20,14 @@ import com.sun.istack.internal.NotNull;
 public class MainController implements Initializable {
 
     // Lists
-    private ObservableList<Song> songList;
-    private ObservableList<Playlist> playlistList;
+    ObservableList<Song> songList;
+    ObservableList<Playlist> playlistList;
+    
+    // Helpers
+    FileMenu fileMenu;
+    PlaybackMenu playbackMenu;
+    SongMenu songMenu;
+    PlaylistMenu playlistMenu;
 
     // FXML Injections
     @FXML
@@ -84,6 +83,12 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Initialize the helpers.
+        fileMenu = new FileMenu(this);
+        playbackMenu = new PlaybackMenu(this);
+        songMenu = new SongMenu(this);
+        playlistMenu = new PlaylistMenu(this);
+        
         // Initialize the song table.
         songList = FXCollections.observableArrayList();
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
@@ -120,15 +125,15 @@ public class MainController implements Initializable {
             if (newValue == null) return;
 
             // When a playlist is selected, display it.
-                songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
-                songTable.setItems(songList);
+            songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
+            songTable.setItems(songList);
 
-                // The master playlist cannot be renamed, deleted, or altered,
-                // so disable that functionality if the master playlist is selected.
-                menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
-                menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
-                menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
-            });
+            // The master playlist cannot be renamed, deleted, or altered,
+            // so disable that functionality if the master playlist is selected.
+            menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
+            menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
+            menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
+        });
 
         // Initialize the volume slider.
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -139,82 +144,15 @@ public class MainController implements Initializable {
     // --------------- File --------------- //
 
     public void createPlaylistButton() {
-        createPlaylist();
+        fileMenu.createPlaylist();
     }
 
-    /**
-     * Creates a new playlist.
-     */
-    private boolean createPlaylist() {
-        // Prompt the user for a playlist name.
-        TextInputDialog dialog = new TextInputDialog("Untitled Playlist");
-        dialog.setTitle("New Playlist");
-        dialog.setHeaderText("Create a new playlist");
-        dialog.setContentText("Playlist name:");
-
-        Optional<String> playlistName = dialog.showAndWait();
-        if (playlistName.isPresent()) {
-            String pName = playlistName.get();
-
-            // Playlist creation fails if a playlist with the specified name already exists.
-            for (Playlist p : playlistList) {
-                if (p.getName().equalsIgnoreCase(pName)) {
-                    Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
-                    conflictAlert.setTitle("Playlist Conflict");
-                    conflictAlert.setHeaderText("A playlist named " + pName + " already exists.");
-                    conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
-                    conflictAlert.showAndWait();
-                    return false;
-                }
-            }
-
-            Playlist p = new Playlist(pName);
-            try {
-                p.save();
-                loadPlaylist(p);
-                return true;
-            } catch (IOException e) {
-                // Playlist creation fails if it cannot be successfully saved.
-                Alert failAlert = new Alert(Alert.AlertType.ERROR);
-                failAlert.setTitle("Playlist Write Error");
-                failAlert.setHeaderText("Failed to create playlist: " + pName);
-                failAlert.setContentText("The playlist failed to save. Make sure the name does not contain any "
-                        + "illegal characters.");
-                failAlert.showAndWait();
-                LOGGER.log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Asks the user if it is okay to end the program. If so, end the program.
-     */
     public void quit() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit JVMP3");
-        alert.setHeaderText("Confirm Exit");
-        alert.setContentText("Are you sure you would like to exit?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) Platform.exit();
+        fileMenu.quit();
     }
 
     public void addDirectory() {
-        try {
-            status.setText("Loading your songs, please be patient...");
-            MainView.addDirectory();
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Failed");
-            alert.setHeaderText("Failed to add the directory.");
-            alert.setContentText("Please see log.txt for details.");
-            alert.showAndWait();
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        } finally {
-            playlistList.set(0, MainView.getMasterPlaylist());
-            status.setText("");
-        }
+        fileMenu.addDirectory();
     }
 
     // --------------- Playback --------------- //
@@ -223,343 +161,55 @@ public class MainController implements Initializable {
      * Plays or resumes the selected song.
      */
     public void play() {
-        int index = songTable.getFocusModel().getFocusedIndex();
-        if (songList.isEmpty() || index < 0 || index >= songList.size()) {
-            status.setText("No song selected.");
-            return;
-        }
-        shortcutPause.setText("Pause");
-        menuPause.setText("Pause");
-        play(songTable.getFocusModel().getFocusedIndex());
+        playbackMenu.play();
     }
 
-    /**
-     * Plays the song at the specified row of the song table.
-     *
-     * @param row
-     *            The row that the song is located in
-     */
-    private void play(int row) {
-        try {
-            // Have the playlist point to the appropriate song, then play it
-            songTable.getSelectionModel().select(row);
-            songList.get(row).play(volumeSlider.getValue());
-            MainView.setEndOfSongAction(this::playNext);
-
-            // Update the status bar accordingly
-            status.setText("Now Playing: " + MainView.getNowPlaying().toString());
-        } catch (NullPointerException e) {
-            LOGGER.log(Level.SEVERE, "Failed to play song. "
-                    + (songList.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to play song.", e);
-        }
-    }
-
-    /**
-     * Handling for the pause button. If the pause button says "Pause", it will
-     * pause the currently playing song, then change to "Resume". <br>
-     * <br>
-     * If it says "Resume", it will resume the currently playing song, then
-     * change to "Pause". <br>
-     * <br>
-     * If it says anything else, the error will be logged.
-     */
     public void pause() {
-        if (MainView.getNowPlaying() == null) {
-            status.setText("No song is currently playing.");
-            return;
-        }
-
-        if (menuPause.getText().equals("Pause")) {
-            status.setText("Paused: " + MainView.getNowPlaying().toString());
-            MainView.getNowPlaying().pause();
-            shortcutPause.setText("Resume");
-            menuPause.setText("Resume");
-        } else if (menuPause.getText().equals("Resume")) {
-            status.setText("Now Playing: " + MainView.getNowPlaying().toString());
-            MainView.getNowPlaying().play(volumeSlider.getValue());
-            shortcutPause.setText("Pause");
-            menuPause.setText("Pause");
-        } else {
-            LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: " + menuPause.getText());
-        }
+        playbackMenu.pause();
     }
 
-    /**
-     * Stops the currently playing song.
-     */
     public void stop() {
-        if (MainView.getNowPlaying() == null) {
-            status.setText("No song is currently playing.");
-            return;
-        }
-
-        status.setText("");
-        menuPause.setText("Pause");
-        MainView.getNowPlaying().stop();
+        playbackMenu.stop();
     }
 
-    /**
-     * Plays the previous song.
-     */
     public void playPrev() {
-        if (MainView.getNowPlaying() == null) {
-            status.setText("No song is currently playing.");
-            return;
-        }
-
-        int row = songList.indexOf(MainView.getNowPlaying());
-        row = (row <= 0) ? 0 : row - 1;
-        play(row);
-        songTable.getSelectionModel().select(row);
+        playbackMenu.playPrev();
     }
 
-    /**
-     * Plays the next song.
-     */
     public void playNext() {
-        if (MainView.getNowPlaying() == null) {
-            status.setText("No song is currently playing.");
-            return;
-        }
-
-        int row = songList.indexOf(MainView.getNowPlaying());
-        row = (row + 1 >= songList.size()) ? 0 : row + 1;
-        play(row);
-        songTable.getSelectionModel().select(row);
+        playbackMenu.playNext();
     }
 
     // --------------- Song --------------- //
 
-    /**
-     * Creates a user dialog that allows modification of the selected song's ID3
-     * tags.
-     */
     public void editSong() {
-        Song songToEdit = songTable.getSelectionModel().getSelectedItem();
-        if (songToEdit == null) {
-            status.setText("No song selected.");
-            return;
-        }
-
-        // Create the editor dialog.
-        Dialog<List<String>> editor = new Dialog<>();
-        editor.setTitle("Song Editor");
-        editor.setHeaderText("Editing " + songToEdit.toString());
-
-        // Set the button types.
-        ButtonType saveButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        editor.getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
-
-        // Create the labels and fields.
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField title = new TextField();
-        title.setPromptText("Title");
-        title.setText(songToEdit.getTitle());
-
-        TextField artist = new TextField();
-        artist.setPromptText("Artist");
-        artist.setText(songToEdit.getArtist());
-
-        TextField album = new TextField();
-        album.setPromptText("Album");
-        album.setText(songToEdit.getAlbum());
-
-        grid.add(new Label("Title:"), 0, 0);
-        grid.add(title, 1, 0);
-        grid.add(new Label("Artist:"), 0, 1);
-        grid.add(artist, 1, 1);
-        grid.add(new Label("Album:"), 0, 2);
-        grid.add(album, 1, 2);
-
-        editor.getDialogPane().setContent(grid);
-
-        // Convert the result to an ArrayList of type String.
-        editor.setResultConverter(param -> {
-            if (param == saveButton) {
-                List<String> list = new ArrayList<>();
-                list.add(title.getText());
-                list.add(artist.getText());
-                list.add(album.getText());
-                return list;
-            }
-            return null;
-        });
-
-        Optional<List<String>> newParams = editor.showAndWait();
-        if (newParams.isPresent()) {
-            songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
-            refreshTables();
-        }
+        songMenu.editSong();
     }
 
-    /**
-     * Creates a new playlist and adds the selected song to it.
-     */
     public void toNewPlaylist() {
-        Song songToAdd = songTable.getSelectionModel().getSelectedItem();
-        if (songToAdd == null) {
-            status.setText("No song was selected.");
-            return;
-        }
-        if (createPlaylist()) {
-            playlistList.get(playlistList.size() - 1).add(songToAdd);
-        }
+        songMenu.toNewPlaylist();
     }
 
-    /**
-     * Removes the selected song from the current playlist.
-     */
     public void removeSong() {
-        // Find the index of the song to remove.
-        int songIndex = songTable.getSelectionModel().getSelectedIndex();
-        if (songIndex < 0 || songIndex > songList.size()) {
-            status.setText("No song selected.");
-            return;
-        }
-
-        // Remove it, then save changes to the playlist.
-        Playlist pl = playlistTable.getSelectionModel().getSelectedItem();
-        pl.remove(songIndex);
-        refreshTables();
-        try {
-            pl.save();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        }
+        songMenu.removeSong();
     }
 
     // --------------- Playlist --------------- //
 
-    /**
-     * Adds a playlist to the playlist table, then loads it into the song table.
-     *
-     * @param p
-     *            A playlist
-     */
     public void loadPlaylist(@NotNull Playlist p) {
-        playlistList.add(p);
-        playlistTable.setItems(playlistList);
-        focus(playlistTable, playlistList.size() - 1);
-
-        songList = FXCollections.observableArrayList(p);
-        songTable.setItems(songList);
-        LOGGER.log(Level.INFO, "Loaded playlist: " + p.getName());
-
-        // Enable the user to add songs to the playlist (unless the playlist is MainView::masterPlaylist).
-        if (p.getName().equals("All Music")) return;
-        MenuItem m = new MenuItem(p.getName());
-        addToPlaylist.getItems().add(m);
-        m.setOnAction(event -> {
-            Song songToAdd = songTable.getSelectionModel().getSelectedItem();
-            p.add(songToAdd);
-            try {
-                p.save();
-            } catch (IOException e) {
-                status.setText("Playlist \"" + p.getName() + "\" save unsuccessful.");
-                LOGGER.log(Level.SEVERE, "Failed to save the playlist.", e);
-            } finally {
-                refreshTables();
-                event.consume();
-            }
-        });
+        playlistMenu.loadPlaylist(p);
     }
-
-    /**
-     * Shuffles the song table. If a song is currently playing, it will be moved
-     * to the top of the table and playback will continue.
-     */
+    
     public void shuffle() {
-        if (songList.isEmpty()) {
-            status.setText("No songs to shuffle.");
-            return;
-        }
-
-        Collections.shuffle(songList);
-        if (MainView.getNowPlaying() != null && songList.indexOf(MainView.getNowPlaying()) >= 0) {
-            Collections.swap(songList, 0, songList.indexOf(MainView.getNowPlaying()));
-        } else {
-            play(0);
-        }
-        focus(songTable, 0);
+        playlistMenu.shuffle();
     }
 
-    /**
-     * Renames the current playlist.
-     */
     public void renamePlaylist() {
-        Playlist pl = playlistTable.getSelectionModel().getSelectedItem();
-        String oldName = pl.getName();
-        File oldFile = new File(oldName + ".m3u");
-
-        // Prompt the user for a playlist name.
-        TextInputDialog dialog = new TextInputDialog(oldName);
-        dialog.setTitle("Rename");
-        dialog.setHeaderText("Please enter a new name for playlist \"" + pl.getName() + "\".");
-        dialog.setContentText("New name:");
-        Optional<String> playlistName = dialog.showAndWait();
-        if (!playlistName.isPresent()) return;
-
-        // Make sure that the user has picked a unique playlist name.
-        for (Playlist p : playlistList) {
-            if (p.getName().equalsIgnoreCase(playlistName.get())) {
-                Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
-                conflictAlert.setTitle("Playlist Conflict");
-                conflictAlert.setHeaderText("A playlist named " + playlistName.get() + " already exists.");
-                conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
-                conflictAlert.showAndWait();
-                return;
-            }
-        }
-
-        try {
-            // Rename the playlist and attempt to save changes.
-            pl.setName(playlistName.get());
-            pl.save();
-            if (!oldFile.delete()) {
-                status.setText("Could not delete the old file.");
-            }
-            refreshTables();
-
-            // Also, rename the playlist in the "Song -> Add to...<PLAYLIST>" menu.
-            for (MenuItem item : addToPlaylist.getItems()) {
-                if (item.getText() == null) continue;
-                if (item.getText().equals(oldName)) {
-                    item.setText(playlistName.get());
-                }
-            }
-
-        } catch (IOException e) {
-            status.setText("Rename failed. See log.txt for details.");
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        }
+        playlistMenu.renamePlaylist();
     }
 
-    /**
-     * Asks the user if it is okay to delete the current playlist. If it is
-     * okay, deletes the current playlist.
-     */
     public void deletePlaylist() {
-        Playlist pl = playlistTable.getSelectionModel().getSelectedItem();
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete");
-        alert.setHeaderText("Confirm Deletion");
-        alert.setContentText("Are you sure you would like to delete playlist \"" + pl.getName() + "\"?");
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.get() != ButtonType.OK) return;
-        if (new File(pl.getName() + ".m3u").delete()) {
-            playlistList.remove(pl);
-            refreshTables();
-        } else {
-            status.setText("Deletion failed.");
-        }
+        playlistMenu.deletePlaylist();
     }
 
     // --------------- Utilities --------------- //
@@ -572,7 +222,7 @@ public class MainController implements Initializable {
      * @param index
      *            The row that should be selected
      */
-    private void focus(TableView<?> t, int index) {
+    void focus(TableView<?> t, int index) {
         Platform.runLater(() -> {
             t.requestFocus();
             t.getSelectionModel().select(index);
@@ -581,11 +231,7 @@ public class MainController implements Initializable {
         });
     }
 
-    public void focusMasterPlaylist() {
-        focus(playlistTable, 0);
-    }
-
-    private void refreshTables() {
+    void refreshTables() {
         // Keep tabs on what was selected before.
         int playlistIndex = playlistTable.getFocusModel().getFocusedIndex();
         int songIndex = songTable.getFocusModel().getFocusedIndex();
