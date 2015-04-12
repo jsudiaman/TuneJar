@@ -16,8 +16,7 @@ gradlew eclipse
 
 After doing so, you should be able to import this project in Eclipse.
 
-You can use http://search.maven.org[Maven Central] to find libraries to include into the project.
-Also, http://libraries.io/[find great open source libraries here].
+https://www.dropbox.com/s/nljh38blcnwrv6a/formatting.xml?dl=0[Here is a formatting style I recommend.] You should be able to import it right into Eclipse.
 
 = Suggestion box
 Questions, comments, or concerns? http://goo.gl/forms/RB3EcUC61c[Let us know!]

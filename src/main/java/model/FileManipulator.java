@@ -127,18 +127,18 @@ public final class FileManipulator {
 
         // Iterate through each file in the directory.
         for (File f : directory.listFiles()) {
-            // If a directory was found, add the mp3 files in that directory as well.
-            if (f.isDirectory()) {
-                set.addAll(getSongs(f));
-            } else {
-                // Attempt to construct a song object. If successful, add it to the set.
-                if (!f.toString().endsWith(".mp3")) continue;
-                try {
+            try {
+                // If a directory was found, add the mp3 files in that directory as well.
+                if (f.isDirectory()) {
+                    set.addAll(getSongs(f));
+                } else {
+                    // Attempt to construct a song object. If successful, add it to the set.
+                    if (!f.toString().endsWith(".mp3")) continue;
                     Song song = new Song(new Mp3File(f));
                     set.add(song);
-                } catch (UnsupportedTagException | InvalidDataException | IOException e) {
-                    LOGGER.log(Level.SEVERE, "Failed to construct a song object from file: " + f.toString(), e);
                 }
+            } catch (UnsupportedTagException | InvalidDataException | IOException | NullPointerException e) {
+                LOGGER.log(Level.SEVERE, "Failed to construct a song object from file: " + f.toString(), e);
             }
         }
 

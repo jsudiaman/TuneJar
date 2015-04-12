@@ -14,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -85,14 +84,6 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Disable all interactivity until MainView::init() completes.
-        for (Menu m : topMenuBar.getMenus()) {
-            m.setDisable(true);
-        }
-        for (Node n : shortcutBar.getItems()) {
-            n.setDisable(true);
-        }
-
         // Initialize the song table.
         songList = FXCollections.observableArrayList();
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
@@ -143,16 +134,6 @@ public class MainController implements Initializable {
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             MainView.setVolume(newValue.doubleValue());
         });
-    }
-
-    public void enableInteractivity() {
-        for (Menu m : topMenuBar.getMenus()) {
-            m.setDisable(false);
-        }
-
-        for (Node n : shortcutBar.getItems()) {
-            n.setDisable(false);
-        }
     }
 
     // --------------- File --------------- //
