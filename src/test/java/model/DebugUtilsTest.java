@@ -11,37 +11,37 @@ import org.junit.Test;
 
 public class DebugUtilsTest {
 
-	Exception e;
-	File logFile;
+    Exception e;
+    File logFile;
 
-	@Before
-	public void setUp() throws Exception {
-		logFile = new File("log.txt");
-		e = new NullPointerException();
-		assertNotNull(DebugUtils.LOGGER);
-	}
+    @Before
+    public void setUp() throws Exception {
+        logFile = new File("log.txt");
+        e = new NullPointerException();
+        assertNotNull(DebugUtils.LOGGER);
+    }
 
-	@Test
-	public void testLogger() throws Exception {
-		// Log an exception.
-		try {
-			throw e;
-		} catch (NullPointerException e) {
-			DebugUtils.LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		}
+    @Test
+    public void testLogger() throws Exception {
+        // Log an exception.
+        try {
+            throw e;
+        } catch (NullPointerException e) {
+            DebugUtils.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
 
-		// Find the exception in the log file.
-		boolean foundException = false;
-		BufferedReader reader = new BufferedReader(new FileReader(logFile));
-		for (String nextLine; (nextLine = reader.readLine()) != null;) {
-			if (nextLine.contains("NullPointerException")) {
-				foundException = true;
-				break;
-			}
-		}
-		assertTrue(foundException);
+        // Find the exception in the log file.
+        boolean foundException = false;
+        BufferedReader reader = new BufferedReader(new FileReader(logFile));
+        for (String nextLine; (nextLine = reader.readLine()) != null;) {
+            if (nextLine.contains("NullPointerException")) {
+                foundException = true;
+                break;
+            }
+        }
+        assertTrue(foundException);
 
-		reader.close();
-	}
+        reader.close();
+    }
 
 }
