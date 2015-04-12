@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
+import java.util.Collection;
 import java.util.logging.Level;
 
 import static model.DebugUtils.LOGGER;
@@ -31,7 +31,7 @@ public class MainView extends Application {
 
     // Data Structures
     private static Playlist masterPlaylist;
-    private static Set<File> directorySet;
+    private static Collection<File> directories;
 
     /**
      * Calls Application::launch().
@@ -79,9 +79,9 @@ public class MainView extends Application {
 
         // Load the directories. If none are present, prompt the user for one.
         try {
-            directorySet = readDirectories(new File("directories.dat"));
+            directories = readDirectories();
         } catch (FileNotFoundException e) {
-            directorySet = initialSetup(primaryStage);
+            directories = initialSetup(primaryStage);
         }
 
         MainController controller = fxmlLoader.getController();
@@ -93,19 +93,19 @@ public class MainView extends Application {
             refresh();
             controller.loadPlaylist(masterPlaylist);
 
-            // Save the directory set.
+            // Save the directories.
             try {
-                writeFileSet(directorySet);
+                writeFiles(directories);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to save the directory set.", e);
+                LOGGER.log(Level.SEVERE, "Failed to save directories.", e);
             }
 
             // Finally, load in all playlists from the working directory.
             Platform.runLater(() -> {
                 controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully.");
-                Set<Playlist> playlistSet = null;
+                Collection<Playlist> playlistSet = null;
                 try {
-                    playlistSet = allPlaylists();
+                    playlistSet = getPlaylists();
                 } catch (IOException | NullPointerException e) {
                     LOGGER.log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
                 }
@@ -126,16 +126,16 @@ public class MainView extends Application {
         // Initialize the master playlist.
         masterPlaylist = new Playlist("All Music");
 
-        // Then add all songs found in the directory set to the master playlist.
-        LOGGER.log(Level.INFO, "directorySet: " + (directorySet != null ? directorySet.toString() : null));
+        // Then add all songs found in the directories to the master playlist.
+        LOGGER.log(Level.INFO, "directories: " + (directories != null ? directories.toString() : null));
         try {
-            for (File directory : directorySet) {
+            for (File directory : directories) {
                 LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
-                masterPlaylist.addAll(songSet(directory));
+                masterPlaylist.addAll(getSongs(directory));
             }
             LOGGER.log(Level.INFO, "Refresh successful!");
         } catch (NullPointerException e) {
-            LOGGER.log(Level.SEVERE, "An unusable directory is in the directory set.", e);
+            LOGGER.log(Level.SEVERE, "An unusable directory was found.", e);
             fatalException(e);
         }
     }
@@ -205,4 +205,5 @@ public class MainView extends Application {
     public static Song getNowPlaying() {
         return nowPlaying;
     }
+
 }

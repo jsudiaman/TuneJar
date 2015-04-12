@@ -18,7 +18,7 @@
         </TableView>
     </center>
     <top>
-        <MenuBar fx:id="topMenuBar" BorderPane.alignment="CENTER">
+        <MenuBar fx:id="topMenuBar">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
@@ -27,13 +27,18 @@
                                 <MenuItem mnemonicParsing="false" onAction="#createPlaylistButton" text="Playlist" />
                             </items>
                         </Menu>
+                  <Menu mnemonicParsing="false" text="Add...">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Folder" />
+                    </items>
+                  </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Playback">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#play" text="Play" />
-                        <MenuItem fx:id="pauseButton" mnemonicParsing="false" onAction="#pause" text="Pause" />
+                        <MenuItem fx:id="menuPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
                         <MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
                         <MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
                         <MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
@@ -45,12 +50,19 @@
                         <Menu fx:id="addToPlaylist" mnemonicParsing="false" text="Add To...">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#selectedSongToNewPlaylist" text="New Playlist" />
-                                <SeparatorMenuItem mnemonicParsing="false" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
                             </items>
                         </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#edit" text="Edit" />
+                  <MenuItem fx:id="menuRemoveSong" mnemonicParsing="false" onAction="#removeSong" text="Remove" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="Playlist">
+              <items>
+                <MenuItem fx:id="menuRenamePlaylist" mnemonicParsing="false" onAction="#renamePlaylist" text="Rename" />
+                  <MenuItem fx:id="menuDeletePlaylist" mnemonicParsing="false" text="Delete" />
+              </items>
+            </Menu>
             </menus>
         </MenuBar>
     </top>
@@ -65,10 +77,23 @@
         </TableView>
     </left>
     <bottom>
-        <ToolBar BorderPane.alignment="CENTER">
-            <items>
-                <Label fx:id="status" focusTraversable="false" />
-            </items>
-        </ToolBar>
+      <HBox>
+         <children>
+              <ToolBar prefHeight="43.0" HBox.hgrow="ALWAYS">
+                  <items>
+                      <Label fx:id="status" focusTraversable="false" />
+                  </items>
+              </ToolBar>
+            <ToolBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="ALWAYS">
+               <items>
+                  <Button mnemonicParsing="false" onAction="#playNext" text="Next" />
+                  <Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
+                  <Button mnemonicParsing="false" onAction="#stop" text="Stop" />
+                  <Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
+                  <Button mnemonicParsing="false" onAction="#play" text="Play" />
+               </items>
+            </ToolBar>
+         </children>
+      </HBox>
     </bottom>
 </BorderPane>

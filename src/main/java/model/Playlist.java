@@ -62,6 +62,10 @@ public class Playlist extends ArrayList<Song> {
 
     // --------------- Getters and Setters --------------- //
 
+    public void setName(String newName) {
+        name.set(newName);
+    }
+
     public String getName() {
         return name.get();
     }

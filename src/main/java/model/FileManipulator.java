@@ -10,6 +10,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ import static model.DebugUtils.LOGGER;
  */
 public final class FileManipulator {
 
-    private static final String DIRECTORY_FILENAME = "directories.dat"; // Where to save the directory set.
+    private static final String DIRECTORY_FILENAME = "directories.dat"; // Where to save the directories.
 
     private FileManipulator() {
         throw new AssertionError();
@@ -44,10 +45,10 @@ public final class FileManipulator {
      * store directories.
      *
      * @param stage The stage that will hold the dialog box
-     * @return A set that holds one directory chosen by the user, or an empty
+     * @return A collection that holds one directory chosen by the user, or an empty
      * set if the user cancels
      */
-    public static Set<File> initialSetup(Stage stage) {
+    public static Collection<File> initialSetup(Stage stage) {
         Set<File> set;
 
         // Alert the user that no directories were found
@@ -72,17 +73,16 @@ public final class FileManipulator {
     }
 
     /**
-     * Read in a list of directories, line by line, from a specified text file.
+     * Read in a list of directories, line by line, from a text file.
      *
-     * @param file The file to read directories from
-     * @return A set containing all of the specified directories
+     * @return A collection containing all of the specified directories
      * @throws IOException The file cannot be found or accessed
      */
-    public static Set<File> readDirectories(File file) throws IOException {
+    public static Collection<File> readDirectories() throws IOException {
         Set<File> dirSet = new HashSet<>();
 
         // Read in the directories line by line.
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(new FileReader(DIRECTORY_FILENAME));
         for (String nextLine; (nextLine = reader.readLine()) != null; ) {
             dirSet.add(new File(nextLine));
         }
@@ -93,14 +93,14 @@ public final class FileManipulator {
     }
 
     /**
-     * Output the contents of a file set, line by line.
+     * Output the contents of a collection of files, line by line.
      *
-     * @param fileSet  A set of files
+     * @param files A collection of files
      * @throws IOException Unable to write the output to the file
      */
-    public static void writeFileSet(Set<File> fileSet) throws IOException {
+    public static void writeFiles(Collection<File> files) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(DIRECTORY_FILENAME, false));
-        for (File f : fileSet) {
+        for (File f : files) {
             writer.write(f.getAbsoluteFile().toString());
             writer.newLine();
         }
@@ -110,14 +110,14 @@ public final class FileManipulator {
     /**
      * Takes in a directory and recursively searches for all mp3 files contained
      * within that directory. The files are then constructed as Song objects to
-     * be wrapped up in a set.
+     * be wrapped up in a collection.
      *
      * @param directory A File object that is a directory.
-     * @return A set containing all the Song objects, or null if the File
+     * @return A collection containing all the Song objects, or null if the File
      * object is not a directory.
      */
     @Nullable
-    public static Set<Song> songSet(@NotNull File directory) {
+    public static Collection<Song> getSongs(@NotNull File directory) {
         // Initialize the set or return null if necessary.
         if (directory == null || !directory.isDirectory()) return null;
         Set<Song> set = new HashSet<>();
@@ -126,7 +126,7 @@ public final class FileManipulator {
         for (File f : directory.listFiles()) {
             // If a directory was found, add the mp3 files in that directory as well.
             if (f.isDirectory()) {
-                set.addAll(songSet(f));
+                set.addAll(getSongs(f));
             } else {
                 // Attempt to construct a song object. If successful, add it to the set.
                 if (!f.toString().endsWith(".mp3")) continue;
@@ -144,7 +144,7 @@ public final class FileManipulator {
 
     /**
      * Searches the working directory for .m3u files and creates a playlist
-     * out of each one. All of the created playlists are then wrapped into a set
+     * out of each one. All of the created playlists are then wrapped into a collection
      * and returned.
      *
      * @return All of the created playlists
@@ -152,7 +152,7 @@ public final class FileManipulator {
      * @throws IOException Unable to access the working directory
      * @throws NullPointerException NullPointerException thrown by dereference of the working directory
      */
-    public static Set<Playlist> allPlaylists() throws IOException, NullPointerException {
+    public static Collection<Playlist> getPlaylists() throws IOException, NullPointerException {
         Set<Playlist> set = new HashSet<>();
 
         // Iterate through each file in the working directory.

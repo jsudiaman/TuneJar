@@ -19,6 +19,8 @@ public final class DebugUtils {
 
     public static final Logger LOGGER = initLogger(); // Global logger
 
+    private static final String LOG_FILE = "log.txt";
+
     private DebugUtils() {
         throw new AssertionError();
     }
@@ -26,12 +28,12 @@ public final class DebugUtils {
     private static Logger initLogger() {
         Logger log = Logger.getLogger(MainView.class.getName());
         try {
-            Handler handler = new FileHandler("log.txt");
+            Handler handler = new FileHandler(LOG_FILE);
             handler.setFormatter(new SimpleFormatter());
             log.addHandler(handler);
-            log.log(Level.INFO, "log.txt initialized successfully.");
+            log.log(Level.INFO, LOG_FILE + " initialized successfully.");
         } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to generate log.txt. Logs will be written only to the console.", e);
+            log.log(Level.WARNING, "Failed to generate " + LOG_FILE + ". Logs will be written only to the console.", e);
         }
         return log;
     }

@@ -88,8 +88,10 @@ public class Song {
      * @param newTitle  New title
      * @param newArtist New artist
      * @param newAlbum  New album
+     *
+     * @return True iff changes to the song were saved successfully.
      */
-    public void setTag(String newTitle, String newArtist, String newAlbum) {
+    public boolean setTag(String newTitle, String newArtist, String newAlbum) {
         // Remove leading and trailing whitespace
         newTitle = newTitle.trim();
         newArtist = newArtist.trim();
@@ -130,10 +132,11 @@ public class Song {
 
         // Save changes to the mp3 file
         try {
-            save();
+            return save();
         } catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             fatalException(e);
+            return false;
         }
     }
 
@@ -187,20 +190,32 @@ public class Song {
 
     /**
      * Saves changes to the MP3 file.
+     *
+     * @return True iff changes to the song were saved successfully.
+     *
+     * @throws IOException
+     * @throws NotSupportedException
+     * @throws InvalidDataException
+     * @throws UnsupportedTagException
      */
-    private void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
+    private boolean save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
+        boolean successful = true;
+
         String fileName = mp3file.getFilename();
         mp3file.save(fileName + ".tmp"); // Save the new file by appending ".tmp"
 
         if (!new File(fileName).delete()) { // Delete the old file
             LOGGER.log(Level.SEVERE, "Failed to delete file: " + fileName);
+            successful = false;
         }
 
         if (!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
             LOGGER.log(Level.SEVERE, "Failed to rename file: " + fileName + ".tmp");
+            successful = false;
         }
 
         mp3file = new Mp3File(new File(fileName)); // Update the mp3file reference
+        return successful;
     }
 
     // ---------------- Overriding Methods ------------------ //

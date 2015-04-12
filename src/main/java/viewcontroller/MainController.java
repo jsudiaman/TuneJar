@@ -15,9 +15,12 @@ import javafx.scene.layout.GridPane;
 import model.Playlist;
 import model.Song;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static model.DebugUtils.LOGGER;
@@ -45,12 +48,19 @@ public class MainController implements Initializable {
 
     @FXML
     MenuBar topMenuBar = new MenuBar();
-
     @FXML
     Menu addToPlaylist = new Menu();
+    @FXML
+    MenuItem menuPause = new MenuItem();
+    @FXML
+    MenuItem menuRemoveSong = new MenuItem();
+    @FXML
+    MenuItem menuRenamePlaylist = new MenuItem();
+    @FXML
+    MenuItem menuDeletePlaylist = new MenuItem();
 
     @FXML
-    MenuItem pauseButton = new MenuItem();
+    Button shortcutPause = new Button();
 
     @FXML
     Label status = new Label();
@@ -99,15 +109,16 @@ public class MainController implements Initializable {
             }
         });
 
-        // When a playlist is selected, display it.
+        // Add listeners to all playlists in the playlist table.
+        menuRemoveSong.setDisable(true);
         playlistTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            // When a playlist is selected, display it.
             songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
             songTable.setItems(songList);
-        });
 
-        // Disable multi-selections.
-        songTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        playlistTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            // Decide whether to enable the "Remove from Playlist" button.
+            menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
+        });
     }
 
     public void enableTopMenuBar() {
@@ -138,7 +149,7 @@ public class MainController implements Initializable {
 
             // Playlist creation fails if a playlist with the specified name already exists.
             for(Playlist p : playlistList) {
-                if(p.getName().equals(pName)) {
+                if(p.getName().equalsIgnoreCase(pName)) {
                     Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
                     conflictAlert.setTitle("Playlist Conflict");
                     conflictAlert.setHeaderText("A playlist named " + pName + " already exists.");
@@ -187,7 +198,7 @@ public class MainController implements Initializable {
      * Plays or resumes the selected song.
      */
     public void play() {
-        pauseButton.setText("Pause");
+        menuPause.setText("Pause");
         play(songTable.getFocusModel().getFocusedIndex());
     }
 
@@ -228,16 +239,18 @@ public class MainController implements Initializable {
             return;
         }
 
-        if (pauseButton.getText().equals("Pause")) {
+        if (menuPause.getText().equals("Pause")) {
             status.setText("Paused: " + MainView.getNowPlaying().toString());
             MainView.getNowPlaying().pause();
-            pauseButton.setText("Resume");
-        } else if (pauseButton.getText().equals("Resume")) {
+            shortcutPause.setText("Resume");
+            menuPause.setText("Resume");
+        } else if (menuPause.getText().equals("Resume")) {
             status.setText("Now Playing: " + MainView.getNowPlaying().toString());
             MainView.getNowPlaying().play();
-            pauseButton.setText("Pause");
+            shortcutPause.setText("Pause");
+            menuPause.setText("Pause");
         } else {
-            LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: " + pauseButton.getText());
+            LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: " + menuPause.getText());
         }
     }
 
@@ -251,7 +264,7 @@ public class MainController implements Initializable {
         }
 
         status.setText("");
-        pauseButton.setText("Pause");
+        menuPause.setText("Pause");
         MainView.getNowPlaying().stop();
     }
 
@@ -267,7 +280,7 @@ public class MainController implements Initializable {
         int row = songList.indexOf(MainView.getNowPlaying());
         row = (row <= 0) ? 0 : row - 1;
         play(row);
-        focus(songTable, row);
+        songTable.getSelectionModel().select(row);
     }
 
     /**
@@ -282,7 +295,7 @@ public class MainController implements Initializable {
         int row = songList.indexOf(MainView.getNowPlaying());
         row = (row + 1 >= songList.size()) ? 0 : row + 1;
         play(row);
-        focus(songTable, row);
+        songTable.getSelectionModel().select(row);
     }
 
     // --------------- Song --------------- //
@@ -349,7 +362,7 @@ public class MainController implements Initializable {
         Optional<List<String>> newParams = editor.showAndWait();
         if (newParams.isPresent()) {
             songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
-            refreshSongTable();
+            refreshTables();
         }
     }
 
@@ -364,6 +377,28 @@ public class MainController implements Initializable {
         }
         if(createPlaylist()) {
             playlistList.get(playlistList.size() - 1).add(songToAdd);
+        }
+    }
+
+    /**
+     * Removes the selected song from the current playlist.
+     */
+    public void removeSong() {
+        // Find the index of the song to remove.
+        int songIndex = songTable.getSelectionModel().getSelectedIndex();
+        if(songIndex < 0 || songIndex > songList.size()) {
+            status.setText("No song selected.");
+            return;
+        }
+
+        // Remove it, then save changes to the playlist.
+        Playlist pl = playlistTable.getSelectionModel().getSelectedItem();
+        pl.remove(songIndex);
+        refreshTables();
+        try {
+            pl.save();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -392,12 +427,11 @@ public class MainController implements Initializable {
             p.add(songToAdd);
             try {
                 p.save();
-                status.setText("Added \"" + songToAdd.toString() + "\" to playlist \"" + p.getName() + "\".");
             } catch (IOException e) {
-                status.setText("Playlist \"" + p.getName() + "\" save unsuccessful. See log.txt for details.");
+                status.setText("Playlist \"" + p.getName() + "\" save unsuccessful.");
                 LOGGER.log(Level.SEVERE, "Failed to save the playlist.", e);
             } finally {
-                refreshSongTable();
+                refreshTables();
                 event.consume();
             }
         });
@@ -415,6 +449,55 @@ public class MainController implements Initializable {
             play(0);
         }
         focus(songTable, 0);
+    }
+
+    /**
+     * Renames the current playlist.
+     */
+    public void renamePlaylist() {
+        Playlist pl = playlistTable.getSelectionModel().getSelectedItem();
+        String oldName = pl.getName();
+        File oldFile = new File(oldName + ".m3u");
+
+        // Prompt the user for a playlist name.
+        TextInputDialog dialog = new TextInputDialog(oldName);
+        dialog.setTitle("Rename");
+        dialog.setHeaderText("Please enter a new name for playlist \"" + pl.getName() + "\".");
+        dialog.setContentText("New name:");
+        Optional<String> playlistName = dialog.showAndWait();
+        if(!playlistName.isPresent()) return;
+
+        // Make sure that the user has picked a unique playlist name.
+        for(Playlist p : playlistList) {
+            if(p.getName().equalsIgnoreCase(playlistName.get())) {
+                Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
+                conflictAlert.setTitle("Playlist Conflict");
+                conflictAlert.setHeaderText("A playlist named " + playlistName.get() + " already exists.");
+                conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
+                conflictAlert.showAndWait();
+                return;
+            }
+        }
+
+        try {
+            // Rename the playlist and attempt to save changes.
+            pl.setName(playlistName.get());
+            pl.save();
+            oldFile.deleteOnExit();
+            refreshTables();
+
+            // Also, rename the playlist in the "Song -> Add to...<PLAYLIST>" menu.
+            for(MenuItem item : addToPlaylist.getItems()) {
+                if(item.getText() == null) continue;
+                if(item.getText().equals(oldName)) {
+                    item.setText(playlistName.get());
+                }
+            }
+
+        } catch (IOException e) {
+            status.setText("Rename failed. See log.txt for details.");
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     // --------------- Utilities --------------- //
@@ -447,11 +530,7 @@ public class MainController implements Initializable {
         focus(playlistTable, 0);
     }
 
-    /**
-     * Refreshes the song table, allowing the user to see changes to the currently
-     * selected playlist.
-     */
-    public void refreshSongTable() {
+    public void refreshTables() {
         // Keep tabs on what was selected before.
         int playlistIndex = playlistTable.getFocusModel().getFocusedIndex();
         int songIndex = songTable.getFocusModel().getFocusedIndex();
@@ -459,6 +538,10 @@ public class MainController implements Initializable {
         // Where the actual "refreshing" is done
         songTable.getColumns().get(0).setVisible(false);
         songTable.getColumns().get(0).setVisible(true);
+        songTable.getSelectionModel().select(0);
+
+        playlistTable.getColumns().get(0).setVisible(false);
+        playlistTable.getColumns().get(0).setVisible(true);
         playlistTable.getSelectionModel().select(0);
 
         // Re-select what was selected before.
