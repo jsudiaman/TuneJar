@@ -16,8 +16,8 @@ gradlew eclipse
 
 After doing so, you should be able to import this project in Eclipse.
 
-https://www.dropbox.com/s/nljh38blcnwrv6a/formatting.xml?dl=0[Here is a formatting style I recommend.]
-To import it, go to: Window -> Preferences -> Java -> Code Style -> Formatter -> Import...
+https://www.dropbox.com/s/nljh38blcnwrv6a/formatting.xml?dl=0[Here is a formatting style I recommend.] +
+To import it, go to: Window -> Preferences -> Java -> Code Style -> Formatter -> Import.
 
 = Suggestion box
 Questions, comments, or concerns? http://goo.gl/forms/RB3EcUC61c[Let us know!]
