@@ -113,7 +113,7 @@ public class MainView extends Application {
                     playlistSet.forEach(controller::loadPlaylist);
                 }
                 controller.focusMasterPlaylist();
-                controller.enableTopMenuBar();
+                controller.enableInteractivity();
             });
         });
         initPlaylist.start();
@@ -204,6 +204,14 @@ public class MainView extends Application {
     @Nullable
     public static Song getNowPlaying() {
         return nowPlaying;
+    }
+
+    public static void setVolume(double value) {
+        if (player != null) {
+            player.setVolume(value);
+        } else {
+            LOGGER.log(Level.WARNING, "The media player is null.");
+        }
     }
 
 }

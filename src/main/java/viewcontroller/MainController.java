@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -19,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static model.DebugUtils.LOGGER;
@@ -28,8 +27,8 @@ import static model.DebugUtils.LOGGER;
 public class MainController implements Initializable {
 
     // Lists
-    ObservableList<Song> songList;
-    ObservableList<Playlist> playlistList;
+    private ObservableList<Song> songList;
+    private ObservableList<Playlist> playlistList;
 
     // FXML Injections
     @FXML
@@ -65,6 +64,14 @@ public class MainController implements Initializable {
     @FXML
     Label status = new Label();
 
+    @FXML
+    ToolBar shortcutBar = new ToolBar();
+
+    @FXML
+    Slider volumeSlider = new Slider();
+
+    // --------------- Initialization --------------- //
+
     /**
      * Sets up the playlist viewer.
      *
@@ -74,9 +81,12 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Disable the top menu bar. It will be re-enabled once MainView::init() completes.
+        // Disable all interactivity until MainView::init() completes.
         for(Menu m : topMenuBar.getMenus()) {
             m.setDisable(true);
+        }
+        for(Node n : shortcutBar.getItems()) {
+            n.setDisable(true);
         }
 
         // Initialize the song table.
@@ -116,14 +126,26 @@ public class MainController implements Initializable {
             songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
             songTable.setItems(songList);
 
-            // Decide whether to enable the "Remove from Playlist" button.
+            // The master playlist cannot be renamed, deleted, or altered, so disable that functionality if
+            // the master playlist is selected.
             menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
+            menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
+            menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
+        });
+
+        // Initialize the volume slider.
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            MainView.setVolume(newValue.doubleValue());
         });
     }
 
-    public void enableTopMenuBar() {
+    public void enableInteractivity() {
         for(Menu m : topMenuBar.getMenus()) {
             m.setDisable(false);
+        }
+
+        for(Node n : shortcutBar.getItems()) {
+            n.setDisable(false);
         }
     }
 
@@ -136,7 +158,7 @@ public class MainController implements Initializable {
     /**
      * Creates a new playlist.
      */
-    public boolean createPlaylist() {
+    private boolean createPlaylist() {
         // Prompt the user for a playlist name.
         TextInputDialog dialog = new TextInputDialog("Untitled Playlist");
         dialog.setTitle("New Playlist");
@@ -198,6 +220,12 @@ public class MainController implements Initializable {
      * Plays or resumes the selected song.
      */
     public void play() {
+        int index = songTable.getFocusModel().getFocusedIndex();
+        if(songList.isEmpty() || index < 0 || index >= songList.size()) {
+            status.setText("No song selected.");
+            return;
+        }
+        shortcutPause.setText("Pause");
         menuPause.setText("Pause");
         play(songTable.getFocusModel().getFocusedIndex());
     }
@@ -207,7 +235,7 @@ public class MainController implements Initializable {
      *
      * @param row The row that the song is located in
      */
-    public void play(int row) {
+    private void play(int row) {
         try {
             // Have the playlist point to the appropriate song, then play it
             songTable.getSelectionModel().select(row);
@@ -304,7 +332,7 @@ public class MainController implements Initializable {
      * Creates a user dialog that allows modification of the selected
      * song's ID3 tags.
      */
-    public void edit() {
+    public void editSong() {
         Song songToEdit = songTable.getSelectionModel().getSelectedItem();
         if (songToEdit == null) {
             status.setText("No song selected.");
@@ -369,7 +397,7 @@ public class MainController implements Initializable {
     /**
      * Creates a new playlist and adds the selected song to it.
      */
-    public void selectedSongToNewPlaylist() {
+    public void toNewPlaylist() {
         Song songToAdd = songTable.getSelectionModel().getSelectedItem();
         if (songToAdd == null) {
             status.setText("No song was selected.");
@@ -442,6 +470,11 @@ public class MainController implements Initializable {
      * be moved to the top of the table and playback will continue.
      */
     public void shuffle() {
+        if (songList.isEmpty()) {
+            status.setText("No songs to shuffle.");
+            return;
+        }
+
         Collections.shuffle(songList);
         if (MainView.getNowPlaying() != null && songList.indexOf(MainView.getNowPlaying()) >= 0) {
             Collections.swap(songList, 0, songList.indexOf(MainView.getNowPlaying()));
@@ -483,7 +516,9 @@ public class MainController implements Initializable {
             // Rename the playlist and attempt to save changes.
             pl.setName(playlistName.get());
             pl.save();
-            oldFile.deleteOnExit();
+            if(!oldFile.delete()) {
+                status.setText("Could not delete the old file.");
+            }
             refreshTables();
 
             // Also, rename the playlist in the "Song -> Add to...<PLAYLIST>" menu.
@@ -497,6 +532,28 @@ public class MainController implements Initializable {
         } catch (IOException e) {
             status.setText("Rename failed. See log.txt for details.");
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Asks the user if it is okay to delete the current playlist.
+     * If it is okay, deletes the current playlist.
+     */
+    public void deletePlaylist() {
+        Playlist pl = playlistTable.getSelectionModel().getSelectedItem();
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Confirm Deletion");
+        alert.setContentText("Are you sure you would like to delete playlist \"" + pl.getName() + "\"?");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() != ButtonType.OK) return;
+        if (new File(pl.getName() + ".m3u").delete()) {
+            playlistList.remove(pl);
+            refreshTables();
+        } else {
+            status.setText("Deletion failed.");
         }
     }
 
@@ -517,7 +574,7 @@ public class MainController implements Initializable {
      * @param t The table in which the selection occurs
      * @param index The row that should be selected
      */
-    public void focus(TableView t, int index) {
+    private void focus(TableView t, int index) {
         Platform.runLater(() -> {
             t.requestFocus();
             t.getSelectionModel().select(index);
@@ -530,7 +587,7 @@ public class MainController implements Initializable {
         focus(playlistTable, 0);
     }
 
-    public void refreshTables() {
+    private void refreshTables() {
         // Keep tabs on what was selected before.
         int playlistIndex = playlistTable.getFocusModel().getFocusedIndex();
         int songIndex = songTable.getFocusModel().getFocusedIndex();
