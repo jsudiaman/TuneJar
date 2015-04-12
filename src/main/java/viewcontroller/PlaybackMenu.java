@@ -2,13 +2,7 @@ package viewcontroller;
 
 import static model.DebugUtils.LOGGER;
 
-import java.io.File;
-import java.util.Optional;
 import java.util.logging.Level;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import model.Playlist;
 
 /**
  * Helper class for handling the Playback menu.
