@@ -98,7 +98,7 @@ final class FileMenu {
     
     void removeDirectory() {
         // TODO Implement this method
-        System.out.println("I'm doing the thing.");
+    	MainView.removeDirectory();
     }
 
 }
