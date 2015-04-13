@@ -37,6 +37,7 @@ public final class FileManipulator {
         return chooser.showDialog(stage);
     }
 
+    // TODO Refactor to return a single file, not a collection.
     /**
      * Prompts the user for a directory and initializes a data structure to
      * store directories.
