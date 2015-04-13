@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
+import com.sun.org.apache.xerces.internal.util.Status;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -84,9 +86,12 @@ final class SongMenu {
 
         Optional<List<String>> newParams = editor.showAndWait();
         if (newParams.isPresent()) {
-            songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
+            if(songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2))) {
+                controller.status.setText("Edit successful.");
+            } else {
+                controller.status.setText("Edit failed. See log.txt for details.");
+            }
             controller.refreshTables();
-            controller.status.setText("Edit successful.");
         }
     }
      

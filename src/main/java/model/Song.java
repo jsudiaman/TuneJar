@@ -1,7 +1,6 @@
 package model;
 
 import static model.DebugUtils.LOGGER;
-import static model.DebugUtils.fatalException;
 
 import java.io.File;
 import java.io.IOException;
@@ -141,7 +140,6 @@ public class Song {
             return save();
         } catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            fatalException(e);
             return false;
         }
     }
