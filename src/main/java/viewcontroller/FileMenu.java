@@ -80,25 +80,22 @@ final class FileMenu {
     }
     
     void addDirectory() {
-        try {
-            MainView.addDirectory();
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Failed");
-            alert.setHeaderText("Failed to add the directory.");
-            alert.setContentText("Please see log.txt for details.");
-            alert.showAndWait();
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        } finally {
+        MainView.addDirectory();
+        Platform.runLater(() -> {
             controller.playlistList.set(0, MainView.getMasterPlaylist());
             controller.refreshTables();
             controller.focus(controller.playlistTable, 0);
-        }
+        });
     }
     
     void removeDirectory() {
-        // TODO Implement this method
-    	MainView.removeDirectory();
+        if (MainView.removeDirectory()) {
+            MainView.refresh();
+            Platform.runLater(() -> {
+                controller.playlistList.set(0, MainView.getMasterPlaylist());
+                controller.refreshTables();
+            });
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import com.mpatric.mp3agic.*;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Helper class for file manipulation within the GUI.
@@ -37,19 +38,15 @@ public final class FileManipulator {
         return chooser.showDialog(stage);
     }
 
-    // TODO Refactor to return a single file, not a collection.
     /**
-     * Prompts the user for a directory and initializes a data structure to
-     * store directories.
+     * Prompts the user for a directory.
      *
      * @param stage
      *            The stage that will hold the dialog box
-     * @return A collection that holds one directory chosen by the user, or an
-     *         empty set if the user cancels
+     * @return A directory chosen by the user, or null if the user cancels
      */
-    public static Collection<File> initialSetup(Stage stage) {
-        Set<File> set;
-
+    @Nullable
+    public static File initialDirectory(Stage stage) {
         // Alert the user that no directories were found
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Welcome!");
@@ -60,15 +57,13 @@ public final class FileManipulator {
         alert.showAndWait();
 
         // Begin building up a data structure to store directories
-        set = new HashSet<>();
         File chosenDirectory = chooseDirectory(stage);
         if (chosenDirectory == null) {
             LOGGER.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory.");
+            return null;
         } else {
-            set.add(chosenDirectory);
+            return chosenDirectory;
         }
-
-        return set;
     }
 
     /**
@@ -122,7 +117,7 @@ public final class FileManipulator {
         // Initialize the set or return an empty set if necessary.
         Set<Song> set = new HashSet<>();
         if (directory == null || !directory.isDirectory()) {
-            LOGGER.log(Level.SEVERE, "Failed to access directory: " + 
+            LOGGER.log(Level.SEVERE, "Failed to access directory: " +
                     (directory == null ? "null" : directory.toString()));
             return set;
         }
@@ -161,7 +156,7 @@ public final class FileManipulator {
         // Initialization
         Set<Playlist> set = new HashSet<>();
         File[] fileList = new File(".").listFiles();
-        if(fileList == null) {
+        if (fileList == null) {
             LOGGER.log(Level.SEVERE, "Unable to access the working directory.");
             return set;
         }

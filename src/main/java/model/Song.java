@@ -99,7 +99,7 @@ public class Song {
      *
      * @return True iff changes to the song were saved successfully.
      */
-    public boolean setTag(String newTitle, String newArtist, String newAlbum) {
+    public void setTag(String newTitle, String newArtist, String newAlbum) {
         // Remove leading and trailing whitespace
         newTitle = newTitle.trim();
         newArtist = newArtist.trim();
@@ -140,10 +140,9 @@ public class Song {
 
         // Save changes to the mp3 file
         try {
-            return save();
+            save();
         } catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            return false;
         }
     }
 
@@ -154,9 +153,13 @@ public class Song {
      * @return The file name
      */
     public String getFilename() {
-        String filename = new File(mp3file.getFilename()).getName();
-        filename = filename.substring(0, filename.indexOf(".mp3"));
-        return filename;
+        try {
+            String filename = new File(mp3file.getFilename()).getName();
+            filename = filename.substring(0, filename.indexOf(".mp3"));
+            return filename;
+        } catch (NullPointerException e) {
+            return "null";
+        }
     }
 
     /**
@@ -193,22 +196,31 @@ public class Song {
 
     // ---------------- Saving ------------------ //
 
+    public boolean canSave() {
+        try {
+            save();
+            return true;
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Unable to save song: " + toString(), e);
+            return false;
+        } finally {
+            new File(mp3file.getFilename() + ".tmp").deleteOnExit();
+        }
+    }
+    
     /**
      * Saves changes to the MP3 file.
-     *
-     * @return True iff changes to the song were saved successfully.
      *
      * @throws IOException
      * @throws NotSupportedException
      * @throws InvalidDataException
      * @throws UnsupportedTagException
      */
-    private boolean save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
+    private void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
         String tempname = mp3file.getFilename() + ".tmp";
         mp3file.save(mp3file.getFilename() + ".tmp");
         Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), REPLACE_EXISTING);
         mp3file = new Mp3File(new File(mp3file.getFilename()));
-        return true;
     }
 
     // ---------------- Overriding Methods ------------------ //

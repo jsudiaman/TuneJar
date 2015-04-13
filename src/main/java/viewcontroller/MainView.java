@@ -6,10 +6,7 @@ import static model.FileManipulator.*;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 
 import javafx.application.Application;
@@ -17,6 +14,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -92,12 +90,16 @@ public class MainView extends Application {
         try {
             directories = readDirectories();
         } catch (FileNotFoundException e) {
-            directories = initialSetup(primaryStage);
+            directories = new HashSet<>();
+            File directory = initialDirectory(primaryStage);
+            if (directory != null) {
+                directories.add(directory);
+            }
         }
 
         controller = fxmlLoader.getController();
-        controller.status.setText("Loading your songs, please be patient...");
 
+        controller.status.setText("Loading your songs, please be patient...");
         Platform.runLater(() -> {
             // Create and display a playlist containing all songs from each directory.
             refresh();
@@ -106,13 +108,13 @@ public class MainView extends Application {
             // Save the directories.
             try {
                 writeFiles(directories);
+                controller.status.setText("");
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Failed to save directories.", e);
                 controller.status.setText("Failed to save directories.");
             }
 
             // Finally, load in all playlists from the working directory.
-            controller.status.setText("");
             Collection<Playlist> playlistSet = null;
             try {
                 playlistSet = getPlaylists();
@@ -132,7 +134,6 @@ public class MainView extends Application {
      * directories.
      */
     public static void refresh() {
-        // Initialize the master playlist.
         masterPlaylist = new Playlist("All Music");
 
         // Then add all songs found in the directories to the master playlist.
@@ -147,7 +148,7 @@ public class MainView extends Application {
                 masterPlaylist.addAll(getSongs(directory));
             }
         }
-        LOGGER.log(Level.INFO, "Refresh successful");
+        LOGGER.log(Level.INFO, "Refresh successful");        
     }
 
     // ------------------- Media Player Controls ------------------- //
@@ -230,39 +231,65 @@ public class MainView extends Application {
     // ------------------- File Manipulation ------------------- //
 
     /**
-     * Adds a user-selected directory to the directory collection.
-     * 
-     * @throws IOException
-     *             The directory collection was not properly saved
+     * Adds a user-selected directory to the directory collection. 
      */
-    public static void addDirectory() throws IOException {
+    public static void addDirectory() {
         File directory = chooseDirectory(primaryStage);
         if (directory == null) return;
-        directories.add(directory);
-        writeFiles(directories);
-        refresh();
+        controller.status.setText("Loading your songs, please be patient...");
+        Platform.runLater(() -> {
+            directories.add(directory);
+            try {
+                writeFiles(directories);
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Failed");
+                alert.setHeaderText("Failed to add the directory.");
+                alert.setContentText("Please see log.txt for details.");
+                alert.showAndWait();
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+            refresh();
+            controller.status.setText("");
+        });
     }
-    
-    public static void removeDirectory()  {
-        // TODO Implement this method
-    	List<File> choices = new ArrayList<>();
-    	choices.addAll(directories);
-    	ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
-    	dialog.setTitle("Remove Directory");
-    	dialog.setHeaderText("Remove a directory from the mp3 player");
-    	dialog.setContentText("Choose your directory:");
-    	Optional<File> result = dialog.showAndWait();
-    	if (result.isPresent()){
-    	   directories.remove(result.get());
-    	   controller.status.setText("Directory Removed");
-    	   LOGGER.log(Level.INFO, "Directory removed remaining directories:"+directories);
-    	   try {
-			writeFiles(directories);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			controller.status.setText("Could not delete directory");
-		}
-    	}
+
+    /**
+     * Allows the user to choose and remove a directory from the
+     * directory collection.
+     * 
+     * @return True iff a directory was successfully removed.
+     */
+    public static boolean removeDirectory() {
+        if(directories.isEmpty()) {
+            controller.status.setText("No folders found.");
+            return false;
+        }
+
+        // Create and display dialog box.
+        List<File> choices = new ArrayList<>();
+        choices.addAll(directories);
+        ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
+        dialog.setTitle("Remove Folder");
+        dialog.setHeaderText("Which folder would you like to remove?");
+        dialog.setContentText("Choose a folder:");
+        Optional<File> result = dialog.showAndWait();
+
+        // Remove the chosen folder unless the user pressed "cancel".
+        if (result.isPresent()) {
+            directories.remove(result.get());
+            try {
+                writeFiles(directories);
+                controller.status.setText("Directory removed.");
+                LOGGER.log(Level.INFO, "Directory removed. Remaining directories:" + directories.toString());
+                return true;
+            } catch (IOException e) {
+                controller.status.setText("Failed to remove directory.");
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                return false;
+            }
+        } 
+        return false;
     }
 
 }

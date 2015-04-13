@@ -33,6 +33,11 @@ final class SongMenu {
             controller.status.setText("No song selected.");
             return;
         }
+        
+        if (!songToEdit.canSave()) {
+            controller.status.setText("The file is locked. See log.txt for details.");
+            return;
+        }
 
         // Create the editor dialog.
         Dialog<List<String>> editor = new Dialog<>();
@@ -84,12 +89,9 @@ final class SongMenu {
 
         Optional<List<String>> newParams = editor.showAndWait();
         if (newParams.isPresent()) {
-            if(songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2))) {
-                controller.status.setText("Edit successful.");
-            } else {
-                controller.status.setText("Edit failed. See log.txt for details.");
-            }
+            songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
             controller.refreshTables();
+            controller.status.setText("Edit successful.");
         }
     }
      
@@ -128,6 +130,43 @@ final class SongMenu {
              LOGGER.log(Level.SEVERE, e.getMessage(), e);
          }
      }
+     
+     void search() {
+         // TODO Allow the user to decide on a keyword
+         controller.status.setText("Found " + search("you") + " matching songs.");
+     }
+     
+     /**
+      * Arranges the playlist such that songs matching the keyword
+      * have priority.
+      * 
+      * @param keyword
+      * @return The amount of songs that match
+      */
+     int search(String keyword) {
+         keyword = keyword.toLowerCase();
+         
+         // Generate a sublist containing the matching songs
+         List<Song> sublist = new ArrayList<>();
+         for (Song s : controller.songList) {
+             if (s.getTitle().toLowerCase().contains(keyword) || s.getAlbum().toLowerCase().contains(keyword)
+                     || s.getAlbum().toLowerCase().contains(keyword)) {
+                 sublist.add(s);
+             }
+         }
+         
+         // Customized sorting
+         Collections.sort(controller.songList, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                if(sublist.contains(o1) && sublist.contains(o2)) return 0;
+                else if(sublist.contains(o1) && !sublist.contains(o2)) return -1;
+                else return 1;
+            }            
+         });
+         
+         controller.songTable.getSelectionModel().select(sublist.get(sublist.size() - 1));
+         return sublist.size();
+     }
 
-    
 }

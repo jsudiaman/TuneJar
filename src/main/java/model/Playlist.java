@@ -3,7 +3,7 @@ package model;
 import static model.DebugUtils.LOGGER;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.logging.Level;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -13,9 +13,9 @@ import com.mpatric.mp3agic.*;
 /**
  * An ordered collection of Song objects.
  */
-@SuppressWarnings("serial")
 public class Playlist extends ArrayList<Song> {
 
+    private static final long serialVersionUID = -8031855334970457796L;
     private final SimpleStringProperty name;
 
     // --------------- Constructors --------------- //

@@ -43,11 +43,11 @@ public class SongTest {
 
     @Test
     public void testSetTag() throws Exception {
-        assertTrue(song.setTag("Test_Title", "Test_Artist", "Test_Album"));
+        song.setTag("Test_Title", "Test_Artist", "Test_Album");
         assertEquals("Test_Title", song.getTitle());
         assertEquals("Test_Artist", song.getArtist());
         assertEquals("Test_Album", song.getAlbum());
-        assertTrue(song.setTag("Queen of the Night", "Machinimasound", "Machinimasound 2009"));
+        song.setTag("Queen of the Night", "Machinimasound", "Machinimasound 2009");
     }
 
     @Test

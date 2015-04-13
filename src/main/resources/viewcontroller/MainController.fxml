@@ -62,6 +62,7 @@
                               </Menu>
                               <MenuItem mnemonicParsing="false" onAction="#editSong" text="Edit" />
                         <MenuItem fx:id="menuRemoveSong" mnemonicParsing="false" onAction="#removeSong" text="Remove" />
+                        <MenuItem mnemonicParsing="false" onAction="#search" text="Search" />
                           </items>
                       </Menu>
                   <Menu mnemonicParsing="false" text="Playlist">

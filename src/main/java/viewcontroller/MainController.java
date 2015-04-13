@@ -197,6 +197,10 @@ public class MainController implements Initializable {
     public void removeSong() {
         songMenu.removeSong();
     }
+    
+    public void search() {
+        songMenu.search();
+    }
 
     // --------------- Playlist --------------- //
 
@@ -214,7 +218,7 @@ public class MainController implements Initializable {
 
     public void deletePlaylist() {
         playlistMenu.deletePlaylist();
-    }
+    }    
 
     // --------------- Utilities --------------- //
 
