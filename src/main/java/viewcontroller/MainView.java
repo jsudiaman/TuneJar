@@ -6,7 +6,10 @@ import static model.FileManipulator.*;
 
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 import javafx.application.Application;
@@ -14,6 +17,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -33,6 +37,7 @@ public class MainView extends Application {
     private static Collection<File> directories;
 
     private static Stage primaryStage;
+    private static MainController controller;
 
     /**
      * Calls Application::launch().
@@ -90,7 +95,7 @@ public class MainView extends Application {
             directories = initialSetup(primaryStage);
         }
 
-        final MainController controller = fxmlLoader.getController();
+        controller = fxmlLoader.getController();
         controller.status.setText("Loading your songs, please be patient...");
 
         Platform.runLater(() -> {
@@ -238,8 +243,26 @@ public class MainView extends Application {
         refresh();
     }
     
-    public static void removeDirectory() {
+    public static void removeDirectory()  {
         // TODO Implement this method
+    	List<File> choices = new ArrayList<>();
+    	choices.addAll(directories);
+    	ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
+    	dialog.setTitle("Remove Directory");
+    	dialog.setHeaderText("Remove a directory from the mp3 player");
+    	dialog.setContentText("Choose your directory:");
+    	Optional<File> result = dialog.showAndWait();
+    	if (result.isPresent()){
+    	   directories.remove(result.get());
+    	   controller.status.setText("Directory Removed");
+    	   LOGGER.log(Level.INFO, "Directory removed remaining directories:"+directories);
+    	   try {
+			writeFiles(directories);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			controller.status.setText("Could not delete directory");
+		}
+    	}
     }
 
 }
