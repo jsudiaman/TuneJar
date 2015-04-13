@@ -15,7 +15,7 @@ import model.Song;
 /**
  * Helper class for handling the Song menu.
  */
-public class SongMenu {
+final class SongMenu {
 
     private MainController controller;
     

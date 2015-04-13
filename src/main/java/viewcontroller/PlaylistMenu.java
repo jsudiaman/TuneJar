@@ -18,8 +18,7 @@ import com.sun.istack.internal.NotNull;
 /**
  * Helper class for handling the Playlist menu.
  */
-
-public class PlaylistMenu {
+final class PlaylistMenu {
 
     private MainController controller;
 
