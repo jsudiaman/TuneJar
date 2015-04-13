@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
-import com.sun.org.apache.xerces.internal.util.Status;
-
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
