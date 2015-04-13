@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import com.mpatric.mp3agic.*;
 import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 
 /**
  * Helper class for file manipulation within the GUI.
@@ -116,14 +115,16 @@ public final class FileManipulator {
      *
      * @param directory
      *            A File object that is a directory.
-     * @return A collection containing all the Song objects, or null if the File
-     *         object is not a directory.
+     * @return A collection containing all the Song objects.
      */
-    @Nullable
     public static Collection<Song> getSongs(@NotNull File directory) {
-        // Initialize the set or return null if necessary.
-        if (directory == null || !directory.isDirectory()) return null;
+        // Initialize the set or return an empty set if necessary.
         Set<Song> set = new HashSet<>();
+        if (directory == null || !directory.isDirectory()) {
+            LOGGER.log(Level.SEVERE, "Failed to access directory: " + 
+                    (directory == null ? "null" : directory.toString()));
+            return set;
+        }
 
         // Iterate through each file in the directory.
         for (File f : directory.listFiles()) {
@@ -154,16 +155,18 @@ public final class FileManipulator {
      *
      * @throws IOException
      *             Unable to access the working directory
-     * @throws NullPointerException
-     *             NullPointerException thrown by dereference of the working
-     *             directory
      */
-    public static Collection<Playlist> getPlaylists() throws IOException, NullPointerException {
+    public static Collection<Playlist> getPlaylists() throws IOException {
+        // Initialization
         Set<Playlist> set = new HashSet<>();
+        File[] fileList = new File(".").listFiles();
+        if(fileList == null) {
+            LOGGER.log(Level.SEVERE, "Unable to access the working directory.");
+            return set;
+        }
 
         // Iterate through each file in the working directory.
-        for (File f : new File(".").listFiles()) {
-            // Attempt to construct a playlist object. If successful, add it to the set.
+        for (File f : fileList) {
             if (f.toString().endsWith(".m3u")) {
                 Playlist playlist = new Playlist(f);
                 set.add(playlist);

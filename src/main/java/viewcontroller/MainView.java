@@ -131,7 +131,7 @@ public class MainView extends Application {
         masterPlaylist = new Playlist("All Music");
 
         // Then add all songs found in the directories to the master playlist.
-        LOGGER.log(Level.INFO, "directories: " + (directories != null ? directories.toString() : null));
+        LOGGER.log(Level.INFO, "Found directories: " + (directories != null ? directories.toString() : "null"));
         for (File directory : directories) {
             LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
             Collection<Song> songs = getSongs(directory);
@@ -142,7 +142,7 @@ public class MainView extends Application {
                 masterPlaylist.addAll(getSongs(directory));
             }
         }
-        LOGGER.log(Level.INFO, "Refresh successful!");
+        LOGGER.log(Level.INFO, "Refresh successful");
     }
 
     // ------------------- Media Player Controls ------------------- //
