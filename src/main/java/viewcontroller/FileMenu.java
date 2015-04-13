@@ -81,7 +81,6 @@ final class FileMenu {
     
     void addDirectory() {
         try {
-            controller.status.setText("Loading your songs, please be patient...");
             MainView.addDirectory();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -92,8 +91,14 @@ final class FileMenu {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             controller.playlistList.set(0, MainView.getMasterPlaylist());
-            controller.status.setText("");
+            controller.refreshTables();
+            controller.focus(controller.playlistTable, 0);
         }
+    }
+    
+    void removeDirectory() {
+        // TODO Implement this method
+        System.out.println("I'm doing the thing.");
     }
 
 }

@@ -154,6 +154,10 @@ public class MainController implements Initializable {
     public void addDirectory() {
         fileMenu.addDirectory();
     }
+    
+    public void removeDirectory() {
+        fileMenu.removeDirectory();
+    }
 
     // --------------- Playback --------------- //
 

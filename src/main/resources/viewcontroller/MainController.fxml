@@ -34,6 +34,11 @@
                             <MenuItem mnemonicParsing="false" onAction="#addDirectory" text="Folder" />
                           </items>
                         </Menu>
+                        <Menu mnemonicParsing="false" text="Remove...">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#removeDirectory" text="Folder" />
+                          </items>
+                        </Menu>
                               <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
                           </items>
                       </Menu>

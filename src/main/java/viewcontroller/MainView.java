@@ -237,5 +237,9 @@ public class MainView extends Application {
         writeFiles(directories);
         refresh();
     }
+    
+    public static void removeDirectory() {
+        // TODO Implement this method
+    }
 
 }
