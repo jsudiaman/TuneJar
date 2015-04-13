@@ -1,42 +1,40 @@
 package model;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
+import org.junit.*;
+
+import com.mpatric.mp3agic.Mp3File;
 
 public class PlaylistTest {
 
-    Playlist testPlaylist;
+    Playlist p;
 
     @Before
     public void setUp() throws Exception {
-        testPlaylist = new Playlist();
-        testPlaylist.addAll(FileManipulator.songList(new File("src/test/resources")));
+        p = new Playlist();
+        for (File f : new File("src/test/resources").listFiles()) {
+            if (f.toString().endsWith(".mp3")) {
+                p.add(new Song(new Mp3File(f)));
+            }
+        }
     }
 
     @After
     public void tearDown() throws Exception {
-        assertTrue(new File("Untitled.m3u").delete());
+        new File("Untitled.m3u").deleteOnExit();
     }
 
     @Test
-    public void testSaveAsM3U() throws Exception {
-        testPlaylist.saveAsM3U();
-        BufferedReader reader = new BufferedReader(new FileReader("Untitled.m3u"));
-        int i = 0;
-        for (String nextLine; (nextLine = reader.readLine()) != null; ) {
-            assertTrue(nextLine.endsWith(".mp3"));
-            i++;
-        }
-        assertEquals(3, i);
-        reader.close();
+    public void testGetName() throws Exception {
+        assertEquals("Untitled", p.getName());
     }
 
+    @Test
+    public void testSave() throws Exception {
+        p.save();
+        assertEquals(3, p.size());
+    }
 }

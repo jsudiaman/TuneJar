@@ -1,6 +1,14 @@
 package viewcontroller;
 
-import com.sun.istack.internal.Nullable;
+import static model.DebugUtils.LOGGER;
+import static model.DebugUtils.fatalException;
+import static model.FileManipulator.*;
+
+import java.io.*;
+import java.net.URL;
+import java.util.Collection;
+import java.util.logging.Level;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,16 +20,7 @@ import javafx.stage.Stage;
 import model.Playlist;
 import model.Song;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Set;
-import java.util.logging.Level;
-
-import static model.DebugUtils.LOGGER;
-import static model.DebugUtils.fatalException;
-import static model.FileManipulator.*;
+import com.sun.istack.internal.Nullable;
 
 public class MainView extends Application {
 
@@ -31,12 +30,15 @@ public class MainView extends Application {
 
     // Data Structures
     private static Playlist masterPlaylist;
-    private static Set<File> directorySet;
+    private static Collection<File> directories;
+
+    private static Stage primaryStage;
 
     /**
      * Calls Application::launch().
      *
-     * @param args The command line arguments
+     * @param args
+     *            The command line arguments
      */
     public static void main(String[] args) {
         launch(args);
@@ -45,7 +47,8 @@ public class MainView extends Application {
     /**
      * Starts the program.
      *
-     * @param primaryStage The stage that will hold the interface
+     * @param primaryStage
+     *            The stage that will hold the interface
      */
     @Override
     public void start(Stage primaryStage) {
@@ -61,12 +64,14 @@ public class MainView extends Application {
     /**
      * Handles program initialization.
      *
-     * @param primaryStage The stage that will hold the interface
-     * @throws IOException          Failed to load the FXML, or could not load/save a file.
-     * @throws NullPointerException An unusable directory is in the directory set
+     * @param primaryStage
+     *            The stage that will hold the interface
+     * @throws IOException
+     *             Failed to load the FXML, or could not load/save a file.
      */
-    private void init(Stage primaryStage) throws IOException, NullPointerException {
+    private void init(Stage primaryStage) throws IOException {
         // Load the FXML file and display the interface.
+        MainView.primaryStage = primaryStage;
         URL location = getClass().getResource("MainController.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(location.openStream());
@@ -80,49 +85,64 @@ public class MainView extends Application {
 
         // Load the directories. If none are present, prompt the user for one.
         try {
-            directorySet = readDirectories(new File("directories.dat"));
+            directories = readDirectories();
         } catch (FileNotFoundException e) {
-            directorySet = initialSetup(primaryStage);
+            directories = initialSetup(primaryStage);
         }
 
-        MainController controller = fxmlLoader.getController();
-        controller.setStatus("Loading your songs, please be patient...");
+        final MainController controller = fxmlLoader.getController();
+        controller.status.setText("Loading your songs, please be patient...");
 
-        // Multithreading this task since it takes a while
-        Thread initPlaylist = new Thread(() -> {
+        Platform.runLater(() -> {
             // Create and display a playlist containing all songs from each directory.
             refresh();
             controller.loadPlaylist(masterPlaylist);
 
-            // Finally, save the directory set.
+            // Save the directories.
             try {
-                writeFileSet("directories.dat", directorySet);
+                writeFiles(directories);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to save the directory set.", e);
+                LOGGER.log(Level.SEVERE, "Failed to save directories.", e);
+                controller.status.setText("Failed to save directories.");
             }
 
-            Platform.runLater(() -> controller.setStatus("Loaded " + masterPlaylist.size() + " songs successfully."));
+            // Finally, load in all playlists from the working directory.
+            controller.status.setText("");
+            Collection<Playlist> playlistSet = null;
+            try {
+                playlistSet = getPlaylists();
+            } catch (IOException | NullPointerException e) {
+                LOGGER.log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
+                fatalException(e);
+            }
+            if (playlistSet != null) {
+                playlistSet.forEach(controller::loadPlaylist);
+            }
+            controller.focus(controller.playlistTable, 0);
         });
-        initPlaylist.start();
     }
 
     /**
-     * The master playlist takes in all MP3 files that can be found in available directories.
-     *
-     * @throws NullPointerException An unusable directory is in the directory set
+     * The master playlist takes in all MP3 files that can be found in available
+     * directories.
      */
-    public static void refresh() throws NullPointerException {
+    public static void refresh() {
+        // Initialize the master playlist.
         masterPlaylist = new Playlist("All Music");
-        LOGGER.log(Level.INFO, "directorySet: " + (directorySet != null ? directorySet.toString() : null));
-        try {
-            for (File directory : directorySet) {
-                LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
-                masterPlaylist.addAll(songList(directory));
+
+        // Then add all songs found in the directories to the master playlist.
+        LOGGER.log(Level.INFO, "Found directories: " + (directories != null ? directories.toString() : "null"));
+        for (File directory : directories) {
+            LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
+            Collection<Song> songs = getSongs(directory);
+
+            if (songs == null) {
+                LOGGER.log(Level.SEVERE, "Failed to load songs from " + directory.toString() + ", skipping...");
+            } else {
+                masterPlaylist.addAll(getSongs(directory));
             }
-            LOGGER.log(Level.INFO, "Refresh successful!");
-        } catch (NullPointerException e) {
-            fatalException(new NullPointerException("An unusable directory is in the directory set."));
         }
+        LOGGER.log(Level.INFO, "Refresh successful");
     }
 
     // ------------------- Media Player Controls ------------------- //
@@ -130,9 +150,10 @@ public class MainView extends Application {
     /**
      * Loads a song into the media player, then plays it.
      *
-     * @param song The song to play
+     * @param song
+     *            The song to play
      */
-    public static void playSong(Song song) {
+    public static void playSong(Song song, double volume) {
         if (nowPlaying != null) {
             nowPlaying.stop();
         }
@@ -140,6 +161,7 @@ public class MainView extends Application {
         LOGGER.log(Level.INFO, "Playing: " + nowPlaying.toString());
         String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
         player = new MediaPlayer(new Media(uriString));
+        player.setVolume(volume);
         player.play();
     }
 
@@ -177,10 +199,11 @@ public class MainView extends Application {
     // ------------------- Getters and Setters ------------------- //
 
     /**
-     * Sets up the media player to perform a specified action at the end
-     * of every song.
+     * Sets up the media player to perform a specified action at the end of
+     * every song.
      *
-     * @param action An action wrapped in a Runnable
+     * @param action
+     *            An action wrapped in a Runnable
      */
     public static void setEndOfSongAction(Runnable action) {
         player.setOnEndOfMedia(action);
@@ -190,4 +213,33 @@ public class MainView extends Application {
     public static Song getNowPlaying() {
         return nowPlaying;
     }
+
+    public static void setVolume(double value) {
+        if (player != null) player.setVolume(value);
+    }
+
+    public static Playlist getMasterPlaylist() {
+        return masterPlaylist;
+    }
+
+    // ------------------- File Manipulation ------------------- //
+
+    /**
+     * Adds a user-selected directory to the directory collection.
+     * 
+     * @throws IOException
+     *             The directory collection was not properly saved
+     */
+    public static void addDirectory() throws IOException {
+        File directory = chooseDirectory(primaryStage);
+        if (directory == null) return;
+        directories.add(directory);
+        writeFiles(directories);
+        refresh();
+    }
+    
+    public static void removeDirectory() {
+        // TODO Implement this method
+    }
+
 }

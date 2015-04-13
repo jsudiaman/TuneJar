@@ -1,23 +1,23 @@
 package model;
 
+import java.io.*;
+import java.util.logging.*;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import viewcontroller.MainView;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.logging.*;
-
 /**
- * Class for logging information to the console and log.txt.
- * Useful for debugging and error handling.
+ * Class for logging information to the console and log.txt. Useful for
+ * debugging and error handling.
  */
 public final class DebugUtils {
 
     public static final Logger LOGGER = initLogger(); // Global logger
+
+    private static final String LOG_FILE = "log.txt";
 
     private DebugUtils() {
         throw new AssertionError();
@@ -26,21 +26,22 @@ public final class DebugUtils {
     private static Logger initLogger() {
         Logger log = Logger.getLogger(MainView.class.getName());
         try {
-            Handler handler = new FileHandler("log.txt");
+            Handler handler = new FileHandler(LOG_FILE);
             handler.setFormatter(new SimpleFormatter());
             log.addHandler(handler);
-            log.log(Level.INFO, "log.txt initialized successfully.");
+            log.log(Level.INFO, LOG_FILE + " initialized successfully.");
         } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to generate log.txt. Logs will be written only to the console.", e);
+            log.log(Level.WARNING, "Failed to generate " + LOG_FILE + ". Logs will be written only to the console.", e);
         }
         return log;
     }
 
     /**
-     * Displays a dialog box explaining what happened.
-     * Once the dialog box is closed, the program exits with exit code -1.
+     * Displays a dialog box explaining what happened. Once the dialog box is
+     * closed, the program exits with exit code -1.
      *
-     * @param e An exception that should end the program
+     * @param e
+     *            An exception that should end the program
      */
     public static void fatalException(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
