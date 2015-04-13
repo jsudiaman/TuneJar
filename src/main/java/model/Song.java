@@ -4,6 +4,7 @@ import static model.DebugUtils.LOGGER;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.logging.Level;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -11,6 +12,8 @@ import viewcontroller.MainView;
 
 import com.mpatric.mp3agic.*;
 import com.sun.istack.internal.NotNull;
+
+import static java.nio.file.StandardCopyOption.*;
 
 /**
  * Helpful documentation for the MP3agic library:
@@ -190,7 +193,6 @@ public class Song {
 
     // ---------------- Saving ------------------ //
 
-    // TODO This method fails quite often
     /**
      * Saves changes to the MP3 file.
      *
@@ -202,22 +204,11 @@ public class Song {
      * @throws UnsupportedTagException
      */
     private boolean save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
-        boolean successful = true;
-        String fileName = mp3file.getFilename();
-        mp3file.save(fileName + ".tmp"); // Save the new file by appending ".tmp"
-
-        if (!new File(fileName).delete()) { // Delete the old file
-            LOGGER.log(Level.SEVERE, "Failed to delete file: " + fileName);
-            successful = false;
-        }
-
-        if (!new File(fileName + ".tmp").renameTo(new File(fileName))) { // Remove ".tmp" from the new file
-            LOGGER.log(Level.SEVERE, "Failed to rename file: " + fileName + ".tmp");
-            successful = false;
-        }
-
-        mp3file = new Mp3File(new File(fileName)); // Update the mp3file reference
-        return successful;
+        String tempname = mp3file.getFilename() + ".tmp";
+        mp3file.save(mp3file.getFilename() + ".tmp");
+        Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), REPLACE_EXISTING);
+        mp3file = new Mp3File(new File(mp3file.getFilename()));
+        return true;
     }
 
     // ---------------- Overriding Methods ------------------ //
