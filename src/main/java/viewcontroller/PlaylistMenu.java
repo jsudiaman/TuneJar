@@ -4,8 +4,7 @@ import static model.DebugUtils.LOGGER;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 
 import javafx.collections.FXCollections;
@@ -46,8 +45,14 @@ final class PlaylistMenu {
         MenuItem m = new MenuItem(p.getName());
         controller.addToPlaylist.getItems().add(m);
         m.setOnAction(event -> {
-            Song songToAdd = controller.songTable.getSelectionModel().getSelectedItem();
-            p.add(songToAdd);
+            List<Song> songsToAdd = new ArrayList<Song>();
+            songsToAdd.addAll(controller.songTable.getSelectionModel().getSelectedItems());
+            
+            if(songsToAdd.size() == 0) {
+                controller.status.setText("No song selected.");
+                return;
+            }
+            p.addAll(songsToAdd);
             try {
                 p.save();
             } catch (IOException e) {
@@ -136,6 +141,7 @@ final class PlaylistMenu {
      */
     void deletePlaylist() {
         Playlist pl = controller.playlistTable.getSelectionModel().getSelectedItem();
+        String name = pl.getName();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete");
@@ -146,6 +152,17 @@ final class PlaylistMenu {
         if (result.get() != ButtonType.OK) return;
         if (new File(pl.getName() + ".m3u").delete()) {
             controller.playlistList.remove(pl);
+            
+            // Remove the playlist from the "Song -> Add To..." menu.
+            List<MenuItem> list = controller.addToPlaylist.getItems();
+            for(int i = 0; i < list.size(); i++) {
+                if(list.get(i).getText() == null) continue;
+                if(list.get(i).getText().equals(name)) {
+                    controller.addToPlaylist.getItems().remove(i);
+                    break;
+                }
+            }
+            
             controller.refreshTables();
         } else {
             controller.status.setText("Deletion failed.");

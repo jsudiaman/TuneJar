@@ -88,6 +88,7 @@ public class MainController implements Initializable {
         artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
         album.setCellValueFactory(new PropertyValueFactory<>("Album"));
         songTable.setItems(songList);
+        songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         // Initialize the playlist table.
         playlistList = FXCollections.observableArrayList();

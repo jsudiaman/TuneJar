@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
-import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -19,14 +19,9 @@ import model.Song;
 final class SongMenu {
 
     private MainController controller;
-    private ChangeListener<Song> listener;
 
     SongMenu(MainController controller) {
         this.controller = controller;
-        listener = (observable, oldValue, newValue) -> {
-            controller.songTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        };
-        controller.songTable.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 
     /**
@@ -34,12 +29,20 @@ final class SongMenu {
      * tags.
      */
     void editSong() {
-        Song songToEdit = controller.songTable.getSelectionModel().getSelectedItem();
-        if (songToEdit == null) {
+        ObservableList<Song> songsToEdit = controller.songTable.getSelectionModel().getSelectedItems();
+        
+        if (songsToEdit.size() == 0) {
             controller.status.setText("No song selected.");
             return;
         }
-
+        
+        if(songsToEdit.size() > 1) {
+            controller.status.setText("You can only edit one song at a time.");
+            return;
+        }
+        
+        Song songToEdit = songsToEdit.get(0);
+        
         if (!songToEdit.canSave()) {
             controller.status.setText("The file is locked. See log.txt for details.");
             return;
@@ -102,33 +105,44 @@ final class SongMenu {
     }
 
     /**
-     * Creates a new playlist and adds the selected song to it.
+     * Creates a new playlist and adds the selected songs to it.
      */
     void toNewPlaylist() {
-        Song songToAdd = controller.songTable.getSelectionModel().getSelectedItem();
-        if (songToAdd == null) {
+        List<Song> songs = new ArrayList<Song>();
+        songs.addAll(controller.songTable.getSelectionModel().getSelectedItems());
+        
+        if (songs.size() == 0) {
             controller.status.setText("No song was selected.");
             return;
         }
-        if (controller.fileMenu.createPlaylist()) {
-            controller.playlistList.get(controller.playlistList.size() - 1).add(songToAdd);
+
+        Playlist pl;
+        if ((pl = controller.fileMenu.createPlaylist()) != null) {
+            pl.addAll(songs);
+            try {
+                pl.save();
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
 
     /**
-     * Removes the selected song from the current playlist.
+     * Removes the selected songs from the current playlist.
      */
     void removeSong() {
-        // Find the index of the song to remove.
-        int songIndex = controller.songTable.getSelectionModel().getSelectedIndex();
-        if (songIndex < 0 || songIndex > controller.songList.size()) {
+        // Find the songs to remove.
+        List<Song> songs = new ArrayList<>();
+        songs.addAll(controller.songTable.getSelectionModel().getSelectedItems());
+        
+        if (songs.size() == 0) {
             controller.status.setText("No song selected.");
             return;
         }
 
-        // Remove it, then save changes to the playlist.
+        // Remove them, then save changes to the playlist.
         Playlist pl = controller.playlistTable.getSelectionModel().getSelectedItem();
-        pl.remove(songIndex);
+        pl.removeAll(songs);
         controller.refreshTables();
         try {
             pl.save();
@@ -150,10 +164,8 @@ final class SongMenu {
             int count = search(keyword.get().trim());
             if(count == 0) {
                 controller.status.setText("No matches found.");
-                controller.songTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
             } else {
                 controller.status.setText("Found " + count + " matching songs.");
-                controller.songTable.getSelectionModel().selectedItemProperty().addListener(listener);
             }
         }
     }
@@ -199,9 +211,7 @@ final class SongMenu {
         
         // Select all relevant songs. 
         controller.songTable.scrollTo(0);
-        controller.songTable.getSelectionModel().selectedItemProperty().removeListener(listener);
         controller.songTable.getSelectionModel().clearSelection();
-        controller.songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         for (int i = 0; i < count; i++) {
             controller.songTable.getSelectionModel().select(i);
         }

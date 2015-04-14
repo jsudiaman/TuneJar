@@ -71,6 +71,15 @@ public class Song {
 
         paused = false;
     }
+    
+    /**
+     * Copy constructor.
+     * 
+     * @param s Song object to copy
+     */
+    public Song(Song s) {
+        this(s.mp3file);
+    }
 
     // ------------------- Getters and Setters ------------------- //
 
@@ -233,33 +242,6 @@ public class Song {
     @Override
     public String toString() {
         return title.get() + " - " + artist.get();
-    }
-
-    /**
-     * A song object is equal to another object iff the following is true:
-     * <ul>
-     * <li>The other object is also a Song.</li>
-     * <li>The two songs have the same title, artist, and album.</li>
-     * </ul>
-     *
-     * @param otherObject
-     *            Another object
-     * @return True iff this object is equal to otherObject
-     */
-    @Override
-    public boolean equals(Object otherObject) {
-        if (otherObject instanceof Song) {
-            Song otherSong = (Song) otherObject;
-            return this.getTitle().equals(otherSong.getTitle()) && this.getArtist().equals(otherSong.getArtist())
-                    && this.getAlbum().equals(otherSong.getAlbum());
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return getTitle().hashCode() + getArtist().hashCode() + getAlbum().hashCode();
     }
 
 }

@@ -26,7 +26,7 @@ final class PlaybackMenu {
         }
         controller.shortcutPause.setText("Pause");
         controller.menuPause.setText("Pause");
-        play(controller.songTable.getFocusModel().getFocusedIndex());
+        play(index);
     }
     
     /**
@@ -38,7 +38,7 @@ final class PlaybackMenu {
     void play(int row) {
         try {
             // Have the playlist point to the appropriate song, then play it
-            controller.songTable.getSelectionModel().select(row);
+            controller.songTable.getSelectionModel().clearAndSelect(row);
             controller.songList.get(row).play(controller.volumeSlider.getValue());
             MainView.setEndOfSongAction(controller::playNext);
 
@@ -93,6 +93,7 @@ final class PlaybackMenu {
         }
 
         controller.status.setText("");
+        controller.shortcutPause.setText("Pause");
         controller.menuPause.setText("Pause");
         MainView.getNowPlaying().stop();
     }

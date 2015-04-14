@@ -23,8 +23,10 @@ final class FileMenu {
 
     /**
      * Creates a new playlist.
+     * 
+     * @return The created playlist.
      */
-    boolean createPlaylist() {
+    Playlist createPlaylist() {
         // Prompt the user for a playlist name.
         TextInputDialog dialog = new TextInputDialog("Untitled Playlist");
         dialog.setTitle("New Playlist");
@@ -43,7 +45,7 @@ final class FileMenu {
                     conflictAlert.setHeaderText("A playlist named " + pName + " already exists.");
                     conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
                     conflictAlert.showAndWait();
-                    return false;
+                    return null;
                 }
             }
 
@@ -51,7 +53,7 @@ final class FileMenu {
             try {
                 p.save();
                 controller.playlistMenu.loadPlaylist(p);
-                return true;
+                return p;
             } catch (IOException e) {
                 // Playlist creation fails if it cannot be successfully saved.
                 Alert failAlert = new Alert(Alert.AlertType.ERROR);
@@ -63,7 +65,7 @@ final class FileMenu {
                 LOGGER.log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
             }
         }
-        return false;
+        return null;
     }
     
     /**

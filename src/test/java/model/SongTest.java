@@ -11,14 +11,10 @@ import com.mpatric.mp3agic.Mp3File;
 public class SongTest {
 
     Song song;
-    Song equalSong;
-    Song notEqualSong;
-
+    
     @Before
     public void setUp() throws Exception {
         song = new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3")));
-        equalSong = new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3")));
-        notEqualSong = new Song(new Mp3File(new File("src/test/resources/Sunlight.mp3")));
     }
 
     @After
@@ -65,15 +61,4 @@ public class SongTest {
         assertEquals("Queen of the Night - Machinimasound", song.toString());
     }
 
-    @Test
-    public void testEquals() throws Exception {
-        assertEquals(equalSong, song);
-        assertNotSame(notEqualSong, song);
-    }
-
-    @Test
-    public void testHashCode() throws Exception {
-        assertEquals(equalSong.hashCode(), song.hashCode());
-        assertNotSame(notEqualSong.hashCode(), song.hashCode());
-    }
 }
