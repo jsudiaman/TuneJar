@@ -16,7 +16,6 @@ import com.mpatric.mp3agic.*;
  */
 public class Playlist extends ArrayList<Song> {
 
-    private static final long serialVersionUID = -8031855334970457796L;
     private final SimpleStringProperty name;
 
     // --------------- Constructors --------------- //
