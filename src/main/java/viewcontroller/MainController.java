@@ -101,13 +101,18 @@ public class MainController implements Initializable {
         name.setCellValueFactory(new PropertyValueFactory<>("Name"));
         playlistTable.setItems(playlistList);
 
-        // When a song is double clicked, play it.
+        // Listen for click actions taken on the song table.        
         songTable.setRowFactory(param -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
+                // Update the status bar.
+                status.setText(MainView.getNowPlaying() != null ? "Now Playing: " 
+                        + MainView.getNowPlaying().toString() : "");
+
+                // If the action was a double click, play the song that was double clicked.
                 if (event.getClickCount() == 2 && !row.isEmpty() && event.getButton().equals(MouseButton.PRIMARY)) {
                     play();
-                }
+                }                
             });
             return row;
         });

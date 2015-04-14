@@ -18,22 +18,22 @@ import model.Song;
 final class SongMenu {
 
     private MainController controller;
-    
+
     SongMenu(MainController controller) {
         this.controller = controller;
     }
-    
+
     /**
      * Creates a user dialog that allows modification of the selected song's ID3
      * tags.
      */
-     void editSong() {
+    void editSong() {
         Song songToEdit = controller.songTable.getSelectionModel().getSelectedItem();
         if (songToEdit == null) {
             controller.status.setText("No song selected.");
             return;
         }
-        
+
         if (!songToEdit.canSave()) {
             controller.status.setText("The file is locked. See log.txt for details.");
             return;
@@ -94,79 +94,90 @@ final class SongMenu {
             controller.status.setText("Edit successful.");
         }
     }
-     
-     /**
-      * Creates a new playlist and adds the selected song to it.
-      */
-     void toNewPlaylist() {
-         Song songToAdd = controller.songTable.getSelectionModel().getSelectedItem();
-         if (songToAdd == null) {
-             controller.status.setText("No song was selected.");
-             return;
-         }
-         if (controller.fileMenu.createPlaylist()) {
-             controller.playlistList.get(controller.playlistList.size() - 1).add(songToAdd);
-         }
-     }
-     
-     /**
-      * Removes the selected song from the current playlist.
-      */
-     void removeSong() {
-         // Find the index of the song to remove.
-         int songIndex = controller.songTable.getSelectionModel().getSelectedIndex();
-         if (songIndex < 0 || songIndex > controller.songList.size()) {
-             controller.status.setText("No song selected.");
-             return;
-         }
 
-         // Remove it, then save changes to the playlist.
-         Playlist pl = controller.playlistTable.getSelectionModel().getSelectedItem();
-         pl.remove(songIndex);
-         controller.refreshTables();
-         try {
-             pl.save();
-         } catch (IOException e) {
-             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-         }
-     }
-     
-     void search() {
-         // TODO Allow the user to decide on a keyword
-         controller.status.setText("Found " + search("you") + " matching songs.");
-     }
-     
-     /**
-      * Arranges the playlist such that songs matching the keyword
-      * have priority.
-      * 
-      * @param keyword
-      * @return The amount of songs that match
-      */
-     int search(String keyword) {
-         keyword = keyword.toLowerCase();
-         
-         // Generate a sublist containing the matching songs
-         List<Song> sublist = new ArrayList<>();
-         for (Song s : controller.songList) {
-             if (s.getTitle().toLowerCase().contains(keyword) || s.getAlbum().toLowerCase().contains(keyword)
-                     || s.getAlbum().toLowerCase().contains(keyword)) {
-                 sublist.add(s);
-             }
-         }
-         
-         // Customized sorting
-         Collections.sort(controller.songList, new Comparator<Song>() {
-            @Override
-            public int compare(Song o1, Song o2) {
-                if(sublist.contains(o1) && sublist.contains(o2)) return 0;
-                else if(sublist.contains(o1) && !sublist.contains(o2)) return -1;
-                else return 1;
-            }            
-         });
-         
-         controller.songTable.getSelectionModel().select(sublist.get(sublist.size() - 1));
-         return sublist.size();
-     }
+    /**
+     * Creates a new playlist and adds the selected song to it.
+     */
+    void toNewPlaylist() {
+        Song songToAdd = controller.songTable.getSelectionModel().getSelectedItem();
+        if (songToAdd == null) {
+            controller.status.setText("No song was selected.");
+            return;
+        }
+        if (controller.fileMenu.createPlaylist()) {
+            controller.playlistList.get(controller.playlistList.size() - 1).add(songToAdd);
+        }
+    }
+
+    /**
+     * Removes the selected song from the current playlist.
+     */
+    void removeSong() {
+        // Find the index of the song to remove.
+        int songIndex = controller.songTable.getSelectionModel().getSelectedIndex();
+        if (songIndex < 0 || songIndex > controller.songList.size()) {
+            controller.status.setText("No song selected.");
+            return;
+        }
+
+        // Remove it, then save changes to the playlist.
+        Playlist pl = controller.playlistTable.getSelectionModel().getSelectedItem();
+        pl.remove(songIndex);
+        controller.refreshTables();
+        try {
+            pl.save();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    void search() {
+        // TODO Allow the user to decide on a keyword
+        controller.status.setText("Found " + search("you") + " matching songs.");
+    }
+
+    /**
+     * Arranges the playlist such that songs matching the keyword
+     * have priority.
+     * 
+     * @param keyword
+     * @return The amount of songs that match
+     */
+    int search(String keyword) {
+        keyword = keyword.toLowerCase();
+
+        // Assign priorities to the songs, depending on relevance.
+        int count = 0;
+        Map<Song, Integer> priorityMap = new HashMap<>();
+        for (Song s : controller.songList) {
+            if (s.getTitle().toLowerCase().contains(keyword)) {
+                priorityMap.put(s, 1);
+                count++;
+            } else if (s.getArtist().toLowerCase().contains(keyword)) {
+                priorityMap.put(s, 2);
+                count++;
+            } else if (s.getAlbum().toLowerCase().contains(keyword)) {
+                priorityMap.put(s, 3);
+                count++;
+            } else {
+                priorityMap.put(s, 4);
+            }
+        }
+
+        // Sort the song by relevance first, then by the song table's comparator.
+        Collections.sort(controller.songList, (o1, o2) -> {
+            int result = priorityMap.get(o1) - priorityMap.get(o2);
+            if (result == 0) {
+                if (controller.songTable.getComparator() == null) return 0;
+                else return controller.songTable.getComparator().compare(o1, o2);
+            } else {
+                return result;
+            }
+        });
+        
+        // Select the final relevant song.
+        controller.songTable.getSelectionModel().select(count == 0 ? 0 : count - 1);
+        return count;
+    }
 
 }

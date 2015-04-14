@@ -4,6 +4,8 @@ A lightweight MP3 player written in Java.
 
 image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
 
+http://code.makery.ch/blog/javafx-dialogs-official/[Crazy awesome guide to JavaFX8 dialogs]
+
 = Importing this project into Eclipse
 
 Run the following in Terminal:

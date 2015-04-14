@@ -94,6 +94,10 @@ final class FileMenu {
             Platform.runLater(() -> {
                 controller.playlistList.set(0, MainView.getMasterPlaylist());
                 controller.refreshTables();
+                if (MainView.getNowPlaying() != null
+                        && !MainView.getMasterPlaylist().contains(MainView.getNowPlaying())) {
+                    MainView.stopPlayback();
+                }
             });
         }
     }
