@@ -3,7 +3,7 @@ package model;
 import static model.DebugUtils.LOGGER;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import javafx.beans.property.SimpleStringProperty;

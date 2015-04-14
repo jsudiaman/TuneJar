@@ -43,8 +43,6 @@ public class MainController implements Initializable {
     TableColumn<Playlist, String> name;
 
     @FXML
-    MenuBar topMenuBar = new MenuBar();
-    @FXML
     Menu addToPlaylist = new Menu();
     @FXML
     MenuItem menuPause = new MenuItem();
@@ -60,9 +58,6 @@ public class MainController implements Initializable {
 
     @FXML
     Label status = new Label();
-
-    @FXML
-    ToolBar shortcutBar = new ToolBar();
 
     @FXML
     Slider volumeSlider = new Slider();
@@ -111,7 +106,7 @@ public class MainController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty() && event.getButton().equals(MouseButton.PRIMARY)) {
                     play();
-                }                
+                }
             });
             return row;
         });

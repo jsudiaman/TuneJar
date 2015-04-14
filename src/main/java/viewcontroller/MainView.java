@@ -141,12 +141,7 @@ public class MainView extends Application {
         for (File directory : directories) {
             LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
             Collection<Song> songs = getSongs(directory);
-
-            if (songs == null) {
-                LOGGER.log(Level.SEVERE, "Failed to load songs from " + directory.toString() + ", skipping...");
-            } else {
-                masterPlaylist.addAll(getSongs(directory));
-            }
+            masterPlaylist.addAll(songs);
         }
         LOGGER.log(Level.INFO, "Refresh successful");        
     }

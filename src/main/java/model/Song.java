@@ -1,10 +1,12 @@
 package model;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static model.DebugUtils.LOGGER;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -12,8 +14,6 @@ import viewcontroller.MainView;
 
 import com.mpatric.mp3agic.*;
 import com.sun.istack.internal.NotNull;
-
-import static java.nio.file.StandardCopyOption.*;
 
 /**
  * Helpful documentation for the MP3agic library:

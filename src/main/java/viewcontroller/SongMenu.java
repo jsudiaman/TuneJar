@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -18,9 +19,14 @@ import model.Song;
 final class SongMenu {
 
     private MainController controller;
+    private ChangeListener<Song> listener;
 
     SongMenu(MainController controller) {
         this.controller = controller;
+        listener = (observable, oldValue, newValue) -> {
+            controller.songTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        };
+        controller.songTable.getSelectionModel().selectedItemProperty().addListener(listener);
     }
 
     /**
@@ -140,10 +146,15 @@ final class SongMenu {
         Optional<String> keyword = dialog.showAndWait();
         
         // Perform the search.
-        int count;
-        if(keyword.isPresent()) {
-            count = search(keyword.get().trim());
-            controller.status.setText("Found " + count + " matching songs.");
+        if(keyword.isPresent() && keyword.get().trim().length() > 0) {
+            int count = search(keyword.get().trim());
+            if(count == 0) {
+                controller.status.setText("No matches found.");
+                controller.songTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            } else {
+                controller.status.setText("Found " + count + " matching songs.");
+                controller.songTable.getSelectionModel().selectedItemProperty().addListener(listener);
+            }
         }
     }
 
@@ -186,8 +197,14 @@ final class SongMenu {
             }
         });
         
-        // Select the final relevant song.
-        controller.songTable.getSelectionModel().select(count == 0 ? 0 : count - 1);
+        // Select all relevant songs. 
+        controller.songTable.scrollTo(0);
+        controller.songTable.getSelectionModel().selectedItemProperty().removeListener(listener);
+        controller.songTable.getSelectionModel().clearSelection();
+        controller.songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        for (int i = 0; i < count; i++) {
+            controller.songTable.getSelectionModel().select(i);
+        }
         return count;
     }
 

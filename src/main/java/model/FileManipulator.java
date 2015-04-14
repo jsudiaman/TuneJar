@@ -118,7 +118,7 @@ public final class FileManipulator {
         Set<Song> set = new HashSet<>();
         if (directory == null || !directory.isDirectory()) {
             LOGGER.log(Level.SEVERE, "Failed to access directory: " +
-                    (directory == null ? "null" : directory.toString()));
+                    (directory == null ? "null" : directory.toString()) + ", skipping...");
             return set;
         }
 
