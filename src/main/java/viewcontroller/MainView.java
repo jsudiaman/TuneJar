@@ -103,7 +103,7 @@ public class MainView extends Application {
         Platform.runLater(() -> {
             // Create and display a playlist containing all songs from each directory.
             refresh();
-            controller.loadPlaylist(masterPlaylist);
+            controller.playlistMenu.loadPlaylist(masterPlaylist);
 
             // Save the directories.
             try {
@@ -123,7 +123,7 @@ public class MainView extends Application {
                 fatalException(e);
             }
             if (playlistSet != null) {
-                playlistSet.forEach(controller::loadPlaylist);
+                playlistSet.forEach(controller.playlistMenu::loadPlaylist);
             }
             controller.focus(controller.playlistTable, 0);
         });

@@ -50,7 +50,7 @@ final class FileMenu {
             Playlist p = new Playlist(pName);
             try {
                 p.save();
-                controller.loadPlaylist(p);
+                controller.playlistMenu.loadPlaylist(p);
                 return true;
             } catch (IOException e) {
                 // Playlist creation fails if it cannot be successfully saved.

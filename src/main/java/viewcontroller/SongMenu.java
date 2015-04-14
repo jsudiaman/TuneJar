@@ -132,8 +132,19 @@ final class SongMenu {
     }
 
     void search() {
-        // TODO Allow the user to decide on a keyword
-        controller.status.setText("Found " + search("you") + " matching songs.");
+        // Create the dialog box.
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Search");
+        dialog.setHeaderText("What are you looking for?");
+        dialog.setContentText("Enter search term:");
+        Optional<String> keyword = dialog.showAndWait();
+        
+        // Perform the search.
+        int count;
+        if(keyword.isPresent()) {
+            count = search(keyword.get().trim());
+            controller.status.setText("Found " + count + " matching songs.");
+        }
     }
 
     /**
