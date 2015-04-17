@@ -14,6 +14,7 @@ import com.mpatric.mp3agic.*;
 /**
  * An ordered collection of Song objects.
  */
+@SuppressWarnings("serial")
 public class Playlist extends ArrayList<Song> {
 
     private final SimpleStringProperty name;
