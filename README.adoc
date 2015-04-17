@@ -1,4 +1,4 @@
-= JMP3
+= JVMP3
 
 A lightweight MP3 player written in Java.  
 
