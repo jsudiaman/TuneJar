@@ -4,11 +4,13 @@ A lightweight MP3 player written in Java.
 
 image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
 
-http://code.makery.ch/blog/javafx-dialogs-official/[Crazy awesome guide to JavaFX8 dialogs]
-
 = Importing this project into Eclipse
 
-Run the following in Terminal:
+=== Setup:
+
+The easiest way to import this project is by using the http://marketplace.eclipse.org/content/gradle-ide-pack[Gradle plugin] for Eclipse.
+
+Alternatively, you may run the following in Terminal:
 
 ----
 cd <PATH_TO_THIS_FOLDER>
@@ -16,12 +18,10 @@ gradlew run
 gradlew eclipse
 ----
 
-After doing so, you should be able to import this project in Eclipse.
+=== JDK: 
 
-https://www.dropbox.com/s/nljh38blcnwrv6a/formatting.xml?dl=0[Here is a formatting style I recommend.] +
-To import it, go to: Window -> Preferences -> Java -> Code Style -> Formatter -> Import.
-
-Lastly, this project requires JDK 8u40, which is somewhat recent. http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Make sure you're caught up.]
+This project requires JDK 8u40, which is somewhat recent. http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Make sure you're caught up.] +
+Also, check out this crazy awesome http://code.makery.ch/blog/javafx-dialogs-official/[guide to JavaFX8 dialogs.]
 
 = Suggestion box
 Questions, comments, or concerns? http://goo.gl/forms/RB3EcUC61c[Let us know!]
