@@ -1,7 +1,5 @@
 = JVMP3
 
-A lightweight MP3 player written in Java.  
-
 image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
 
 == Importing this project into Eclipse
