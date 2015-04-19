@@ -2,11 +2,22 @@ package viewcontroller;
 
 import static model.DebugUtils.LOGGER;
 import static model.DebugUtils.fatalException;
-import static model.FileManipulator.*;
+import static model.FileManipulator.chooseDirectory;
+import static model.FileManipulator.getPlaylists;
+import static model.FileManipulator.getSongs;
+import static model.FileManipulator.initialDirectory;
+import static model.FileManipulator.readDirectories;
+import static model.FileManipulator.writeFiles;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 import javafx.application.Application;

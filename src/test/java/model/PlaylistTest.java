@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.mpatric.mp3agic.Mp3File;
 

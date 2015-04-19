@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 import javafx.application.Platform;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import model.Playlist;
 
 /**

@@ -2,14 +2,21 @@ package model;
 
 import static model.DebugUtils.LOGGER;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 
 import javafx.beans.property.SimpleStringProperty;
 
-import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 /**
  * An ordered collection of Song objects.

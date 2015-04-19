@@ -12,7 +12,13 @@ import java.util.logging.Level;
 import javafx.beans.property.SimpleStringProperty;
 import viewcontroller.MainView;
 
-import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.ID3v24Tag;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 import com.sun.istack.internal.NotNull;
 
 /**
