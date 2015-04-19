@@ -1,7 +1,7 @@
 package viewcontroller;
 
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -20,7 +20,7 @@ public class MainController implements Initializable {
     // Lists
     ObservableList<Song> songList;
     ObservableList<Playlist> playlistList;
-    
+
     // Helpers
     FileMenu fileMenu;
     PlaybackMenu playbackMenu;
@@ -68,11 +68,11 @@ public class MainController implements Initializable {
      * Sets up the playlist viewer.
      *
      * @param location
-     *            The location used to resolve relative paths for the root
-     *            object, or null if the location is not known.
+     *            The location used to resolve relative paths for the root object, or null if the
+     *            location is not known.
      * @param resources
-     *            The resources used to localize the root object, or null if the
-     *            root object was not localized.
+     *            The resources used to localize the root object, or null if the root object was not
+     *            localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -81,7 +81,7 @@ public class MainController implements Initializable {
         playbackMenu = new PlaybackMenu(this);
         songMenu = new SongMenu(this);
         playlistMenu = new PlaylistMenu(this);
-        
+
         // Initialize the song table.
         songList = FXCollections.observableArrayList();
         title.setCellValueFactory(new PropertyValueFactory<>("Title"));
@@ -96,22 +96,25 @@ public class MainController implements Initializable {
         playlistTable.setItems(playlistList);
 
         // When a song is selected, update the status bar.
-        songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            status.setText(MainView.getNowPlaying() != null ? "Now Playing: " 
-                    + MainView.getNowPlaying().toString() : "");
-        });
+        songTable.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldSelection, newSelection) -> {
+                status.setText(MainView.getNowPlaying() != null ? "Now Playing: "
+                        + MainView.getNowPlaying().toString() : "");
+            }
+        );
 
         // When a song is double clicked, play it.
         songTable.setRowFactory(param -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && !row.isEmpty() && event.getButton().equals(MouseButton.PRIMARY)) {
+                if (event.getClickCount() == 2 && !row.isEmpty()
+                        && event.getButton().equals(MouseButton.PRIMARY)) {
                     play();
                 }
             });
             return row;
         });
-        
+
         // When ENTER is pressed and a song is focused, play the focused song.
         songTable.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
@@ -121,26 +124,31 @@ public class MainController implements Initializable {
 
         // Add listeners to all playlists in the playlist table.
         menuRemoveSong.setDisable(true);
-        playlistTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                return;
+        playlistTable.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> {
+                if (newValue == null) {
+                    return;
+                }
+
+                // When a playlist is selected, display it.
+                songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().
+                        getSelectedItem());
+                songTable.setItems(songList);
+
+                // The master playlist cannot be renamed, deleted, or altered,
+                // so disable that functionality if the master playlist is selected.
+                menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
+                menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
+                menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
             }
-
-            // When a playlist is selected, display it.
-            songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
-            songTable.setItems(songList);
-
-            // The master playlist cannot be renamed, deleted, or altered,
-            // so disable that functionality if the master playlist is selected.
-            menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
-            menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
-            menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
-        });
+        );
 
         // Initialize the volume slider.
-        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            MainView.setVolume(newValue.doubleValue());
-        });
+        volumeSlider.valueProperty().addListener(
+            (observable, oldValue, newValue) -> {
+                MainView.setVolume(newValue.doubleValue());
+            }
+        );
     }
 
     // --------------- File --------------- //
@@ -156,7 +164,7 @@ public class MainController implements Initializable {
     public void addDirectory() {
         fileMenu.addDirectory();
     }
-    
+
     public void removeDirectory() {
         fileMenu.removeDirectory();
     }
@@ -199,7 +207,7 @@ public class MainController implements Initializable {
     public void removeSong() {
         songMenu.removeSong();
     }
-    
+
     public void search() {
         songMenu.search();
     }
@@ -216,7 +224,7 @@ public class MainController implements Initializable {
 
     public void deletePlaylist() {
         playlistMenu.deletePlaylist();
-    }    
+    }
 
     // --------------- Utilities --------------- //
 
@@ -239,8 +247,10 @@ public class MainController implements Initializable {
 
     void refreshTables() {
         // Keep tabs on what was selected before.
-        int playlistIndex = playlistTable.getFocusModel().getFocusedIndex();
-        int songIndex = songTable.getFocusModel().getFocusedIndex();
+        List<Integer> playlistIndices = new ArrayList<>(playlistTable.getSelectionModel()
+                .getSelectedIndices());
+        List<Integer> songIndices = new ArrayList<>(songTable.getSelectionModel()
+                .getSelectedIndices());
 
         // Where the actual "refreshing" is done
         songTable.getColumns().get(0).setVisible(false);
@@ -252,11 +262,17 @@ public class MainController implements Initializable {
         playlistTable.getSelectionModel().select(0);
 
         // Re-select what was selected before.
-        if (playlistIndex >= 0) {
-            playlistTable.getSelectionModel().select(playlistIndex);
+        if (!playlistIndices.isEmpty()) {
+            playlistTable.getSelectionModel().clearSelection();
+            for (Integer i : playlistIndices) {
+                playlistTable.getSelectionModel().select(i);
+            }
         }
-        if (songIndex >= 0) {
-            songTable.getSelectionModel().select(songIndex);
+        if (!songIndices.isEmpty()) {
+            songTable.getSelectionModel().clearSelection();
+            for (Integer i : songIndices) {
+                songTable.getSelectionModel().select(i);
+            }
         }
     }
 

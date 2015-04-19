@@ -14,9 +14,9 @@ import model.Playlist;
  * Helper class for handling the File menu.
  */
 final class FileMenu {
-    
+
     private MainController controller;
-    
+
     FileMenu(MainController controller) {
         this.controller = controller;
     }
@@ -43,7 +43,8 @@ final class FileMenu {
                     Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
                     conflictAlert.setTitle("Playlist Conflict");
                     conflictAlert.setHeaderText("A playlist named " + pName + " already exists.");
-                    conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
+                    conflictAlert.setContentText("Please rename/delete the existing playlist, or "
+                            + "choose another name.");
                     conflictAlert.showAndWait();
                     return null;
                 }
@@ -59,15 +60,15 @@ final class FileMenu {
                 Alert failAlert = new Alert(Alert.AlertType.ERROR);
                 failAlert.setTitle("Playlist Write Error");
                 failAlert.setHeaderText("Failed to create playlist: " + pName);
-                failAlert.setContentText("The playlist failed to save. Make sure the name does not contain any "
-                        + "illegal characters.");
+                failAlert.setContentText("The playlist failed to save. Make sure the name "
+                        + "does not contain any illegal characters.");
                 failAlert.showAndWait();
                 LOGGER.log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
             }
         }
         return null;
     }
-    
+
     /**
      * Asks the user if it is okay to end the program. If so, end the program.
      */
@@ -82,7 +83,7 @@ final class FileMenu {
             Platform.exit();
         }
     }
-    
+
     void addDirectory() {
         MainView.addDirectory();
         Platform.runLater(() -> {
@@ -91,7 +92,7 @@ final class FileMenu {
             controller.focus(controller.playlistTable, 0);
         });
     }
-    
+
     void removeDirectory() {
         if (MainView.removeDirectory()) {
             MainView.refresh();

@@ -25,24 +25,24 @@ final class SongMenu {
     }
 
     /**
-     * Creates a user dialog that allows modification of the selected song's ID3
-     * tags.
+     * Creates a user dialog that allows modification of the selected song's ID3 tags.
      */
     void editSong() {
-        ObservableList<Song> songsToEdit = controller.songTable.getSelectionModel().getSelectedItems();
-        
-        if (songsToEdit.size() == 0) {
+        ObservableList<Song> songsToEdit = controller.songTable.getSelectionModel()
+                .getSelectedItems();
+
+        if (songsToEdit.isEmpty()) {
             controller.status.setText("No song selected.");
             return;
         }
-        
-        if(songsToEdit.size() > 1) {
+
+        if (songsToEdit.size() > 1) {
             controller.status.setText("You can only edit one song at a time.");
             return;
         }
-        
+
         Song songToEdit = songsToEdit.get(0);
-        
+
         if (!songToEdit.canSave()) {
             controller.status.setText("The file is locked. See log.txt for details.");
             return;
@@ -98,7 +98,8 @@ final class SongMenu {
 
         Optional<List<String>> newParams = editor.showAndWait();
         if (newParams.isPresent()) {
-            songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
+            songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get()
+                    .get(2));
             controller.refreshTables();
             controller.status.setText("Edit successful.");
         }
@@ -108,10 +109,10 @@ final class SongMenu {
      * Creates a new playlist and adds the selected songs to it.
      */
     void toNewPlaylist() {
-        List<Song> songs = new ArrayList<Song>();
-        songs.addAll(controller.songTable.getSelectionModel().getSelectedItems());
-        
-        if (songs.size() == 0) {
+        List<Song> songs = new ArrayList<Song>(controller.songTable.getSelectionModel()
+                .getSelectedItems());
+
+        if (songs.isEmpty()) {
             controller.status.setText("No song was selected.");
             return;
         }
@@ -132,10 +133,10 @@ final class SongMenu {
      */
     void removeSong() {
         // Find the songs to remove.
-        List<Song> songs = new ArrayList<>();
-        songs.addAll(controller.songTable.getSelectionModel().getSelectedItems());
-        
-        if (songs.size() == 0) {
+        List<Song> songs = new ArrayList<>(controller.songTable.getSelectionModel()
+                .getSelectedItems());
+
+        if (songs.isEmpty()) {
             controller.status.setText("No song selected.");
             return;
         }
@@ -158,11 +159,11 @@ final class SongMenu {
         dialog.setHeaderText("What are you looking for?");
         dialog.setContentText("Enter search term:");
         Optional<String> keyword = dialog.showAndWait();
-        
+
         // Perform the search.
-        if(keyword.isPresent() && keyword.get().trim().length() > 0) {
+        if (keyword.isPresent() && keyword.get().trim().length() > 0) {
             int count = search(keyword.get().trim());
-            if(count == 0) {
+            if (count == 0) {
                 controller.status.setText("No matches found.");
             } else {
                 controller.status.setText("Found " + count + " matching songs.");
@@ -171,8 +172,7 @@ final class SongMenu {
     }
 
     /**
-     * Arranges the playlist such that songs matching the keyword
-     * have priority.
+     * Arranges the playlist such that songs matching the keyword have priority.
      * 
      * @param keyword
      * @return The amount of songs that match
@@ -211,8 +211,8 @@ final class SongMenu {
                 return result;
             }
         });
-        
-        // Select all relevant songs. 
+
+        // Select all relevant songs.
         controller.songTable.scrollTo(0);
         controller.songTable.getSelectionModel().clearSelection();
         for (int i = 0; i < count; i++) {

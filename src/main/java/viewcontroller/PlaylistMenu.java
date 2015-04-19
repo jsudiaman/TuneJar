@@ -40,7 +40,8 @@ final class PlaylistMenu {
         controller.songTable.setItems(controller.songList);
         LOGGER.log(Level.INFO, "Loaded playlist: " + p.getName());
 
-        // Enable the user to add songs to the playlist (unless the playlist is MainView::masterPlaylist).
+        // Enable the user to add songs to the playlist (unless the playlist is
+        // MainView::masterPlaylist).
         if (p.getName().equals("All Music")) {
             return;
         }
@@ -49,9 +50,9 @@ final class PlaylistMenu {
         m.setOnAction(event -> {
             List<Song> songsToAdd = new ArrayList<Song>();
             songsToAdd.addAll(controller.songTable.getSelectionModel().getSelectedItems());
-            
-            if(songsToAdd.size() == 0) {
-                controller.status.setText("No song selected.");
+
+            if (songsToAdd.isEmpty()) {
+                controller.status.setText("No song was selected.");
                 return;
             }
             p.addAll(songsToAdd);
@@ -66,10 +67,10 @@ final class PlaylistMenu {
             }
         });
     }
-    
+
     /**
-     * Shuffles the song table. If a song is currently playing, it will be moved
-     * to the top of the table and playback will continue.
+     * Shuffles the song table. If a song is currently playing, it will be moved to the top of the
+     * table and playback will continue.
      */
     void shuffle() {
         if (controller.songList.isEmpty()) {
@@ -78,14 +79,16 @@ final class PlaylistMenu {
         }
 
         Collections.shuffle(controller.songList);
-        if (MainView.getNowPlaying() != null && controller.songList.indexOf(MainView.getNowPlaying()) >= 0) {
-            Collections.swap(controller.songList, 0, controller.songList.indexOf(MainView.getNowPlaying()));
+        if (MainView.getNowPlaying() != null
+                && controller.songList.indexOf(MainView.getNowPlaying()) >= 0) {
+            Collections.swap(controller.songList, 0,
+                    controller.songList.indexOf(MainView.getNowPlaying()));
         } else {
             controller.playbackMenu.play(0);
         }
         controller.focus(controller.songTable, 0);
     }
-    
+
     /**
      * Renames the current playlist.
      */
@@ -109,8 +112,10 @@ final class PlaylistMenu {
             if (p.getName().equalsIgnoreCase(playlistName.get())) {
                 Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
                 conflictAlert.setTitle("Playlist Conflict");
-                conflictAlert.setHeaderText("A playlist named " + playlistName.get() + " already exists.");
-                conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
+                conflictAlert.setHeaderText("A playlist named " + playlistName.get()
+                        + " already exists.");
+                conflictAlert
+                        .setContentText("Please rename/delete the existing playlist, or choose another name.");
                 conflictAlert.showAndWait();
                 return;
             }
@@ -142,8 +147,8 @@ final class PlaylistMenu {
     }
 
     /**
-     * Asks the user if it is okay to delete the current playlist. If it is
-     * okay, deletes the current playlist.
+     * Asks the user if it is okay to delete the current playlist. If it is okay, deletes the
+     * current playlist.
      */
     void deletePlaylist() {
         Playlist pl = controller.playlistTable.getSelectionModel().getSelectedItem();
@@ -152,7 +157,8 @@ final class PlaylistMenu {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete");
         alert.setHeaderText("Confirm Deletion");
-        alert.setContentText("Are you sure you would like to delete playlist \"" + pl.getName() + "\"?");
+        alert.setContentText("Are you sure you would like to delete playlist \"" + pl.getName()
+                + "\"?");
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.get() != ButtonType.OK) {
@@ -160,19 +166,19 @@ final class PlaylistMenu {
         }
         if (new File(pl.getName() + ".m3u").delete()) {
             controller.playlistList.remove(pl);
-            
+
             // Remove the playlist from the "Song -> Add To..." menu.
             List<MenuItem> list = controller.addToPlaylist.getItems();
-            for(int i = 0; i < list.size(); i++) {
-                if(list.get(i).getText() == null) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getText() == null) {
                     continue;
                 }
-                if(list.get(i).getText().equals(name)) {
+                if (list.get(i).getText().equals(name)) {
                     controller.addToPlaylist.getItems().remove(i);
                     break;
                 }
             }
-            
+
             controller.refreshTables();
         } else {
             controller.status.setText("Deletion failed.");

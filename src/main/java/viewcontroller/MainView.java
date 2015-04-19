@@ -132,20 +132,20 @@ public class MainView extends Application {
     }
 
     /**
-     * The master playlist takes in all MP3 files that can be found in available
-     * directories.
+     * The master playlist takes in all MP3 files that can be found in available directories.
      */
     public static void refresh() {
         masterPlaylist = new Playlist("All Music");
 
         // Then add all songs found in the directories to the master playlist.
-        LOGGER.log(Level.INFO, "Found directories: " + (directories != null ? directories.toString() : "null"));
+        LOGGER.log(Level.INFO,
+                "Found directories: " + (directories != null ? directories.toString() : "null"));
         for (File directory : directories) {
             LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
             Collection<Song> songs = getSongs(directory);
             masterPlaylist.addAll(songs);
         }
-        LOGGER.log(Level.INFO, "Refresh successful");        
+        LOGGER.log(Level.INFO, "Refresh successful");
     }
 
     // ------------------- Media Player Controls ------------------- //
@@ -202,8 +202,7 @@ public class MainView extends Application {
     // ------------------- Getters and Setters ------------------- //
 
     /**
-     * Sets up the media player to perform a specified action at the end of
-     * every song.
+     * Sets up the media player to perform a specified action at the end of every song.
      *
      * @param action
      *            An action wrapped in a Runnable
@@ -230,7 +229,7 @@ public class MainView extends Application {
     // ------------------- File Manipulation ------------------- //
 
     /**
-     * Adds a user-selected directory to the directory collection. 
+     * Adds a user-selected directory to the directory collection.
      */
     public static void addDirectory() {
         File directory = chooseDirectory(primaryStage);
@@ -256,13 +255,12 @@ public class MainView extends Application {
     }
 
     /**
-     * Allows the user to choose and remove a directory from the
-     * directory collection.
+     * Allows the user to choose and remove a directory from the directory collection.
      * 
      * @return True iff a directory was successfully removed.
      */
     public static boolean removeDirectory() {
-        if(directories.isEmpty()) {
+        if (directories.isEmpty()) {
             controller.status.setText("No folders found.");
             return false;
         }
@@ -282,14 +280,15 @@ public class MainView extends Application {
             try {
                 writeFiles(directories);
                 controller.status.setText("Directory removed.");
-                LOGGER.log(Level.INFO, "Directory removed. Remaining directories:" + directories.toString());
+                LOGGER.log(Level.INFO,
+                        "Directory removed. Remaining directories:" + directories.toString());
                 return true;
             } catch (IOException e) {
                 controller.status.setText("Failed to remove directory.");
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 return false;
             }
-        } 
+        }
         return false;
     }
 

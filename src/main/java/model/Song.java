@@ -16,8 +16,7 @@ import com.mpatric.mp3agic.*;
 import com.sun.istack.internal.NotNull;
 
 /**
- * Helpful documentation for the MP3agic library:
- * https://github.com/mpatric/mp3agic
+ * Helpful documentation for the MP3agic library: https://github.com/mpatric/mp3agic
  */
 public class Song {
 
@@ -81,11 +80,12 @@ public class Song {
 
         paused = false;
     }
-    
+
     /**
      * Copy constructor.
      * 
-     * @param s Song object to copy
+     * @param s
+     *            Song object to copy
      */
     public Song(Song s) {
         this(s.mp3file);
@@ -106,8 +106,7 @@ public class Song {
     }
 
     /**
-     * Alters the ID3 tag of the song, or creates a new one if it does not
-     * exist.
+     * Alters the ID3 tag of the song, or creates a new one if it does not exist.
      *
      * @param newTitle
      *            New title
@@ -166,14 +165,15 @@ public class Song {
         // Save changes to the mp3 file
         try {
             save();
-        } catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
+        } catch (IOException | NotSupportedException | UnsupportedTagException
+                | InvalidDataException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     /**
-     * Finds the file name of the MP3 without any directory information. Ex. If
-     * the MP3 is located in 'C:\Users\Joe\Music\B.mp3', 'B' will be returned.
+     * Finds the file name of the MP3 without any directory information. Ex. If the MP3 is located
+     * in 'C:\Users\Joe\Music\B.mp3', 'B' will be returned.
      *
      * @return The file name
      */
@@ -188,8 +188,8 @@ public class Song {
     }
 
     /**
-     * Finds the absolute path of the MP3. Ex. If the MP3 is located in
-     * 'C:\Users\Joe\Music\B.mp3', that entire string will be returned.
+     * Finds the absolute path of the MP3. Ex. If the MP3 is located in 'C:\Users\Joe\Music\B.mp3',
+     * that entire string will be returned.
      *
      * @return The absolute path
      */
@@ -232,7 +232,7 @@ public class Song {
             new File(mp3file.getFilename() + ".tmp").deleteOnExit();
         }
     }
-    
+
     /**
      * Saves changes to the MP3 file.
      *
@@ -241,7 +241,8 @@ public class Song {
      * @throws InvalidDataException
      * @throws UnsupportedTagException
      */
-    private void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
+    private void save() throws IOException, NotSupportedException, InvalidDataException,
+            UnsupportedTagException {
         String tempname = mp3file.getFilename() + ".tmp";
         mp3file.save(mp3file.getFilename() + ".tmp");
         Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), REPLACE_EXISTING);

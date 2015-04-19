@@ -10,11 +10,11 @@ import java.util.logging.Level;
 final class PlaybackMenu {
 
     private MainController controller;
-    
+
     PlaybackMenu(MainController controller) {
         this.controller = controller;
     }
-    
+
     /**
      * Plays or resumes the selected song.
      */
@@ -28,7 +28,7 @@ final class PlaybackMenu {
         controller.menuPause.setText("Pause");
         play(index);
     }
-    
+
     /**
      * Plays the song at the specified row of the song table.
      *
@@ -46,18 +46,18 @@ final class PlaybackMenu {
             controller.status.setText("Now Playing: " + MainView.getNowPlaying().toString());
         } catch (NullPointerException e) {
             LOGGER.log(Level.SEVERE, "Failed to play song. "
-                    + (controller.songList.isEmpty() ? "The playlist was empty." : "The playlist was not empty."), e);
+                    + (controller.songList.isEmpty() ? "The playlist was empty."
+                            : "The playlist was not empty."), e);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to play song.", e);
         }
     }
-    
+
     /**
-     * Handling for the pause button. If the pause button says "Pause", it will
-     * pause the currently playing song, then change to "Resume". <br>
+     * Handling for the pause button. If the pause button says "Pause", it will pause the currently
+     * playing song, then change to "Resume". <br>
      * <br>
-     * If it says "Resume", it will resume the currently playing song, then
-     * change to "Pause". <br>
+     * If it says "Resume", it will resume the currently playing song, then change to "Pause". <br>
      * <br>
      * If it says anything else, the error will be logged.
      */
@@ -78,11 +78,11 @@ final class PlaybackMenu {
             controller.shortcutPause.setText("Pause");
             controller.menuPause.setText("Pause");
         } else {
-            LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: " 
+            LOGGER.log(Level.SEVERE, "Invalid text for pause button detected, text was: "
                     + controller.menuPause.getText());
         }
     }
-    
+
     /**
      * Stops the currently playing song.
      */
@@ -97,7 +97,7 @@ final class PlaybackMenu {
         controller.menuPause.setText("Pause");
         MainView.getNowPlaying().stop();
     }
-    
+
     /**
      * Plays the previous song.
      */
@@ -112,7 +112,7 @@ final class PlaybackMenu {
         play(row);
         controller.songTable.getSelectionModel().select(row);
     }
-    
+
     /**
      * Plays the next song.
      */

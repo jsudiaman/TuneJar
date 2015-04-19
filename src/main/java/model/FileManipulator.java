@@ -19,7 +19,8 @@ import com.sun.istack.internal.Nullable;
  */
 public final class FileManipulator {
 
-    private static final String DIRECTORY_FILENAME = "directories.dat"; // Where to save the directories.
+    // Where to save the directories.
+    private static final String DIRECTORY_FILENAME = "directories.dat";
 
     private FileManipulator() {
         throw new AssertionError();
@@ -105,9 +106,8 @@ public final class FileManipulator {
     }
 
     /**
-     * Takes in a directory and recursively searches for all mp3 files contained
-     * within that directory. The files are then constructed as Song objects to
-     * be wrapped up in a collection.
+     * Takes in a directory and recursively searches for all mp3 files contained within that
+     * directory. The files are then constructed as Song objects to be wrapped up in a collection.
      *
      * @param directory
      *            A File object that is a directory.
@@ -117,8 +117,8 @@ public final class FileManipulator {
         // Initialize the set or return an empty set if necessary.
         Set<Song> set = new HashSet<>();
         if (directory == null || !directory.isDirectory()) {
-            LOGGER.log(Level.SEVERE, "Failed to access directory: " +
-                    (directory == null ? "null" : directory.toString()) + ", skipping...");
+            LOGGER.log(Level.SEVERE, "Failed to access directory: "
+                    + (directory == null ? "null" : directory.toString()) + ", skipping...");
             return set;
         }
 
@@ -136,8 +136,10 @@ public final class FileManipulator {
                     Song song = new Song(new Mp3File(f));
                     set.add(song);
                 }
-            } catch (UnsupportedTagException | InvalidDataException | IOException | NullPointerException e) {
-                LOGGER.log(Level.SEVERE, "Failed to construct a song object from file: " + f.toString(), e);
+            } catch (UnsupportedTagException | InvalidDataException | IOException
+                    | NullPointerException e) {
+                LOGGER.log(Level.SEVERE,
+                        "Failed to construct a song object from file: " + f.toString(), e);
             }
         }
 
@@ -145,9 +147,8 @@ public final class FileManipulator {
     }
 
     /**
-     * Searches the working directory for .m3u files and creates a playlist out
-     * of each one. All of the created playlists are then wrapped into a
-     * collection and returned.
+     * Searches the working directory for .m3u files and creates a playlist out of each one. All of
+     * the created playlists are then wrapped into a collection and returned.
      *
      * @return All of the created playlists
      *

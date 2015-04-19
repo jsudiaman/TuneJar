@@ -49,7 +49,8 @@ public class Playlist extends ArrayList<Song> {
      */
     public Playlist(File m3uFile) throws IOException {
         // Take the filename to be the name of the playlist.
-        this.name = new SimpleStringProperty(m3uFile.getName().substring(0, m3uFile.getName().indexOf(".m3u")));
+        this.name = new SimpleStringProperty(m3uFile.getName().substring(0,
+                m3uFile.getName().indexOf(".m3u")));
 
         // Add each song line by line.
         BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
@@ -91,35 +92,35 @@ public class Playlist extends ArrayList<Song> {
         writer.close();
         LOGGER.log(Level.INFO, "Successfully saved playlist: " + name.get() + ".m3u");
     }
-    
+
     // --------------- Method Overriding --------------- //
     /**
-     * Similar to java.util.Arraylist.add(E e), but uses the copy constructor instead of
-     * directly adding the argument.
+     * Similar to java.util.Arraylist.add(E e), but uses the copy constructor instead of directly
+     * adding the argument.
      */
     @Override
     public boolean add(Song s) {
         return super.add(new Song(s));
     }
-    
+
     /**
-     * Adds the contents of the song collection to this playlist. Uses the copy constructor
-     * instead of directly adding items from the collection.
+     * Adds the contents of the song collection to this playlist. Uses the copy constructor instead
+     * of directly adding items from the collection.
      * 
-     * @param songs A song collection
+     * @param songs
+     *            A song collection
      * 
      * @return True iff at least one song in the collection was added to this playlist.
      */
     @Override
     public boolean addAll(Collection<? extends Song> songs) {
         boolean added = false;
-        for(Song s : songs) {
-            if(add(s)) {
+        for (Song s : songs) {
+            if (add(s)) {
                 added = true;
             }
         }
         return added;
     }
-    
-    
+
 }

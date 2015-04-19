@@ -11,7 +11,7 @@ import com.mpatric.mp3agic.Mp3File;
 public class SongTest {
 
     Song song;
-    
+
     @Before
     public void setUp() throws Exception {
         song = new Song(new Mp3File(new File("src/test/resources/Queen of the Night.mp3")));

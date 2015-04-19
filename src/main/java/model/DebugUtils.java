@@ -10,8 +10,8 @@ import javafx.scene.layout.Priority;
 import viewcontroller.MainView;
 
 /**
- * Class for logging information to the console and log.txt. Useful for
- * debugging and error handling.
+ * Class for logging information to the console and log.txt. Useful for debugging and error
+ * handling.
  */
 public final class DebugUtils {
 
@@ -31,14 +31,15 @@ public final class DebugUtils {
             log.addHandler(handler);
             log.log(Level.INFO, LOG_FILE + " initialized successfully.");
         } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to generate " + LOG_FILE + ". Logs will be written only to the console.", e);
+            log.log(Level.WARNING, "Failed to generate " + LOG_FILE
+                    + ". Logs will be written only to the console.", e);
         }
         return log;
     }
 
     /**
-     * Displays a dialog box explaining what happened. Once the dialog box is
-     * closed, the program exits with exit code -1.
+     * Displays a dialog box explaining what happened. Once the dialog box is closed, the program
+     * exits with exit code -1.
      *
      * @param e
      *            An exception that should end the program
