@@ -122,7 +122,9 @@ public class MainController implements Initializable {
         // Add listeners to all playlists in the playlist table.
         menuRemoveSong.setDisable(true);
         playlistTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) return;
+            if (newValue == null) {
+                return;
+            }
 
             // When a playlist is selected, display it.
             songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
@@ -250,8 +252,12 @@ public class MainController implements Initializable {
         playlistTable.getSelectionModel().select(0);
 
         // Re-select what was selected before.
-        if (playlistIndex >= 0) playlistTable.getSelectionModel().select(playlistIndex);
-        if (songIndex >= 0) songTable.getSelectionModel().select(songIndex);
+        if (playlistIndex >= 0) {
+            playlistTable.getSelectionModel().select(playlistIndex);
+        }
+        if (songIndex >= 0) {
+            songTable.getSelectionModel().select(songIndex);
+        }
     }
 
 }

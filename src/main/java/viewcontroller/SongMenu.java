@@ -202,8 +202,11 @@ final class SongMenu {
         Collections.sort(controller.songList, (o1, o2) -> {
             int result = priorityMap.get(o1) - priorityMap.get(o2);
             if (result == 0) {
-                if (controller.songTable.getComparator() == null) return 0;
-                else return controller.songTable.getComparator().compare(o1, o2);
+                if (controller.songTable.getComparator() == null) {
+                    return 0;
+                } else {
+                    return controller.songTable.getComparator().compare(o1, o2);
+                }
             } else {
                 return result;
             }

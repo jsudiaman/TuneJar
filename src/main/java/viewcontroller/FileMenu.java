@@ -78,7 +78,9 @@ final class FileMenu {
         alert.setContentText("Are you sure you would like to exit?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) Platform.exit();
+        if (result.get() == ButtonType.OK) {
+            Platform.exit();
+        }
     }
     
     void addDirectory() {

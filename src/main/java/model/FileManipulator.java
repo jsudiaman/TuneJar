@@ -130,7 +130,9 @@ public final class FileManipulator {
                     set.addAll(getSongs(f));
                 } else {
                     // Attempt to construct a song object. If successful, add it to the set.
-                    if (!f.toString().endsWith(".mp3")) continue;
+                    if (!f.toString().endsWith(".mp3")) {
+                        continue;
+                    }
                     Song song = new Song(new Mp3File(f));
                     set.add(song);
                 }

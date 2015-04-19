@@ -218,7 +218,9 @@ public class MainView extends Application {
     }
 
     public static void setVolume(double value) {
-        if (player != null) player.setVolume(value);
+        if (player != null) {
+            player.setVolume(value);
+        }
     }
 
     public static Playlist getMasterPlaylist() {
@@ -232,7 +234,9 @@ public class MainView extends Application {
      */
     public static void addDirectory() {
         File directory = chooseDirectory(primaryStage);
-        if (directory == null) return;
+        if (directory == null) {
+            return;
+        }
         controller.status.setText("Loading your songs, please be patient...");
         Platform.runLater(() -> {
             directories.add(directory);

@@ -42,9 +42,13 @@ public class Song {
      */
     public Song(@NotNull Mp3File mp3file) {
         // Find out which version of ID3 tag is used by the MP3.
-        if (mp3file.hasId3v2Tag()) ID3TagVersion = ID3_V2;
-        else if (mp3file.hasId3v1Tag()) ID3TagVersion = ID3_V1;
-        else ID3TagVersion = CUSTOM_TAG;
+        if (mp3file.hasId3v2Tag()) {
+            ID3TagVersion = ID3_V2;
+        } else if (mp3file.hasId3v1Tag()) {
+            ID3TagVersion = ID3_V1;
+        } else {
+            ID3TagVersion = CUSTOM_TAG;
+        }
 
         // Read metadata by extracting its tags.
         if (ID3TagVersion == ID3_V2) {
@@ -65,9 +69,15 @@ public class Song {
         this.mp3file = mp3file;
 
         // Correct null title, artist, and/or album values.
-        if (title.get() == null) title = new SimpleStringProperty(getFilename());
-        if (artist.get() == null) artist = new SimpleStringProperty("");
-        if (album.get() == null) album = new SimpleStringProperty("");
+        if (title.get() == null) {
+            title = new SimpleStringProperty(getFilename());
+        }
+        if (artist.get() == null) {
+            artist = new SimpleStringProperty("");
+        }
+        if (album.get() == null) {
+            album = new SimpleStringProperty("");
+        }
 
         paused = false;
     }
@@ -115,9 +125,15 @@ public class Song {
         newAlbum = newAlbum.trim();
 
         // Replace empty parameters with the old ones
-        if (newTitle.equals("")) newTitle = getTitle();
-        if (newArtist.equals("")) newArtist = getArtist();
-        if (newAlbum.equals("")) newAlbum = getAlbum();
+        if (newTitle.equals("")) {
+            newTitle = getTitle();
+        }
+        if (newArtist.equals("")) {
+            newArtist = getArtist();
+        }
+        if (newAlbum.equals("")) {
+            newAlbum = getAlbum();
+        }
 
         // Set the instance members
         this.title.set(newTitle);

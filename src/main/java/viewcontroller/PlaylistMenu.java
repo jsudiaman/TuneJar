@@ -41,7 +41,9 @@ final class PlaylistMenu {
         LOGGER.log(Level.INFO, "Loaded playlist: " + p.getName());
 
         // Enable the user to add songs to the playlist (unless the playlist is MainView::masterPlaylist).
-        if (p.getName().equals("All Music")) return;
+        if (p.getName().equals("All Music")) {
+            return;
+        }
         MenuItem m = new MenuItem(p.getName());
         controller.addToPlaylist.getItems().add(m);
         m.setOnAction(event -> {
@@ -98,7 +100,9 @@ final class PlaylistMenu {
         dialog.setHeaderText("Please enter a new name for playlist \"" + pl.getName() + "\".");
         dialog.setContentText("New name:");
         Optional<String> playlistName = dialog.showAndWait();
-        if (!playlistName.isPresent()) return;
+        if (!playlistName.isPresent()) {
+            return;
+        }
 
         // Make sure that the user has picked a unique playlist name.
         for (Playlist p : controller.playlistList) {
@@ -123,7 +127,9 @@ final class PlaylistMenu {
 
             // Also, rename the playlist in the "Song -> Add to...<PLAYLIST>" menu.
             for (MenuItem item : controller.addToPlaylist.getItems()) {
-                if (item.getText() == null) continue;
+                if (item.getText() == null) {
+                    continue;
+                }
                 if (item.getText().equals(oldName)) {
                     item.setText(playlistName.get());
                 }
@@ -149,14 +155,18 @@ final class PlaylistMenu {
         alert.setContentText("Are you sure you would like to delete playlist \"" + pl.getName() + "\"?");
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.get() != ButtonType.OK) return;
+        if (result.get() != ButtonType.OK) {
+            return;
+        }
         if (new File(pl.getName() + ".m3u").delete()) {
             controller.playlistList.remove(pl);
             
             // Remove the playlist from the "Song -> Add To..." menu.
             List<MenuItem> list = controller.addToPlaylist.getItems();
             for(int i = 0; i < list.size(); i++) {
-                if(list.get(i).getText() == null) continue;
+                if(list.get(i).getText() == null) {
+                    continue;
+                }
                 if(list.get(i).getText().equals(name)) {
                     controller.addToPlaylist.getItems().remove(i);
                     break;
