@@ -1,4 +1,4 @@
-package model;
+package com.jonsudiaman.jvmp3.model;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,11 +9,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import com.jonsudiaman.jvmp3.viewcontroller.MainView;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import viewcontroller.MainView;
 
 /**
  * Class for logging information to the console and log.txt. Useful for debugging and error

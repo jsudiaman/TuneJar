@@ -1,7 +1,7 @@
-package model;
+package com.jonsudiaman.jvmp3.model;
 
+import static com.jonsudiaman.jvmp3.model.DebugUtils.LOGGER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static model.DebugUtils.LOGGER;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 
 import javafx.beans.property.SimpleStringProperty;
-import viewcontroller.MainView;
 
+import com.jonsudiaman.jvmp3.viewcontroller.MainView;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v24Tag;

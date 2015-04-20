@@ -1,9 +1,12 @@
-package viewcontroller;
+package com.jonsudiaman.jvmp3.viewcontroller;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.jonsudiaman.jvmp3.model.Playlist;
+import com.jonsudiaman.jvmp3.model.Song;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -22,8 +25,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import model.Playlist;
-import model.Song;
 
 public class MainController implements Initializable {
 

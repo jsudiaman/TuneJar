@@ -1,6 +1,6 @@
-package viewcontroller;
+package com.jonsudiaman.jvmp3.viewcontroller;
 
-import static model.DebugUtils.LOGGER;
+import static com.jonsudiaman.jvmp3.model.DebugUtils.LOGGER;
 
 import java.util.logging.Level;
 

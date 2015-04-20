@@ -1,6 +1,6 @@
-package viewcontroller;
+package com.jonsudiaman.jvmp3.viewcontroller;
 
-import static model.DebugUtils.LOGGER;
+import static com.jonsudiaman.jvmp3.model.DebugUtils.LOGGER;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import model.Playlist;
-import model.Song;
 
+import com.jonsudiaman.jvmp3.model.Playlist;
+import com.jonsudiaman.jvmp3.model.Song;
 import com.sun.istack.internal.NotNull;
 
 /**

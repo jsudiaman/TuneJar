@@ -1,13 +1,13 @@
-package viewcontroller;
+package com.jonsudiaman.jvmp3.viewcontroller;
 
-import static model.DebugUtils.LOGGER;
-import static model.DebugUtils.fatalException;
-import static model.FileManipulator.chooseDirectory;
-import static model.FileManipulator.getPlaylists;
-import static model.FileManipulator.getSongs;
-import static model.FileManipulator.initialDirectory;
-import static model.FileManipulator.readDirectories;
-import static model.FileManipulator.writeFiles;
+import static com.jonsudiaman.jvmp3.model.DebugUtils.LOGGER;
+import static com.jonsudiaman.jvmp3.model.DebugUtils.fatalException;
+import static com.jonsudiaman.jvmp3.model.FileManipulator.chooseDirectory;
+import static com.jonsudiaman.jvmp3.model.FileManipulator.getPlaylists;
+import static com.jonsudiaman.jvmp3.model.FileManipulator.getSongs;
+import static com.jonsudiaman.jvmp3.model.FileManipulator.initialDirectory;
+import static com.jonsudiaman.jvmp3.model.FileManipulator.readDirectories;
+import static com.jonsudiaman.jvmp3.model.FileManipulator.writeFiles;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,9 +31,9 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import model.Playlist;
-import model.Song;
 
+import com.jonsudiaman.jvmp3.model.Playlist;
+import com.jonsudiaman.jvmp3.model.Song;
 import com.sun.istack.internal.Nullable;
 
 public class MainView extends Application {
