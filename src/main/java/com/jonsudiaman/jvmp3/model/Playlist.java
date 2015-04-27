@@ -64,7 +64,7 @@ public class Playlist extends ArrayList<Song> {
         for (String nextLine; (nextLine = reader.readLine()) != null;) {
             try {
                 add(new Song(new Mp3File(new File(nextLine))));
-            } catch (UnsupportedTagException | InvalidDataException e) {
+            } catch (UnsupportedTagException | InvalidDataException | IOException e) {
                 LOGGER.log(Level.SEVERE, "Failed to add song: " + nextLine, e);
             }
         }

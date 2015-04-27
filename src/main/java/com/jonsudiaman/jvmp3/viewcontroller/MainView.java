@@ -29,6 +29,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
@@ -174,7 +175,12 @@ public class MainView extends Application {
         nowPlaying = song;
         LOGGER.log(Level.INFO, "Playing: " + nowPlaying.toString());
         String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
-        player = new MediaPlayer(new Media(uriString));
+        try {
+            player = new MediaPlayer(new Media(uriString));
+        } catch (MediaException e) {
+            controller.status.setText("Failed to play the song. See log.txt for details.");
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
         player.setVolume(volume);
         player.play();
     }
