@@ -9,12 +9,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import com.jonsudiaman.jvmp3.viewcontroller.MainView;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+
+import com.jonsudiaman.jvmp3.viewcontroller.MainView;
 
 /**
  * Class for logging information to the console and log.txt. Useful for debugging and error

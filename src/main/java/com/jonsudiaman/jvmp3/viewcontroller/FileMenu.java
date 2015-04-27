@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 
-import com.jonsudiaman.jvmp3.model.Playlist;
-
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+
+import com.jonsudiaman.jvmp3.model.Playlist;
 
 /**
  * Helper class for handling the File menu.

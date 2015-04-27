@@ -11,9 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 
-import com.jonsudiaman.jvmp3.model.Playlist;
-import com.jonsudiaman.jvmp3.model.Song;
-
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar;
@@ -23,6 +20,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
+
+import com.jonsudiaman.jvmp3.model.Playlist;
+import com.jonsudiaman.jvmp3.model.Song;
 
 /**
  * Helper class for handling the Song menu.

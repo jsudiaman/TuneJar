@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.jonsudiaman.jvmp3.model.Playlist;
-import com.jonsudiaman.jvmp3.model.Song;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +22,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+
+import com.jonsudiaman.jvmp3.model.Playlist;
+import com.jonsudiaman.jvmp3.model.Song;
 
 public class MainController implements Initializable {
 
@@ -107,12 +107,14 @@ public class MainController implements Initializable {
         playlistTable.setItems(playlistList);
 
         // When a song is selected, update the status bar.
-        songTable.getSelectionModel().selectedItemProperty().addListener(
-            (obs, oldSelection, newSelection) -> {
-                status.setText(MainView.getNowPlaying() != null ? "Now Playing: "
-                        + MainView.getNowPlaying().toString() : "");
-            }
-        );
+        songTable
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener(
+                        (obs, oldSelection, newSelection) -> {
+                            status.setText(MainView.getNowPlaying() != null ? "Now Playing: "
+                                    + MainView.getNowPlaying().toString() : "");
+                        });
 
         // When a song is double clicked, play it.
         songTable.setRowFactory(param -> {
@@ -135,31 +137,30 @@ public class MainController implements Initializable {
 
         // Add listeners to all playlists in the playlist table.
         menuRemoveSong.setDisable(true);
-        playlistTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> {
-                if (newValue == null) {
-                    return;
-                }
+        playlistTable
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue == null) {
+                        return;
+                    }
 
-                // When a playlist is selected, display it.
-                songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().
-                        getSelectedItem());
-                songTable.setItems(songList);
+                    // When a playlist is selected, display it.
+                        songList = FXCollections.observableArrayList(playlistTable
+                                .getSelectionModel().getSelectedItem());
+                        songTable.setItems(songList);
 
-                // The master playlist cannot be renamed, deleted, or altered,
-                // so disable that functionality if the master playlist is selected.
-                menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
-                menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
-                menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
-            }
-        );
+                        // The master playlist cannot be renamed, deleted, or altered,
+                        // so disable that functionality if the master playlist is selected.
+                        menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
+                        menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
+                        menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
+                    });
 
         // Initialize the volume slider.
-        volumeSlider.valueProperty().addListener(
-            (observable, oldValue, newValue) -> {
-                MainView.setVolume(newValue.doubleValue());
-            }
-        );
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            MainView.setVolume(newValue.doubleValue());
+        });
     }
 
     // --------------- File --------------- //
