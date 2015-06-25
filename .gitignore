@@ -9,7 +9,7 @@
 *.m3u
 .project
 .classpath
-JavaMP3Player.iml
 log.txt
 log.txt.*
 *.lck
+JVMP3.iml
