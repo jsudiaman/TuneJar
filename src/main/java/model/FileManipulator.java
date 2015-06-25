@@ -1,6 +1,6 @@
-package com.jonsudiaman.jvmp3.model;
+package model;
 
-import static com.jonsudiaman.jvmp3.model.DebugUtils.LOGGER;
+import static model.DebugUtils.LOGGER;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

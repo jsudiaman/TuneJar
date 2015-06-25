@@ -1,4 +1,4 @@
-package com.jonsudiaman.jvmp3.model;
+package model;
 
 import static org.junit.Assert.assertEquals;
 
