@@ -1,13 +1,6 @@
 package viewcontroller;
 
 import static model.DebugUtils.LOGGER;
-import static model.DebugUtils.fatalException;
-import static model.FileManipulator.chooseDirectory;
-import static model.FileManipulator.getPlaylists;
-import static model.FileManipulator.getSongs;
-import static model.FileManipulator.initialDirectory;
-import static model.FileManipulator.readDirectories;
-import static model.FileManipulator.writeFiles;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +25,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-
+import model.DebugUtils;
+import model.FileManipulator;
 import model.Playlist;
 import model.Song;
 
@@ -72,7 +66,7 @@ public class MainView extends Application {
 			init(primaryStage);
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			fatalException(e);
+			DebugUtils.fatalException(e);
 		}
 	}
 
@@ -101,10 +95,10 @@ public class MainView extends Application {
 
 		// Load the directories. If none are present, prompt the user for one.
 		try {
-			directories = readDirectories();
+			directories = FileManipulator.readDirectories();
 		} catch (FileNotFoundException e) {
 			directories = new HashSet<>();
-			File directory = initialDirectory(primaryStage);
+			File directory = FileManipulator.initialDirectory(primaryStage);
 			if (directory != null) {
 				directories.add(directory);
 			}
@@ -112,7 +106,6 @@ public class MainView extends Application {
 
 		controller = fxmlLoader.getController();
 
-		controller.status.setText("Loading your songs, please be patient...");
 		Platform.runLater(() -> {
 			// Create and display a playlist containing all songs from each
 			// directory.
@@ -121,7 +114,7 @@ public class MainView extends Application {
 
 			// Save the directories.
 			try {
-				writeFiles(directories);
+				FileManipulator.writeFiles(directories);
 				controller.status.setText("");
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Failed to save directories.", e);
@@ -131,10 +124,10 @@ public class MainView extends Application {
 			// Finally, load in all playlists from the working directory.
 			Collection<Playlist> playlistSet = null;
 			try {
-				playlistSet = getPlaylists();
+				playlistSet = FileManipulator.getPlaylists();
 			} catch (IOException | NullPointerException e) {
 				LOGGER.log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
-				fatalException(e);
+				DebugUtils.fatalException(e);
 			}
 			if (playlistSet != null) {
 				playlistSet.forEach(controller.playlistMenu::loadPlaylist);
@@ -154,7 +147,7 @@ public class MainView extends Application {
 		LOGGER.log(Level.INFO, "Found directories: " + (directories != null ? directories.toString() : "null"));
 		for (File directory : directories) {
 			LOGGER.log(Level.INFO, "Now adding songs from directory " + directory.toString());
-			Collection<Song> songs = getSongs(directory);
+			Collection<Song> songs = FileManipulator.getSongs(directory);
 			masterPlaylist.addAll(songs);
 		}
 		LOGGER.log(Level.INFO, "Refresh successful");
@@ -249,7 +242,7 @@ public class MainView extends Application {
 	 * Adds a user-selected directory to the directory collection.
 	 */
 	public static void addDirectory() {
-		File directory = chooseDirectory(primaryStage);
+		File directory = FileManipulator.chooseDirectory(primaryStage);
 		if (directory == null) {
 			return;
 		}
@@ -257,7 +250,7 @@ public class MainView extends Application {
 		Platform.runLater(() -> {
 			directories.add(directory);
 			try {
-				writeFiles(directories);
+				FileManipulator.writeFiles(directories);
 			} catch (Exception e) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle("Failed");
@@ -296,7 +289,7 @@ public class MainView extends Application {
 		if (result.isPresent()) {
 			directories.remove(result.get());
 			try {
-				writeFiles(directories);
+				FileManipulator.writeFiles(directories);
 				controller.status.setText("Directory removed.");
 				LOGGER.log(Level.INFO, "Directory removed. Remaining directories:" + directories.toString());
 				return true;

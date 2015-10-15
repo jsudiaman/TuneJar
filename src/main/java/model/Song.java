@@ -1,17 +1,14 @@
 package model;
 
 import static model.DebugUtils.LOGGER;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 
-import javafx.beans.property.SimpleStringProperty;
-
-import viewcontroller.MainView;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v24Tag;
@@ -19,6 +16,9 @@ import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
+
+import javafx.beans.property.SimpleStringProperty;
+import viewcontroller.MainView;
 
 /**
  * Helpful documentation for the MP3agic library:
@@ -248,7 +248,7 @@ public class Song {
 	private void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
 		String tempname = mp3file.getFilename() + ".tmp";
 		mp3file.save(mp3file.getFilename() + ".tmp");
-		Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), REPLACE_EXISTING);
+		Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), StandardCopyOption.REPLACE_EXISTING);
 		mp3file = new Mp3File(new File(mp3file.getFilename()));
 	}
 

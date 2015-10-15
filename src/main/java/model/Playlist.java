@@ -12,15 +12,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 
-import javafx.beans.property.SimpleStringProperty;
-
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
+import javafx.beans.property.SimpleStringProperty;
+
 /**
  * An ordered collection of Song objects.
  */
+// TODO Implement List instead of extending ArrayList 
+// TODO Use a thread-safe data structure
 public class Playlist extends ArrayList<Song> {
 
 	private final SimpleStringProperty name;
