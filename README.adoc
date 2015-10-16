@@ -1,4 +1,4 @@
-= JVMP3
+= TuneJar
 
 image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
 
