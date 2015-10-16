@@ -1,8 +1,6 @@
 = TuneJar
 
-== Importing this project into Eclipse
-
-=== Setup:
+=== Eclipse Setup:
 
 The easiest way to import this project is by using the http://marketplace.eclipse.org/content/gradle-ide-pack[Gradle plugin] for Eclipse.
 
