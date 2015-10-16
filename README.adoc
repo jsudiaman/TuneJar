@@ -1,7 +1,5 @@
 = TuneJar
 
-image:https://raw.githubusercontent.com/sudiamanj/JavaMP3Player/master/screenshot.jpg[]
-
 == Importing this project into Eclipse
 
 === Setup:
