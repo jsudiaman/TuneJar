@@ -230,7 +230,7 @@ public class Song {
 			save();
 			return true;
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to save song: " + toString(), e);
+			LOGGER.log(Level.SEVERE, "Unable to save song: " + toString(), e);
 			return false;
 		} finally {
 			new File(mp3file.getFilename() + ".tmp").deleteOnExit();

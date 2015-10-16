@@ -47,8 +47,7 @@ final class FileMenu {
 					Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
 					conflictAlert.setTitle("Playlist Conflict");
 					conflictAlert.setHeaderText("A playlist named " + pName + " already exists.");
-					conflictAlert
-							.setContentText("Please rename/delete the existing playlist, or " + "choose another name.");
+					conflictAlert.setContentText("Please rename/delete the existing playlist, or choose another name.");
 					conflictAlert.showAndWait();
 					return null;
 				}

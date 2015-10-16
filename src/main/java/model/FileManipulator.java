@@ -66,7 +66,7 @@ public final class FileManipulator {
 		// Begin building up a data structure to store directories
 		File chosenDirectory = chooseDirectory(stage);
 		if (chosenDirectory == null) {
-			LOGGER.log(Level.WARNING, "User pressed 'cancel' when asked to choose a directory.");
+			LOGGER.log(Level.INFO, "User pressed 'cancel' when asked to choose a directory.");
 			return null;
 		} else {
 			return chosenDirectory;

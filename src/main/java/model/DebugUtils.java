@@ -22,12 +22,12 @@ import viewcontroller.MainView;
  */
 public final class DebugUtils {
 
-	public static final Logger LOGGER = initLogger(); // Global logger
+	public static final Logger LOGGER = initLogger(); // Singleton logger
 
 	private static final String LOG_FILE = "log.txt";
 
 	private DebugUtils() {
-		throw new AssertionError();
+		throw new UnsupportedOperationException();
 	}
 
 	private static Logger initLogger() {
