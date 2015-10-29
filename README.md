@@ -2,11 +2,16 @@
 ![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/img/screenshot.png)  
 
 ### What is TuneJar?
-TuneJar is a music player that is **lightweight**, **cross-platform**, and **open-source**.
+TuneJar is a music player that is **lightweight**, **cross-platform**, and best of all, **open source**.
 
-Here's a list of TuneJar's main features:
+### Why TuneJar?
+Here's a few reasons why TuneJar might just be the right program for you.  
 
+- M3U playlists can be created, imported (e.g. from iTunes), and exported for use in other music players.
+- Song metadata (Title, Artist, and Album) can be directly edited.
+- You may customize TuneJar's appeareance to your heart's content using [CSS](https://github.com/sudiamanj/TuneJar/blob/master/src/main/resources/viewcontroller/DarkTheme.css).
 
-## JDK
-This project requires JDK 8u40, which is somewhat recent. [Make sure you're caught up.](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)  
-Also, check out this crazy awesome [guide to JavaFX8 dialogs.](http://code.makery.ch/blog/javafx-dialogs-official)
+Upon pre-release, there will be a Wiki set up with more detailed information. Stay tuned!
+
+## Setup
+This project requires JDK 8u40, which is somewhat recent. [Make sure you're caught up.](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) Also, check out this crazy awesome [guide to JavaFX8 dialogs.](http://code.makery.ch/blog/javafx-dialogs-official)  
