@@ -4,13 +4,11 @@
 This project requires JDK 8u40, which is somewhat recent. http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Make sure you're caught up.] +
 Also, check out this crazy awesome http://code.makery.ch/blog/javafx-dialogs-official/[guide to JavaFX8 dialogs.]
 
-== Attributions
+== Licensing
 |===
-|File|Copyright Information
+|Song File|Copyright Information
 
 |https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/test/resources/MyMP3.mp3[MyMP3.mp3]
 |Cute by http://www.bensound.com/[Bensound]
 
-|https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/java/util/JavaFXThreadingRule.java[JavaFXThreadingRule.java]
-|http://andrewtill.blogspot.com/2012/10/junit-rule-for-javafx-controller-testing.html[Andy Till]
 |===
