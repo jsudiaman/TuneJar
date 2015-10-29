@@ -8,8 +8,7 @@ Alternatively, you may run the following in http://www.mingw.org/wiki/msys[Termi
 
 ----
 cd <PATH_TO_THIS_FOLDER>
-chmod +x gradlew
-./gradlew run
+./gradlew build
 ./gradlew eclipse
 ----
 
