@@ -5,4 +5,4 @@ This project requires JDK 8u40, which is somewhat recent. http://www.oracle.com/
 Also, check out this crazy awesome http://code.makery.ch/blog/javafx-dialogs-official/[guide to JavaFX8 dialogs.]
 
 == Licensing
-https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/test/resources/MyMP3.mp3[MyMP3.mp3]: Cute by http://www.bensound.com/[Bensound]
+https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/test/resources/MyMP3.mp3[MyMP3.mp3] - Cute by http://www.bensound.com/[Bensound]
