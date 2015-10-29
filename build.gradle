@@ -1,8 +1,4 @@
 apply plugin: "java"
-apply plugin: "application"
-apply plugin: "eclipse"
-
-mainClassName = "viewcontroller.View"
 
 repositories {
     mavenCentral()
@@ -10,4 +6,5 @@ repositories {
 
 dependencies {
     compile 'com.mpatric:mp3agic:0.8.3'
+    testCompile 'junit:junit:4.12'
 }
