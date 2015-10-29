@@ -5,7 +5,6 @@ This project requires JDK 8u40, which is somewhat recent. http://www.oracle.com/
 Also, check out this crazy awesome http://code.makery.ch/blog/javafx-dialogs-official/[guide to JavaFX8 dialogs.]
 
 == Attributions
-[cols="2*", options="header"]
 |===
 |File|Copyright Information
 
@@ -14,8 +13,4 @@ Also, check out this crazy awesome http://code.makery.ch/blog/javafx-dialogs-off
 
 |https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/java/util/JavaFXThreadingRule.java[JavaFXThreadingRule.java]
 |http://andrewtill.blogspot.com/2012/10/junit-rule-for-javafx-controller-testing.html[Andy Till]
-
-|f
-|g
-
 |===
