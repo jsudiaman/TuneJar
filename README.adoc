@@ -6,7 +6,6 @@ Also, check out this crazy awesome http://code.makery.ch/blog/javafx-dialogs-off
 
 == Licensing
 |===
-
 |Song File|Copyright Information
 
 |https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/test/resources/MyMP3.mp3[MyMP3.mp3]
