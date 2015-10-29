@@ -2,7 +2,7 @@
 ![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/img/screenshot.png)  
 
 ### What is TuneJar?
-TuneJar is a music player that is **lightweight**, **cross-platform**, and best of all, **open source**.
+TuneJar (powered by **Java**) is a music player that is **lightweight**, **cross-platform**, and best of all, **open source**.
 
 ### Why TuneJar?
 Here's a few reasons why TuneJar might just be the right program for you.  
