@@ -6,11 +6,8 @@ mainClassName = "viewcontroller.View"
 
 repositories {
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    mavenLocal();
 }
 
 dependencies {
-    testCompile 'junit:junit:4.10'
     compile 'com.mpatric:mp3agic:0.8.3'
 }
