@@ -6,21 +6,19 @@ import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.mpatric.mp3agic.Mp3File;
 
-import util.JavaFXThreadingRule;
+import de.saxsys.mvvmfx.testingutils.jfxrunner.JfxRunner;
 import viewcontroller.View;
 
+@RunWith(JfxRunner.class)
 public class SongTest {
 
 	private File testMP3File;
 	private Song testMP3Song;
-
-	@Rule
-	public JavaFXThreadingRule jfxRule = new JavaFXThreadingRule();
 
 	@Before
 	public void setUp() throws Exception {
@@ -93,10 +91,13 @@ public class SongTest {
 	public void testPause() {
 		testMP3Song.play(100);
 		testMP3Song.pause();
+		
+		assertEquals(testMP3Song, View.getNowPlaying());
 	}
 
 	@Test
 	public void testStop() {
+		testMP3Song.play(100);
 		testMP3Song.stop();
 
 		assertNull(View.getNowPlaying());

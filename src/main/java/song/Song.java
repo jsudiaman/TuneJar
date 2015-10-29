@@ -123,22 +123,6 @@ public class Song {
 	 *            New album
 	 */
 	public void setTag(String newTitle, String newArtist, String newAlbum) {
-		// Remove leading and trailing whitespace
-		newTitle = newTitle.trim();
-		newArtist = newArtist.trim();
-		newAlbum = newAlbum.trim();
-
-		// Replace empty parameters with the old ones
-		if (newTitle.equals("")) {
-			newTitle = getTitle();
-		}
-		if (newArtist.equals("")) {
-			newArtist = getArtist();
-		}
-		if (newAlbum.equals("")) {
-			newAlbum = getAlbum();
-		}
-
 		// Set the instance members
 		this.title.set(newTitle);
 		this.artist.set(newArtist);

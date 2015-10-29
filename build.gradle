@@ -6,5 +6,6 @@ repositories {
 
 dependencies {
     compile 'com.mpatric:mp3agic:0.8.3'
-    testCompile 'junit:junit:4.12'
+	testCompile 'de.saxsys:mvvmfx-testing-utils:1.4.0'
+	testCompile 'junit:junit:4.12'
 }
