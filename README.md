@@ -12,7 +12,7 @@ Here's a few reasons why TuneJar might just be the right player for you.
 - Metadata (Title/Artist/Album) can be edited directly.
 - TuneJar is skinnable via CSS and will ship with multiple premade themes.
 
-Upon pre-release, there will be a Wiki set up with more detailed information. Stay tuned!
+Soon there will be a Wiki set up with more detailed information. Stay tuned!
 
 ## Setup
 This project requires [JDK 8u40](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), which is somewhat recent. Make sure you're caught up. Also, check out this awesome [guide to JavaFX8 dialogs](http://code.makery.ch/blog/javafx-dialogs-official).
