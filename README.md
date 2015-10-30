@@ -7,10 +7,10 @@ TuneJar (powered by **Java**) is a music player that is **lightweight**, **cross
 ### Why TuneJar?
 Here's a few reasons why TuneJar might just be the right player for you.  
 
+- Library management is quick and painless. Simply choose which folders to track and let TuneJar do the hard work for you.
 - M3U playlists can be created, imported (e.g. from iTunes), and exported for use in other music players.
 - Metadata (title, artist, and album) can be edited directly.
 - You may customize TuneJar's appeareance to your heart's content using [CSS](https://github.com/sudiamanj/TuneJar/blob/master/src/main/resources/viewcontroller/DarkTheme.css).
-- Library management is quick and painless. Simply choose which folders to track and let TuneJar do the hard work for you.
 
 Upon pre-release, there will be a Wiki set up with more detailed information. Stay tuned!
 
