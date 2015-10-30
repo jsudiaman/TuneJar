@@ -10,7 +10,7 @@ Here's a few reasons why TuneJar might just be the right player for you.
 - Library management is quick and painless. Simply choose which folders to track and let TuneJar do the hard work for you.
 - M3U playlists can be created, imported (e.g. from iTunes), and exported for use in other music players.
 - Metadata (Title/Artist/Album) can be edited directly.
-- TuneJar is skinnable via CSS. In addition, TuneJar will also ship with multiple premade themes.
+- TuneJar is skinnable via CSS and will ship with multiple premade themes.
 
 Upon pre-release, there will be a Wiki set up with more detailed information. Stay tuned!
 
