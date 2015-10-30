@@ -5,7 +5,7 @@
 TuneJar (powered by **Java**) is a music player that is **lightweight**, **cross-platform**, and best of all, **open source**.
 
 ### Why TuneJar?
-Here's a few reasons why TuneJar might just be the right program for you.  
+Here's a few reasons why TuneJar might just be the right player for you.  
 
 - M3U playlists can be created, imported (e.g. from iTunes), and exported for use in other music players.
 - Metadata (title, artist, and album) can be edited directly.
