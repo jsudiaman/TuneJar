@@ -122,7 +122,7 @@ public final class FileManipulator {
 	 *            A File object that is a directory.
 	 * @return A collection containing all the Song objects.
 	 */
-	// TODO Multithread this method to optimize runtime
+	// TODO Fix Issue #4
 	public static Collection<Song> getSongs(File directory) {
 		// Initialize the set or return an empty set if necessary.
 		Set<Song> set = new HashSet<>();
