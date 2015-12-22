@@ -1,6 +1,4 @@
-package menu;
-
-import static util.DebugUtils.LOGGER;
+package tunejar.menu;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,20 +13,24 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import song.Playlist;
-import song.Song;
-import viewcontroller.Controller;
-import viewcontroller.View;
+import tunejar.app.AppController;
+import tunejar.app.AppLauncher;
+import tunejar.app.AppLogger;
+import tunejar.song.Playlist;
+import tunejar.song.Song;
 
 /**
  * Helper class for handling the Playlist menu.
  */
 public class PlaylistMenu {
 
-	private Controller controller;
+	// Singleton Object
+	private static PlaylistMenu instance = new PlaylistMenu();
 
-	public PlaylistMenu(Controller controller) {
-		this.controller = controller;
+	private AppController controller;
+
+	private PlaylistMenu() {
+		this.controller = AppController.getInstance();
 	}
 
 	/**
@@ -44,7 +46,7 @@ public class PlaylistMenu {
 
 		controller.setSongList(FXCollections.observableArrayList(p));
 		controller.getSongTable().setItems(controller.getSongList());
-		LOGGER.log(Level.INFO, "Loaded playlist: " + p.getName());
+		AppLogger.getLogger().log(Level.INFO, "Loaded playlist: " + p.getName());
 
 		// Enable the user to add songs to the playlist (unless the playlist is
 		// MainView::masterPlaylist).
@@ -66,7 +68,7 @@ public class PlaylistMenu {
 				p.save();
 			} catch (IOException e) {
 				controller.getStatus().setText("Playlist \"" + p.getName() + "\" save unsuccessful.");
-				LOGGER.log(Level.SEVERE, "Failed to save the playlist.", e);
+				AppLogger.getLogger().log(Level.SEVERE, "Failed to save the playlist.", e);
 			} finally {
 				controller.refreshTables();
 				event.consume();
@@ -85,10 +87,12 @@ public class PlaylistMenu {
 		}
 
 		Collections.shuffle(controller.getSongList());
-		if (View.getNowPlaying() != null && controller.getSongList().indexOf(View.getNowPlaying()) >= 0) {
-			Collections.swap(controller.getSongList(), 0, controller.getSongList().indexOf(View.getNowPlaying()));
+		if (AppLauncher.getInstance().getNowPlaying() != null
+				&& controller.getSongList().indexOf(AppLauncher.getInstance().getNowPlaying()) >= 0) {
+			Collections.swap(controller.getSongList(), 0,
+					controller.getSongList().indexOf(AppLauncher.getInstance().getNowPlaying()));
 		} else {
-			controller.getPlaybackMenu().play(0);
+			PlaybackMenu.getInstance().play(0);
 		}
 		controller.focus(controller.getSongTable(), 0);
 	}
@@ -145,7 +149,7 @@ public class PlaylistMenu {
 
 		} catch (IOException e) {
 			controller.getStatus().setText("Rename failed. See log.txt for details.");
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -185,6 +189,10 @@ public class PlaylistMenu {
 		} else {
 			controller.getStatus().setText("Deletion failed.");
 		}
+	}
+
+	public static PlaylistMenu getInstance() {
+		return instance;
 	}
 
 }

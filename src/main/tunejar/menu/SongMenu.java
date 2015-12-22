@@ -1,6 +1,4 @@
-package menu;
-
-import static util.DebugUtils.LOGGER;
+package tunejar.menu;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,19 +18,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
-import song.Playlist;
-import song.Song;
-import viewcontroller.Controller;
+import tunejar.app.AppController;
+import tunejar.app.AppLogger;
+import tunejar.song.Playlist;
+import tunejar.song.Song;
 
 /**
  * Helper class for handling the Song menu.
  */
 public class SongMenu {
 
-	private Controller controller;
+	// Singleton Object
+	private static SongMenu instance = new SongMenu();
 
-	public SongMenu(Controller controller) {
-		this.controller = controller;
+	private AppController controller;
+
+	private SongMenu() {
+		this.controller = AppController.getInstance();
 	}
 
 	/**
@@ -109,7 +111,7 @@ public class SongMenu {
 
 		Optional<List<String>> newParams = editor.showAndWait();
 		if (newParams.isPresent()) {
-			songToEdit.setTag(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
+			songToEdit.setMetadata(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
 			controller.refreshTables();
 			controller.getStatus().setText("Edit successful.");
 		}
@@ -127,12 +129,12 @@ public class SongMenu {
 		}
 
 		Playlist pl;
-		if ((pl = controller.getFileMenu().createPlaylist()) != null) {
+		if ((pl = FileMenu.getInstance().createPlaylist()) != null) {
 			pl.addAll(songs);
 			try {
 				pl.save();
 			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 	}
@@ -156,7 +158,7 @@ public class SongMenu {
 		try {
 			pl.save();
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -228,6 +230,10 @@ public class SongMenu {
 			controller.getSongTable().getSelectionModel().select(i);
 		}
 		return count;
+	}
+
+	public static SongMenu getInstance() {
+		return instance;
 	}
 
 }

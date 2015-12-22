@@ -1,6 +1,4 @@
-package song;
-
-import static util.DebugUtils.LOGGER;
+package tunejar.song;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,6 +19,7 @@ import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
+import tunejar.app.AppLogger;
 
 /**
  * An ordered collection of Song objects.
@@ -70,9 +69,9 @@ public class Playlist implements List<Song> {
 		BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
 		for (String nextLine; (nextLine = reader.readLine()) != null;) {
 			try {
-				add(new Song(new Mp3File(new File(nextLine))));
+				add(new Mp3Song(new Mp3File(new File(nextLine)))); // TODO Generalize
 			} catch (UnsupportedTagException | InvalidDataException | IOException e) {
-				LOGGER.log(Level.SEVERE, "Failed to add song: " + nextLine, e);
+				AppLogger.getLogger().log(Level.SEVERE, "Failed to add song: " + nextLine, e);
 			}
 		}
 
@@ -104,7 +103,7 @@ public class Playlist implements List<Song> {
 			writer.newLine();
 		}
 		writer.close();
-		LOGGER.log(Level.INFO, "Successfully saved playlist: " + name.get() + ".m3u");
+		AppLogger.getLogger().log(Level.INFO, "Successfully saved playlist: " + name.get() + ".m3u");
 	}
 
 	// --------------- Method Overriding --------------- //
@@ -114,7 +113,7 @@ public class Playlist implements List<Song> {
 	 */
 	@Override
 	public boolean add(Song s) {
-		return list.add(new Song(s));
+		return list.add(new Mp3Song((Mp3Song) s)); // TODO Generalize
 	}
 
 	/**

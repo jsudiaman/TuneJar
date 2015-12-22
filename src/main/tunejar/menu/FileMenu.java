@@ -1,6 +1,4 @@
-package menu;
-
-import static util.DebugUtils.LOGGER;
+package tunejar.menu;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -10,19 +8,23 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
-import song.Playlist;
-import viewcontroller.Controller;
-import viewcontroller.View;
+import tunejar.app.AppController;
+import tunejar.app.AppLauncher;
+import tunejar.app.AppLogger;
+import tunejar.song.Playlist;
 
 /**
  * Helper class for handling the File menu.
  */
 public class FileMenu {
 
-	private Controller controller;
+	// Singleton Object
+	private static FileMenu instance = new FileMenu();
 
-	public FileMenu(Controller controller) {
-		this.controller = controller;
+	private AppController controller;
+
+	private FileMenu() {
+		this.controller = AppController.getInstance();
 	}
 
 	/**
@@ -57,7 +59,7 @@ public class FileMenu {
 			Playlist p = new Playlist(pName);
 			try {
 				p.save();
-				controller.getPlaylistMenu().loadPlaylist(p);
+				PlaylistMenu.getInstance().loadPlaylist(p);
 				return p;
 			} catch (IOException e) {
 				// Playlist creation fails if it cannot be successfully saved.
@@ -67,7 +69,7 @@ public class FileMenu {
 				failAlert.setContentText("The playlist failed to save. Make sure the name "
 						+ "does not contain any illegal characters.");
 				failAlert.showAndWait();
-				LOGGER.log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
+				AppLogger.getLogger().log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
 			}
 		}
 		return null;
@@ -89,26 +91,30 @@ public class FileMenu {
 	}
 
 	public void addDirectory() {
-		View.addDirectory();
+		AppLauncher.getInstance().addDirectory();
 		Platform.runLater(() -> {
-			controller.getPlaylistList().set(0, View.getMasterPlaylist());
+			controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
 			controller.refreshTables();
 			controller.focus(controller.getPlaylistTable(), 0);
 		});
 	}
 
 	public void removeDirectory() {
-		if (View.removeDirectory()) {
-			View.refresh();
+		if (AppLauncher.getInstance().removeDirectory()) {
+			AppLauncher.getInstance().refresh();
 			Platform.runLater(() -> {
-				controller.getPlaylistList().set(0, View.getMasterPlaylist());
+				controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
 				controller.refreshTables();
-				if (View.getNowPlaying() != null
-						&& !View.getMasterPlaylist().contains(View.getNowPlaying())) {
-					View.stopPlayback();
+				if (AppLauncher.getInstance().getNowPlaying() != null && !AppLauncher.getInstance().getMasterPlaylist()
+						.contains(AppLauncher.getInstance().getNowPlaying())) {
+					AppLauncher.getInstance().stopPlayback();
 				}
 			});
 		}
+	}
+
+	public static FileMenu getInstance() {
+		return instance;
 	}
 
 }

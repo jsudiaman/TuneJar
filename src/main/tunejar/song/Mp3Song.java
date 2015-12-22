@@ -1,6 +1,4 @@
-package song;
-
-import static util.DebugUtils.LOGGER;
+package tunejar.song;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,13 +16,14 @@ import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
-import viewcontroller.View;
+import tunejar.app.AppLauncher;
+import tunejar.app.AppLogger;
 
 /**
  * Helpful documentation for the MP3agic library:
  * https://github.com/mpatric/mp3agic
  */
-public class Song {
+public class Mp3Song implements Song {
 
 	// Assign ID3 tag versions to integers
 	public final static int ID3_V1 = 1;
@@ -45,7 +44,7 @@ public class Song {
 	 * @param mp3file
 	 *            The mp3 file containing the song
 	 */
-	public Song(Mp3File mp3file) {
+	public Mp3Song(Mp3File mp3file) {
 		// Find out which version of ID3 tag is used by the MP3.
 		if (mp3file.hasId3v2Tag()) {
 			ID3TagVersion = ID3_V2;
@@ -91,9 +90,9 @@ public class Song {
 	 * Copy constructor.
 	 * 
 	 * @param s
-	 *            Song object to copy
+	 *            {@link Mp3Song} object to copy
 	 */
-	public Song(Song s) {
+	public Mp3Song(Mp3Song s) {
 		this(s.mp3file);
 	}
 
@@ -122,7 +121,7 @@ public class Song {
 	 * @param newAlbum
 	 *            New album
 	 */
-	public void setTag(String newTitle, String newArtist, String newAlbum) {
+	public void setMetadata(String newTitle, String newArtist, String newAlbum) {
 		// Set the instance members
 		this.title.set(newTitle);
 		this.artist.set(newArtist);
@@ -155,7 +154,7 @@ public class Song {
 		try {
 			save();
 		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -191,20 +190,20 @@ public class Song {
 	public void play(double volume) {
 		if (paused) {
 			paused = false;
-			View.resumePlayback();
+			AppLauncher.getInstance().resumePlayback();
 		} else {
-			View.playSong(this, volume);
+			AppLauncher.getInstance().load(this, volume);
 		}
 	}
 
 	public void pause() {
 		paused = true;
-		View.pausePlayback();
+		AppLauncher.getInstance().pausePlayback();
 	}
 
 	public void stop() {
 		paused = false;
-		View.stopPlayback();
+		AppLauncher.getInstance().stopPlayback();
 	}
 
 	// ---------------- Saving ------------------ //
@@ -214,7 +213,7 @@ public class Song {
 			save();
 			return true;
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Unable to save song: " + toString(), e);
+			AppLogger.getLogger().log(Level.SEVERE, "Unable to save song: " + toString(), e);
 			return false;
 		} finally {
 			new File(mp3file.getFilename() + ".tmp").deleteOnExit();

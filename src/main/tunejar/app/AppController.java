@@ -1,4 +1,4 @@
-package viewcontroller;
+package tunejar.app;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,24 +22,21 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import menu.FileMenu;
-import menu.PlaybackMenu;
-import menu.PlaylistMenu;
-import menu.SongMenu;
-import song.Playlist;
-import song.Song;
+import tunejar.menu.FileMenu;
+import tunejar.menu.PlaybackMenu;
+import tunejar.menu.PlaylistMenu;
+import tunejar.menu.SongMenu;
+import tunejar.song.Playlist;
+import tunejar.song.Song;
 
-public class Controller implements Initializable {
+public class AppController implements Initializable {
+
+	// Singleton Object
+	private static AppController instance;
 
 	// Lists
 	private ObservableList<Song> songList;
 	private ObservableList<Playlist> playlistList;
-
-	// Helpers
-	private FileMenu fileMenu;
-	private PlaybackMenu playbackMenu;
-	private SongMenu songMenu;
-	private PlaylistMenu playlistMenu;
 
 	// FXML Injections
 	@FXML
@@ -78,6 +75,11 @@ public class Controller implements Initializable {
 
 	// --------------- Initialization --------------- //
 
+	public AppController() {
+		if (instance != null)
+			throw new IllegalStateException("An instance of this object already exists.");
+	}
+
 	/**
 	 * Sets up the playlist viewer.
 	 *
@@ -90,11 +92,8 @@ public class Controller implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// Initialize the helpers.
-		fileMenu = new FileMenu(this);
-		playbackMenu = new PlaybackMenu(this);
-		songMenu = new SongMenu(this);
-		playlistMenu = new PlaylistMenu(this);
+		// Initialize the singleton object.
+		instance = this;
 
 		// Initialize the song table.
 		songList = FXCollections.observableArrayList();
@@ -111,7 +110,8 @@ public class Controller implements Initializable {
 
 		// When a song is selected, update the status bar.
 		songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			status.setText(View.getNowPlaying() != null ? "Now Playing: " + View.getNowPlaying().toString() : "");
+			status.setText(AppLauncher.getInstance().getNowPlaying() != null
+					? "Now Playing: " + AppLauncher.getInstance().getNowPlaying().toString() : "");
 		});
 
 		// When a song is double clicked, play it.
@@ -152,26 +152,26 @@ public class Controller implements Initializable {
 
 		// Initialize the volume slider.
 		volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-			View.setVolume(newValue.doubleValue());
+			AppLauncher.getInstance().setVolume(newValue.doubleValue());
 		});
 	}
 
 	// --------------- File --------------- //
 
 	public void createPlaylistButton() {
-		fileMenu.createPlaylist();
+		FileMenu.getInstance().createPlaylist();
 	}
 
 	public void quit() {
-		fileMenu.quit();
+		FileMenu.getInstance().quit();
 	}
 
 	public void addDirectory() {
-		fileMenu.addDirectory();
+		FileMenu.getInstance().addDirectory();
 	}
 
 	public void removeDirectory() {
-		fileMenu.removeDirectory();
+		FileMenu.getInstance().removeDirectory();
 	}
 
 	// --------------- Playback --------------- //
@@ -180,55 +180,55 @@ public class Controller implements Initializable {
 	 * Plays or resumes the selected song.
 	 */
 	public void play() {
-		playbackMenu.play();
+		PlaybackMenu.getInstance().play();
 	}
 
 	public void pause() {
-		playbackMenu.pause();
+		PlaybackMenu.getInstance().pause();
 	}
 
 	public void stop() {
-		playbackMenu.stop();
+		PlaybackMenu.getInstance().stop();
 	}
 
 	public void playPrev() {
-		playbackMenu.playPrev();
+		PlaybackMenu.getInstance().playPrev();
 	}
 
 	public void playNext() {
-		playbackMenu.playNext();
+		PlaybackMenu.getInstance().playNext();
 	}
 
 	// --------------- Song --------------- //
 
 	public void editSong() {
-		songMenu.editSong();
+		SongMenu.getInstance().editSong();
 	}
 
 	public void toNewPlaylist() {
-		songMenu.toNewPlaylist();
+		SongMenu.getInstance().toNewPlaylist();
 	}
 
 	public void removeSong() {
-		songMenu.removeSong();
+		SongMenu.getInstance().removeSong();
 	}
 
 	public void search() {
-		songMenu.search();
+		SongMenu.getInstance().search();
 	}
 
 	// --------------- Playlist --------------- //
 
 	public void shuffle() {
-		playlistMenu.shuffle();
+		PlaylistMenu.getInstance().shuffle();
 	}
 
 	public void renamePlaylist() {
-		playlistMenu.renamePlaylist();
+		PlaylistMenu.getInstance().renamePlaylist();
 	}
 
 	public void deletePlaylist() {
-		playlistMenu.deletePlaylist();
+		PlaylistMenu.getInstance().deletePlaylist();
 	}
 
 	// --------------- Utilities --------------- //
@@ -285,10 +285,6 @@ public class Controller implements Initializable {
 		return playlistList;
 	}
 
-	public PlaylistMenu getPlaylistMenu() {
-		return playlistMenu;
-	}
-
 	public TableView<Playlist> getPlaylistTable() {
 		return playlistTable;
 	}
@@ -317,20 +313,16 @@ public class Controller implements Initializable {
 		return addToPlaylist;
 	}
 
-	public PlaybackMenu getPlaybackMenu() {
-		return playbackMenu;
-	}
-
-	public FileMenu getFileMenu() {
-		return fileMenu;
-	}
-
 	public ObservableList<Song> getSongList() {
 		return songList;
 	}
 
 	public void setSongList(ObservableList<Song> songList) {
 		this.songList = songList;
+	}
+
+	public static AppController getInstance() {
+		return instance;
 	}
 
 }
