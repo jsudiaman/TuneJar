@@ -12,7 +12,6 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -20,10 +19,16 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.HashMultiset;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -48,6 +53,8 @@ public class AppLauncher extends Application {
 	// Singleton Object
 	private static AppLauncher instance;
 
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	// GUI
 	private MediaPlayer player;
 	private Song nowPlaying;
@@ -56,11 +63,11 @@ public class AppLauncher extends Application {
 
 	// Data
 	private Playlist masterPlaylist;
-	private Collection<File> directories;
+	private Set<File> directories;
 
 	// Constants
 	private static final String DIRECTORY_FILENAME = "directories.dat";
-	private static long TIMEOUT_SECONDS = 120;
+	private static final long TIMEOUT = Long.MAX_VALUE;
 
 	public AppLauncher() {
 		if (instance != null)
@@ -85,12 +92,11 @@ public class AppLauncher extends Application {
 	 */
 	@Override
 	public void start(Stage primaryStage) {
-		// Start the program
-		instance = this;
+		setInstance(this);
 		try {
 			init(primaryStage);
 		} catch (Exception e) {
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.catching(Level.FATAL, e);
 			exitWithAlert(e);
 		}
 	}
@@ -131,53 +137,51 @@ public class AppLauncher extends Application {
 
 		controller = fxmlLoader.getController();
 
-		Platform.runLater(() -> {
-			// Create and display a playlist containing all songs from each
-			// directory.
-			refresh();
-			PlaylistMenu.getInstance().loadPlaylist(masterPlaylist);
+		// Create and display a playlist containing all songs from each
+		// directory.
+		refresh();
+		PlaylistMenu.getInstance().loadPlaylist(masterPlaylist);
 
-			// Save the directories.
-			try {
-				writeFiles(directories);
-				controller.getStatus().setText("");
-			} catch (IOException e) {
-				AppLogger.getLogger().log(Level.SEVERE, "Failed to save directories.", e);
-				controller.getStatus().setText("Failed to save directories.");
-			}
+		// Save the directories.
+		try {
+			writeFiles(directories);
+			controller.getStatus().setText("");
+		} catch (IOException e) {
+			LOGGER.error("Failed to save directories.", e);
+			controller.getStatus().setText("Failed to save directories.");
+		}
 
-			// Finally, load in all playlists from the working directory.
-			Collection<Playlist> playlistSet = null;
-			try {
-				playlistSet = getPlaylists();
-			} catch (IOException | NullPointerException e) {
-				AppLogger.getLogger().log(Level.SEVERE, "Failed to load playlists from the working directory.", e);
-				exitWithAlert(e);
-			}
-			if (playlistSet != null) {
-				playlistSet.forEach(PlaylistMenu.getInstance()::loadPlaylist);
-			}
-			controller.focus(controller.getPlaylistTable(), 0);
-		});
+		// Finally, load in all playlists from the working directory.
+		Collection<Playlist> playlistSet = null;
+		try {
+			playlistSet = getPlaylists();
+		} catch (IOException | NullPointerException e) {
+			LOGGER.fatal("Failed to load playlists from the working directory.", e);
+			exitWithAlert(e);
+		}
+		if (playlistSet != null) {
+			playlistSet.forEach(PlaylistMenu.getInstance()::loadPlaylist);
+		}
+		controller.focus(controller.getPlaylistTable(), 0);
 	}
 
 	/**
-	 * The master playlist takes in all MP3 files that can be found in available
-	 * directories.
+	 * The master playlist takes in all music files that can be found in
+	 * available directories.
 	 */
 	public void refresh() {
 		masterPlaylist = new Playlist("All Music");
 
 		// Then add all songs found in the directories to the master playlist.
 		if (directories != null) {
-			AppLogger.getLogger().log(Level.INFO, "Found directories: " + directories.toString());
+			LOGGER.info("Found directories: " + directories);
 			for (File directory : directories) {
-				AppLogger.getLogger().log(Level.INFO, "Now adding songs from directory " + directory.toString());
+				LOGGER.info("Now adding songs from directory " + directory);
 				Collection<Song> songs = getSongs(directory);
 				masterPlaylist.addAll(songs);
 			}
 		}
-		AppLogger.getLogger().log(Level.INFO, "Refresh successful");
+		LOGGER.info("Refresh successful");
 	}
 
 	// ------------------- Media Player Controls ------------------- //
@@ -193,13 +197,13 @@ public class AppLauncher extends Application {
 			nowPlaying.stop();
 		}
 		nowPlaying = song;
-		AppLogger.getLogger().log(Level.INFO, "Playing: " + nowPlaying.toString());
+		LOGGER.info("Playing: " + nowPlaying);
 		String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
 		try {
 			player = new MediaPlayer(new Media(uriString));
 		} catch (MediaException e) {
 			controller.getStatus().setText("Failed to play the song.");
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.catching(Level.ERROR, e);
 		}
 		player.setVolume(AppController.getInstance().getVolumeSlider().getValue());
 		player.play();
@@ -210,7 +214,7 @@ public class AppLauncher extends Application {
 	 */
 	public void resumePlayback() {
 		if (player != null && nowPlaying != null) {
-			AppLogger.getLogger().log(Level.INFO, "Resuming: " + nowPlaying.toString());
+			LOGGER.info("Resuming: " + nowPlaying);
 			player.play();
 		}
 	}
@@ -220,7 +224,7 @@ public class AppLauncher extends Application {
 	 */
 	public void pausePlayback() {
 		if (player != null && nowPlaying != null) {
-			AppLogger.getLogger().log(Level.INFO, "Pausing: " + nowPlaying.toString());
+			LOGGER.info("Pausing: " + nowPlaying);
 			player.pause();
 		}
 	}
@@ -230,7 +234,7 @@ public class AppLauncher extends Application {
 	 */
 	public void stopPlayback() {
 		if (player != null && nowPlaying != null) {
-			AppLogger.getLogger().log(Level.INFO, "Stopping: " + nowPlaying.toString());
+			LOGGER.info("Stopping: " + nowPlaying);
 			player.stop();
 		}
 		nowPlaying = null;
@@ -263,6 +267,10 @@ public class AppLauncher extends Application {
 		return masterPlaylist;
 	}
 
+	private static void setInstance(AppLauncher instance) {
+		AppLauncher.instance = instance;
+	}
+
 	public static AppLauncher getInstance() {
 		return instance;
 	}
@@ -277,27 +285,22 @@ public class AppLauncher extends Application {
 		if (directory == null) {
 			return;
 		}
-		controller.getStatus().setText("Loading your songs, please be patient...");
-		Platform.runLater(() -> {
-			directories.add(directory);
-			try {
-				writeFiles(directories);
-			} catch (Exception e) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Failed");
-				alert.setHeaderText("Failed to add the directory.");
-				alert.setContentText("Please see log.txt for details.");
-				alert.showAndWait();
-				AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
-			}
-			refresh();
-			controller.getStatus().setText("");
-		});
+		directories.add(directory);
+		try {
+			writeFiles(directories);
+		} catch (Exception e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Failed");
+			alert.setHeaderText("Failed to add the directory.");
+			alert.showAndWait();
+			LOGGER.catching(Level.ERROR, e);
+		}
+		refresh();
 	}
 
 	/**
 	 * Allows the user to choose and remove a directory from the directory
-	 * collection.
+	 * set.
 	 * 
 	 * @return True iff a directory was successfully removed.
 	 */
@@ -322,12 +325,11 @@ public class AppLauncher extends Application {
 			try {
 				writeFiles(directories);
 				controller.getStatus().setText("Directory removed.");
-				AppLogger.getLogger().log(Level.INFO,
-						"Directory removed. Remaining directories:" + directories.toString());
+				LOGGER.info("Directory removed. Remaining directories:" + directories);
 				return true;
 			} catch (IOException e) {
 				controller.getStatus().setText("Failed to remove directory.");
-				AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+				LOGGER.catching(Level.ERROR, e);
 				return false;
 			}
 		}
@@ -343,7 +345,7 @@ public class AppLauncher extends Application {
 	 */
 	public File chooseDirectory(Stage stage) {
 		DirectoryChooser chooser = new DirectoryChooser();
-		chooser.setTitle("Where are your MP3s?");
+		chooser.setTitle("Where are your songs?");
 		return chooser.showDialog(stage);
 	}
 
@@ -359,15 +361,15 @@ public class AppLauncher extends Application {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Welcome!");
 		alert.setHeaderText(null);
-		alert.setContentText("Hi there! It seems like you don't have any directories set up."
-				+ "\nThat usually happens when you run this for the first time."
-				+ "\nIf that's the case, let's find your MP3s!");
+		alert.setContentText("Hi there! It seems like you don't have any directories set up. "
+				+ "That usually happens when you run this for the first time. "
+				+ "If that's the case, let's find your songs!");
 		alert.showAndWait();
 
 		// Begin building up a data structure to store directories
 		File chosenDirectory = chooseDirectory(stage);
 		if (chosenDirectory == null) {
-			AppLogger.getLogger().log(Level.INFO, "User pressed 'cancel' when asked to choose a directory.");
+			LOGGER.info("User pressed 'cancel' when asked to choose a directory.");
 			return null;
 		} else {
 			return chosenDirectory;
@@ -381,7 +383,7 @@ public class AppLauncher extends Application {
 	 * @throws IOException
 	 *             The file cannot be found or accessed
 	 */
-	public Collection<File> readDirectories() throws IOException {
+	public Set<File> readDirectories() throws IOException {
 		Set<File> dirSet = new HashSet<>();
 
 		// Read in the directories line by line.
@@ -423,47 +425,46 @@ public class AppLauncher extends Application {
 	 */
 	public Collection<Song> getSongs(File directory) {
 		// Initialization
-		Set<Song> set = Collections.synchronizedSet(new HashSet<Song>());
+		Collection<Song> songs = ConcurrentHashMultiset.create();
 		ExecutorService executor = Executors.newCachedThreadPool();
 
-		// If the directory is null, or not a directory, return the empty set
+		// If the directory is null, or not a directory, return an empty
+		// collection
 		if (directory == null || !directory.isDirectory()) {
-			AppLogger.getLogger().log(Level.SEVERE, "Failed to access directory: "
-					+ (directory == null ? "null" : directory.toString()) + ", skipping...");
-			return set;
+			LOGGER.error("Failed to access directory: " + (directory == null ? "null" : directory) + ", skipping...");
+			return songs;
 		}
 
-		// If the file list is null, return the empty set
+		// If the file list is null, return an empty collection
 		File[] files = directory.listFiles();
 		if (files == null)
-			return set;
+			return songs;
 
 		// Iterate through each file in the directory.
 		for (File f : files) {
-			executor.submit(() -> {
-				try {
-					if (f.isDirectory()) {
-						set.addAll(getSongs(f));
-					} else {
+			if (f.isDirectory()) {
+				songs.addAll(getSongs(f));
+			} else {
+				executor.submit(() -> {
+					try {
 						Song song = SongFactory.getInstance().fromFile(f);
 						if (song != null)
-							set.add(song);
+							songs.add(song);
+					} catch (Exception e) {
+						LOGGER.error("Failed to construct a song object from file: " + f, e);
 					}
-				} catch (Exception e) {
-					AppLogger.getLogger().log(Level.SEVERE,
-							"Failed to construct a song object from file: " + f.toString(), e);
-				}
-			});
+				});
+			}
 		}
 
 		executor.shutdown();
 		try {
-			executor.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+			executor.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new RuntimeException(e);
+			LOGGER.error("Thread was interrupted.", e);
 		}
-		return set;
+		return songs;
 	}
 
 	/**
@@ -478,22 +479,22 @@ public class AppLauncher extends Application {
 	 */
 	public Collection<Playlist> getPlaylists() throws IOException {
 		// Initialization
-		Set<Playlist> set = new HashSet<>();
+		Collection<Playlist> multiset = HashMultiset.create();
 		File[] fileList = new File(".").listFiles();
 		if (fileList == null) {
-			AppLogger.getLogger().log(Level.SEVERE, "Unable to access the working directory.");
-			return set;
+			LOGGER.error("Unable to access the working directory.");
+			return multiset;
 		}
 
 		// Iterate through each file in the working directory.
 		for (File f : fileList) {
 			if (f.toString().endsWith(".m3u")) {
 				Playlist playlist = new Playlist(f);
-				set.add(playlist);
+				multiset.add(playlist);
 			}
 		}
 
-		return set;
+		return multiset;
 	}
 
 	// ------------------- Exception Handling ------------------- //
@@ -516,7 +517,6 @@ public class AppLauncher extends Application {
 		// Create an alert to let the user know what happened.
 		alert.setTitle("Fatal Error!");
 		alert.setHeaderText(e.getClass().toString().substring(6) + ": " + e.getMessage());
-		alert.setContentText("Please send the log.txt file to our developers for analysis.");
 
 		// Store the stack trace string in a textarea hidden by a "Show/Hide
 		// Details" button.

@@ -1,36 +1,27 @@
 package tunejar.song;
 
-import javafx.beans.property.SimpleStringProperty;
+public interface Song {
 
-public abstract class Song {
+	public void play();
 
-	protected SimpleStringProperty title;
-	protected SimpleStringProperty artist;
-	protected SimpleStringProperty album;
-	protected boolean paused;
+	public void pause();
 
-	public abstract void play();
+	public void stop();
 
-	public abstract void pause();
+	public String getAbsoluteFilename();
 
-	public abstract void stop();
+	public boolean canEdit();
 
-	public abstract String getAbsoluteFilename();
+	public void setTitle(String title);
 
-	public abstract boolean canEdit();
+	public String getTitle();
 
-	public abstract void setTitle(String title);
+	public void setArtist(String artist);
 
-	public abstract String getTitle();
+	public String getArtist();
 
-	public abstract void setArtist(String artist);
+	public void setAlbum(String album);
 
-	public abstract String getArtist();
-
-	public abstract void setAlbum(String album);
-
-	public abstract String getAlbum();
-
-	public abstract String toString();
+	public String getAlbum();
 
 }

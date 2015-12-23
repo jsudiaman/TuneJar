@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -93,7 +92,7 @@ public class AppController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// Initialize the singleton object.
-		instance = this;
+		setInstance(this);
 
 		// Initialize the song table.
 		songList = FXCollections.observableArrayList();
@@ -242,12 +241,10 @@ public class AppController implements Initializable {
 	 *            The row that should be selected
 	 */
 	public void focus(TableView<?> t, int index) {
-		Platform.runLater(() -> {
-			t.requestFocus();
-			t.getSelectionModel().select(index);
-			t.getFocusModel().focus(index);
-			t.scrollTo(index);
-		});
+		t.requestFocus();
+		t.getSelectionModel().select(index);
+		t.getFocusModel().focus(index);
+		t.scrollTo(index);
 	}
 
 	public void refreshTables() {
@@ -319,6 +316,10 @@ public class AppController implements Initializable {
 
 	public void setSongList(ObservableList<Song> songList) {
 		this.songList = songList;
+	}
+
+	public static void setInstance(AppController instance) {
+		AppController.instance = instance;
 	}
 
 	public static AppController getInstance() {

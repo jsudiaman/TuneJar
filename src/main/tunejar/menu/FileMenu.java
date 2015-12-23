@@ -2,7 +2,11 @@ package tunejar.menu;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Level;
+import java.util.concurrent.CountDownLatch;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -10,7 +14,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import tunejar.app.AppController;
 import tunejar.app.AppLauncher;
-import tunejar.app.AppLogger;
 import tunejar.song.Playlist;
 
 /**
@@ -20,6 +23,8 @@ public class FileMenu {
 
 	// Singleton Object
 	private static FileMenu instance = new FileMenu();
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private AppController controller;
 
@@ -69,7 +74,7 @@ public class FileMenu {
 				failAlert.setContentText("The playlist failed to save. Make sure the name "
 						+ "does not contain any illegal characters.");
 				failAlert.showAndWait();
-				AppLogger.getLogger().log(Level.SEVERE, "Failed to save playlist: " + pName + ".m3u", e);
+				LOGGER.error("Failed to save playlist: " + pName + ".m3u", e);
 			}
 		}
 		return null;
@@ -92,24 +97,20 @@ public class FileMenu {
 
 	public void addDirectory() {
 		AppLauncher.getInstance().addDirectory();
-		Platform.runLater(() -> {
-			controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
-			controller.refreshTables();
-			controller.focus(controller.getPlaylistTable(), 0);
-		});
+		controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
+		controller.refreshTables();
+		controller.focus(controller.getPlaylistTable(), 0);
 	}
 
 	public void removeDirectory() {
 		if (AppLauncher.getInstance().removeDirectory()) {
 			AppLauncher.getInstance().refresh();
-			Platform.runLater(() -> {
-				controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
-				controller.refreshTables();
-				if (AppLauncher.getInstance().getNowPlaying() != null && !AppLauncher.getInstance().getMasterPlaylist()
-						.contains(AppLauncher.getInstance().getNowPlaying())) {
-					AppLauncher.getInstance().stopPlayback();
-				}
-			});
+			controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
+			controller.refreshTables();
+			if (AppLauncher.getInstance().getNowPlaying() != null && !AppLauncher.getInstance().getMasterPlaylist()
+					.contains(AppLauncher.getInstance().getNowPlaying())) {
+				AppLauncher.getInstance().stopPlayback();
+			}
 		}
 	}
 

@@ -11,19 +11,21 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
-import tunejar.app.AppLogger;
 
 /**
  * An ordered collection of Song objects.
  */
 public class Playlist implements List<Song> {
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<Song> list = new ArrayList<Song>();
 	private final SimpleStringProperty name;
@@ -66,7 +68,7 @@ public class Playlist implements List<Song> {
 			try {
 				add(SongFactory.getInstance().fromFile(new File(nextLine)));
 			} catch (UnsupportedTagException | InvalidDataException | IOException e) {
-				AppLogger.getLogger().log(Level.SEVERE, "Failed to add song: " + nextLine, e);
+				LOGGER.error("Failed to add song: " + nextLine, e);
 			}
 		}
 
@@ -98,7 +100,7 @@ public class Playlist implements List<Song> {
 			writer.newLine();
 		}
 		writer.close();
-		AppLogger.getLogger().log(Level.INFO, "Successfully saved playlist: " + name.get() + ".m3u");
+		LOGGER.info("Successfully saved playlist: " + name.get() + ".m3u");
 	}
 
 	// --------------- Method Overriding --------------- //

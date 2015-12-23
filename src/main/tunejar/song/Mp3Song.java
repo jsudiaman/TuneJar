@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
@@ -17,13 +20,8 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
 import tunejar.app.AppLauncher;
-import tunejar.app.AppLogger;
 
-/**
- * Helpful documentation for the MP3agic library:
- * https://github.com/mpatric/mp3agic
- */
-public class Mp3Song extends Song {
+public class Mp3Song implements Song {
 
 	private class ID3Version {
 		public final static int ID3_V1 = 1;
@@ -31,6 +29,12 @@ public class Mp3Song extends Song {
 		public final static int CUSTOM_TAG = 3;
 	}
 
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	private SimpleStringProperty title;
+	private SimpleStringProperty artist;
+	private SimpleStringProperty album;
+	private boolean paused;
 	private int id3Version;
 	private Mp3File mp3file;
 
@@ -92,6 +96,7 @@ public class Mp3Song extends Song {
 		this(s.mp3file);
 	}
 
+	@Override
 	public void play() {
 		if (paused) {
 			paused = false;
@@ -101,11 +106,13 @@ public class Mp3Song extends Song {
 		}
 	}
 
+	@Override
 	public void pause() {
 		paused = true;
 		AppLauncher.getInstance().pausePlayback();
 	}
 
+	@Override
 	public void stop() {
 		paused = false;
 		AppLauncher.getInstance().stopPlayback();
@@ -117,23 +124,26 @@ public class Mp3Song extends Song {
 	 *
 	 * @return The absolute path
 	 */
+	@Override
 	public String getAbsoluteFilename() {
 		File file = new File(mp3file.getFilename());
 		return file.getAbsolutePath();
 	}
 
+	@Override
 	public boolean canEdit() {
 		try {
 			save();
 			return true;
 		} catch (Exception e) {
-			AppLogger.getLogger().log(Level.SEVERE, "Unable to save song: " + toString(), e);
+			LOGGER.error("Unable to save song: " + toString(), e);
 			return false;
 		} finally {
 			new File(mp3file.getFilename() + ".tmp").deleteOnExit();
 		}
 	}
 
+	@Override
 	public void setTitle(String title) {
 		this.title.set(title);
 		switch (id3Version) {
@@ -156,14 +166,16 @@ public class Mp3Song extends Song {
 		try {
 			save();
 		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.catching(Level.ERROR, e);
 		}
 	}
 
+	@Override
 	public String getTitle() {
 		return title.get();
 	}
 
+	@Override
 	public void setArtist(String artist) {
 		this.artist.set(artist);
 		switch (id3Version) {
@@ -186,14 +198,16 @@ public class Mp3Song extends Song {
 		try {
 			save();
 		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.catching(Level.ERROR, e);
 		}
 	}
 
+	@Override
 	public String getArtist() {
 		return artist.get();
 	}
 
+	@Override
 	public void setAlbum(String album) {
 		this.album.set(album);
 		switch (id3Version) {
@@ -216,10 +230,11 @@ public class Mp3Song extends Song {
 		try {
 			save();
 		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.catching(Level.ERROR, e);
 		}
 	}
 
+	@Override
 	public String getAlbum() {
 		return album.get();
 	}
@@ -229,6 +244,7 @@ public class Mp3Song extends Song {
 	 *
 	 * @return "Song Title - Artist"
 	 */
+	@Override
 	public String toString() {
 		return getTitle() + " - " + getArtist();
 	}

@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
@@ -15,7 +18,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import tunejar.app.AppController;
 import tunejar.app.AppLauncher;
-import tunejar.app.AppLogger;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
 
@@ -26,6 +28,8 @@ public class PlaylistMenu {
 
 	// Singleton Object
 	private static PlaylistMenu instance = new PlaylistMenu();
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private AppController controller;
 
@@ -46,7 +50,7 @@ public class PlaylistMenu {
 
 		controller.setSongList(FXCollections.observableArrayList(p));
 		controller.getSongTable().setItems(controller.getSongList());
-		AppLogger.getLogger().log(Level.INFO, "Loaded playlist: " + p.getName());
+		LOGGER.info("Loaded playlist: " + p.getName());
 
 		// Enable the user to add songs to the playlist (unless the playlist is
 		// MainView::masterPlaylist).
@@ -68,7 +72,7 @@ public class PlaylistMenu {
 				p.save();
 			} catch (IOException e) {
 				controller.getStatus().setText("Playlist \"" + p.getName() + "\" save unsuccessful.");
-				AppLogger.getLogger().log(Level.SEVERE, "Failed to save the playlist.", e);
+				LOGGER.error("Failed to save the playlist.", e);
 			} finally {
 				controller.refreshTables();
 				event.consume();
@@ -148,8 +152,8 @@ public class PlaylistMenu {
 			}
 
 		} catch (IOException e) {
-			controller.getStatus().setText("Rename failed. See log.txt for details.");
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			controller.getStatus().setText("Rename failed.");
+			LOGGER.catching(Level.ERROR, e);
 		}
 	}
 

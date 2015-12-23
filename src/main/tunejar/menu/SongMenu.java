@@ -7,7 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -19,7 +22,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import tunejar.app.AppController;
-import tunejar.app.AppLogger;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
 
@@ -30,6 +32,8 @@ public class SongMenu {
 
 	// Singleton Object
 	private static SongMenu instance = new SongMenu();
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private AppController controller;
 
@@ -135,7 +139,7 @@ public class SongMenu {
 			try {
 				pl.save();
 			} catch (IOException e) {
-				AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+				LOGGER.catching(Level.ERROR, e);
 			}
 		}
 	}
@@ -159,7 +163,7 @@ public class SongMenu {
 		try {
 			pl.save();
 		} catch (IOException e) {
-			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.catching(Level.ERROR, e);
 		}
 	}
 

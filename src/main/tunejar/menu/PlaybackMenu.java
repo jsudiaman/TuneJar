@@ -1,10 +1,10 @@
 package tunejar.menu;
 
-import java.util.logging.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import tunejar.app.AppController;
 import tunejar.app.AppLauncher;
-import tunejar.app.AppLogger;
 
 /**
  * Helper class for handling the Playback menu.
@@ -13,6 +13,8 @@ public class PlaybackMenu {
 
 	// Singleton Object
 	private static PlaybackMenu instance = new PlaybackMenu();
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private AppController controller;
 
@@ -50,11 +52,13 @@ public class PlaybackMenu {
 			// Update the status bar accordingly
 			controller.getStatus().setText("Now Playing: " + AppLauncher.getInstance().getNowPlaying().toString());
 		} catch (NullPointerException e) {
-			AppLogger.getLogger().log(Level.SEVERE, "Failed to play song. "
-					+ (controller.getSongList().isEmpty() ? "The playlist was empty." : "The playlist was not empty."),
-					e);
+			if (controller.getSongList().isEmpty())
+				LOGGER.info("The playlist is empty.");
+			else
+				LOGGER.info("The playlist is not empty.");
+			LOGGER.error("Failed to play song.", e);
 		} catch (Exception e) {
-			AppLogger.getLogger().log(Level.SEVERE, "Failed to play song.", e);
+			LOGGER.error("Failed to play song.", e);
 		}
 	}
 
@@ -84,8 +88,8 @@ public class PlaybackMenu {
 			controller.getShortcutPause().setText("Pause");
 			controller.getMenuPause().setText("Pause");
 		} else {
-			AppLogger.getLogger().log(Level.SEVERE,
-					"Invalid text for pause button detected, text was: " + controller.getMenuPause().getText());
+			LOGGER.fatal("Invalid text for pause button detected, text was: " + controller.getMenuPause().getText());
+			throw new AssertionError();
 		}
 	}
 
