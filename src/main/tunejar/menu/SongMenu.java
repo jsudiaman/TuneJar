@@ -38,8 +38,7 @@ public class SongMenu {
 	}
 
 	/**
-	 * Creates a user dialog that allows modification of the selected song's ID3
-	 * tags.
+	 * Creates a user dialog that allows modification of the selected song.
 	 */
 	public void editSong() {
 		ObservableList<Song> songsToEdit = controller.getSongTable().getSelectionModel().getSelectedItems();
@@ -56,8 +55,8 @@ public class SongMenu {
 
 		Song songToEdit = songsToEdit.get(0);
 
-		if (!songToEdit.canSave()) {
-			controller.getStatus().setText("The file is locked. See log.txt for details.");
+		if (!songToEdit.canEdit()) {
+			controller.getStatus().setText("The file is locked.");
 			return;
 		}
 
@@ -110,11 +109,13 @@ public class SongMenu {
 		});
 
 		Optional<List<String>> newParams = editor.showAndWait();
-		if (newParams.isPresent()) {
-			songToEdit.setMetadata(newParams.get().get(0), newParams.get().get(1), newParams.get().get(2));
+		newParams.ifPresent(list -> {
+			songToEdit.setTitle(list.get(0));
+			songToEdit.setArtist(list.get(1));
+			songToEdit.setAlbum(list.get(2));
 			controller.refreshTables();
 			controller.getStatus().setText("Edit successful.");
-		}
+		});
 	}
 
 	/**

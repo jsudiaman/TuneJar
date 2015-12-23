@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -26,14 +25,10 @@ import tunejar.app.AppLogger;
  */
 public class Playlist implements List<Song> {
 
-	private final List<Song> list;
+	private final List<Song> list = new ArrayList<Song>();
 	private final SimpleStringProperty name;
 
 	// --------------- Constructors --------------- //
-
-	{
-		this.list = Collections.synchronizedList(new ArrayList<Song>());
-	}
 
 	/**
 	 * Creates a new instance of Playlist that is named "Untitled".
@@ -69,7 +64,7 @@ public class Playlist implements List<Song> {
 		BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
 		for (String nextLine; (nextLine = reader.readLine()) != null;) {
 			try {
-				add(new Mp3Song(new Mp3File(new File(nextLine)))); // TODO Generalize
+				add(SongFactory.getInstance().fromFile(new File(nextLine)));
 			} catch (UnsupportedTagException | InvalidDataException | IOException e) {
 				AppLogger.getLogger().log(Level.SEVERE, "Failed to add song: " + nextLine, e);
 			}
@@ -113,7 +108,7 @@ public class Playlist implements List<Song> {
 	 */
 	@Override
 	public boolean add(Song s) {
-		return list.add(new Mp3Song((Mp3Song) s)); // TODO Generalize
+		return list.add(SongFactory.getInstance().fromSong(s));
 	}
 
 	/**

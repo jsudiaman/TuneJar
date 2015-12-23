@@ -44,7 +44,7 @@ public class PlaybackMenu {
 		try {
 			// Have the playlist point to the appropriate song, then play it
 			controller.getSongTable().getSelectionModel().clearAndSelect(row);
-			controller.getSongList().get(row).play(controller.getVolumeSlider().getValue());
+			controller.getSongList().get(row).play();
 			AppLauncher.getInstance().setEndOfSongAction(controller::playNext);
 
 			// Update the status bar accordingly
@@ -80,7 +80,7 @@ public class PlaybackMenu {
 			controller.getMenuPause().setText("Resume");
 		} else if (controller.getMenuPause().getText().equals("Resume")) {
 			controller.getStatus().setText("Now Playing: " + AppLauncher.getInstance().getNowPlaying().toString());
-			AppLauncher.getInstance().getNowPlaying().play(controller.getVolumeSlider().getValue());
+			AppLauncher.getInstance().getNowPlaying().play();
 			controller.getShortcutPause().setText("Pause");
 			controller.getMenuPause().setText("Pause");
 		} else {

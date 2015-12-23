@@ -1,3 +1,5 @@
+// TODO Use Log4J instead
+
 package tunejar.app;
 
 import java.io.IOException;

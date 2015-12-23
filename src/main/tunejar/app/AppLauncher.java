@@ -12,15 +12,15 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,9 +39,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import tunejar.menu.PlaylistMenu;
-import tunejar.song.Mp3Song;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
+import tunejar.song.SongFactory;
 
 public class AppLauncher extends Application {
 
@@ -59,7 +59,8 @@ public class AppLauncher extends Application {
 	private Collection<File> directories;
 
 	// Constants
-	private final String DIRECTORY_FILENAME = "directories.dat";
+	private static final String DIRECTORY_FILENAME = "directories.dat";
+	private static long TIMEOUT_SECONDS = 120;
 
 	public AppLauncher() {
 		if (instance != null)
@@ -168,12 +169,13 @@ public class AppLauncher extends Application {
 		masterPlaylist = new Playlist("All Music");
 
 		// Then add all songs found in the directories to the master playlist.
-		AppLogger.getLogger().log(Level.INFO,
-				"Found directories: " + (directories != null ? directories.toString() : "null"));
-		for (File directory : directories) {
-			AppLogger.getLogger().log(Level.INFO, "Now adding songs from directory " + directory.toString());
-			Collection<Song> songs = getSongs(directory);
-			masterPlaylist.addAll(songs);
+		if (directories != null) {
+			AppLogger.getLogger().log(Level.INFO, "Found directories: " + directories.toString());
+			for (File directory : directories) {
+				AppLogger.getLogger().log(Level.INFO, "Now adding songs from directory " + directory.toString());
+				Collection<Song> songs = getSongs(directory);
+				masterPlaylist.addAll(songs);
+			}
 		}
 		AppLogger.getLogger().log(Level.INFO, "Refresh successful");
 	}
@@ -186,7 +188,7 @@ public class AppLauncher extends Application {
 	 * @param song
 	 *            The song to play
 	 */
-	public void load(Song song, double volume) {
+	public void load(Song song) {
 		if (nowPlaying != null) {
 			nowPlaying.stop();
 		}
@@ -196,10 +198,10 @@ public class AppLauncher extends Application {
 		try {
 			player = new MediaPlayer(new Media(uriString));
 		} catch (MediaException e) {
-			controller.getStatus().setText("Failed to play the song. See log.txt for details.");
+			controller.getStatus().setText("Failed to play the song.");
 			AppLogger.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
-		player.setVolume(volume);
+		player.setVolume(AppController.getInstance().getVolumeSlider().getValue());
 		player.play();
 	}
 
@@ -411,45 +413,56 @@ public class AppLauncher extends Application {
 	}
 
 	/**
-	 * Takes in a directory and recursively searches for all music files contained
-	 * within that directory. The files are then constructed as Song objects to
-	 * be wrapped up in a collection.
+	 * Takes in a directory and recursively searches for all music files
+	 * contained within that directory. The files are then constructed as Song
+	 * objects to be wrapped up in a collection.
 	 *
 	 * @param directory
 	 *            A File object that is a directory.
 	 * @return A collection containing all the Song objects.
 	 */
 	public Collection<Song> getSongs(File directory) {
-		// Initialize the set or return an empty set if necessary.
-		Set<Song> set = new HashSet<>();
+		// Initialization
+		Set<Song> set = Collections.synchronizedSet(new HashSet<Song>());
+		ExecutorService executor = Executors.newCachedThreadPool();
+
+		// If the directory is null, or not a directory, return the empty set
 		if (directory == null || !directory.isDirectory()) {
 			AppLogger.getLogger().log(Level.SEVERE, "Failed to access directory: "
 					+ (directory == null ? "null" : directory.toString()) + ", skipping...");
 			return set;
 		}
 
+		// If the file list is null, return the empty set
+		File[] files = directory.listFiles();
+		if (files == null)
+			return set;
+
 		// Iterate through each file in the directory.
-		for (File f : directory.listFiles()) {
-			try {
-				// If a directory was found, add the mp3 files in that directory
-				// as well.
-				if (f.isDirectory()) {
-					set.addAll(getSongs(f));
-				} else {
-					// Attempt to construct a song object. If successful, add it
-					// to the set.
-					if (!f.toString().endsWith(".mp3")) {
-						continue;
+		for (File f : files) {
+			executor.submit(() -> {
+				try {
+					if (f.isDirectory()) {
+						set.addAll(getSongs(f));
+					} else {
+						Song song = SongFactory.getInstance().fromFile(f);
+						if (song != null)
+							set.add(song);
 					}
-					Song song = new Mp3Song(new Mp3File(f)); // TODO Generalize
-					set.add(song);
+				} catch (Exception e) {
+					AppLogger.getLogger().log(Level.SEVERE,
+							"Failed to construct a song object from file: " + f.toString(), e);
 				}
-			} catch (UnsupportedTagException | InvalidDataException | IOException | NullPointerException e) {
-				AppLogger.getLogger().log(Level.SEVERE,
-						"Failed to construct a song object from file: " + f.toString(), e);
-			}
+			});
 		}
 
+		executor.shutdown();
+		try {
+			executor.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
 		return set;
 	}
 
