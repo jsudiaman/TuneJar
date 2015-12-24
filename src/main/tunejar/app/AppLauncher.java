@@ -298,8 +298,7 @@ public class AppLauncher extends Application {
 	}
 
 	/**
-	 * Allows the user to choose and remove a directory from the directory
-	 * set.
+	 * Allows the user to choose and remove a directory from the directory set.
 	 * 
 	 * @return True iff a directory was successfully removed.
 	 */
@@ -447,8 +446,10 @@ public class AppLauncher extends Application {
 				executor.submit(() -> {
 					try {
 						Song song = SongFactory.getInstance().fromFile(f);
-						if (song != null)
+						if (song != null) {
 							songs.add(song);
+							LOGGER.debug("Added song: " + song);
+						}
 					} catch (Exception e) {
 						LOGGER.error("Failed to construct a song object from file: " + f, e);
 					}
