@@ -2,9 +2,7 @@ package tunejar.menu;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
