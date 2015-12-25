@@ -21,7 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
-import tunejar.app.AppController;
+import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
 
@@ -35,10 +35,10 @@ public class SongMenu {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private AppController controller;
+	private PlayerController controller;
 
 	private SongMenu() {
-		this.controller = AppController.getInstance();
+		this.controller = PlayerController.getInstance();
 	}
 
 	/**

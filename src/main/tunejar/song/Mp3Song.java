@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,15 +18,10 @@ import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
-import tunejar.app.AppLauncher;
+import tunejar.config.ID3Version;
+import tunejar.player.Player;
 
 public class Mp3Song implements Song {
-
-	private class ID3Version {
-		public final static int ID3_V1 = 1;
-		public final static int ID3_V2 = 2;
-		public final static int CUSTOM_TAG = 3;
-	}
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -100,22 +94,22 @@ public class Mp3Song implements Song {
 	public void play() {
 		if (paused) {
 			paused = false;
-			AppLauncher.getInstance().resumePlayback();
+			Player.getInstance().resumePlayback();
 		} else {
-			AppLauncher.getInstance().load(this);
+			Player.getInstance().load(this);
 		}
 	}
 
 	@Override
 	public void pause() {
 		paused = true;
-		AppLauncher.getInstance().pausePlayback();
+		Player.getInstance().pausePlayback();
 	}
 
 	@Override
 	public void stop() {
 		paused = false;
-		AppLauncher.getInstance().stopPlayback();
+		Player.getInstance().stopPlayback();
 	}
 
 	/**
@@ -136,10 +130,8 @@ public class Mp3Song implements Song {
 			save();
 			return true;
 		} catch (Exception e) {
-			LOGGER.error("Unable to save song: " + toString(), e);
+			LOGGER.error("Unable to edit song: " + toString(), e);
 			return false;
-		} finally {
-			new File(mp3file.getFilename() + ".tmp").deleteOnExit();
 		}
 	}
 
@@ -165,8 +157,8 @@ public class Mp3Song implements Song {
 
 		try {
 			save();
-		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			LOGGER.catching(Level.ERROR, e);
+		} catch (Exception e) {
+			LOGGER.error("Unable to set title.", e);
 		}
 	}
 
@@ -197,8 +189,8 @@ public class Mp3Song implements Song {
 
 		try {
 			save();
-		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			LOGGER.catching(Level.ERROR, e);
+		} catch (Exception e) {
+			LOGGER.error("Unable to set artist.", e);
 		}
 	}
 
@@ -229,8 +221,8 @@ public class Mp3Song implements Song {
 
 		try {
 			save();
-		} catch (IOException | NotSupportedException | UnsupportedTagException | InvalidDataException e) {
-			LOGGER.catching(Level.ERROR, e);
+		} catch (Exception e) {
+			LOGGER.error("Unable to set album.", e);
 		}
 	}
 
@@ -274,10 +266,14 @@ public class Mp3Song implements Song {
 	 * @throws UnsupportedTagException
 	 */
 	private void save() throws IOException, NotSupportedException, InvalidDataException, UnsupportedTagException {
-		String tempname = mp3file.getFilename() + ".tmp";
-		mp3file.save(mp3file.getFilename() + ".tmp");
-		Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), StandardCopyOption.REPLACE_EXISTING);
-		mp3file = new Mp3File(new File(mp3file.getFilename()));
+		try {
+			String tempname = mp3file.getFilename() + ".tmp";
+			mp3file.save(mp3file.getFilename() + ".tmp");
+			Files.move(Paths.get(tempname), Paths.get(mp3file.getFilename()), StandardCopyOption.REPLACE_EXISTING);
+			mp3file = new Mp3File(new File(mp3file.getFilename()));
+		} finally {
+			Files.deleteIfExists(Paths.get(mp3file.getFilename() + ".tmp"));
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package tunejar.app;
+package tunejar.player;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,10 +28,10 @@ import tunejar.menu.SongMenu;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
 
-public class AppController implements Initializable {
+public class PlayerController implements Initializable {
 
 	// Singleton Object
-	private static AppController instance;
+	private static PlayerController instance;
 
 	// Lists
 	private ObservableList<Song> songList;
@@ -74,7 +74,7 @@ public class AppController implements Initializable {
 
 	// --------------- Initialization --------------- //
 
-	public AppController() {
+	public PlayerController() {
 		if (instance != null)
 			throw new IllegalStateException("An instance of this object already exists.");
 	}
@@ -109,8 +109,8 @@ public class AppController implements Initializable {
 
 		// When a song is selected, update the status bar.
 		songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			status.setText(AppLauncher.getInstance().getNowPlaying() != null
-					? "Now Playing: " + AppLauncher.getInstance().getNowPlaying().toString() : "");
+			status.setText(Player.getInstance().getNowPlaying() != null
+					? "Now Playing: " + Player.getInstance().getNowPlaying().toString() : "");
 		});
 
 		// When a song is double clicked, play it.
@@ -151,7 +151,7 @@ public class AppController implements Initializable {
 
 		// Initialize the volume slider.
 		volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-			AppLauncher.getInstance().setVolume(newValue.doubleValue());
+			Player.getInstance().setVolume(newValue.doubleValue());
 		});
 	}
 
@@ -318,11 +318,11 @@ public class AppController implements Initializable {
 		this.songList = songList;
 	}
 
-	public static void setInstance(AppController instance) {
-		AppController.instance = instance;
+	public static void setInstance(PlayerController instance) {
+		PlayerController.instance = instance;
 	}
 
-	public static AppController getInstance() {
+	public static PlayerController getInstance() {
 		return instance;
 	}
 

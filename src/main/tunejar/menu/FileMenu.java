@@ -10,8 +10,8 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
-import tunejar.app.AppController;
-import tunejar.app.AppLauncher;
+import tunejar.player.Player;
+import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 
 /**
@@ -24,10 +24,10 @@ public class FileMenu {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private AppController controller;
+	private PlayerController controller;
 
 	private FileMenu() {
-		this.controller = AppController.getInstance();
+		this.controller = PlayerController.getInstance();
 	}
 
 	/**
@@ -94,20 +94,20 @@ public class FileMenu {
 	}
 
 	public void addDirectory() {
-		AppLauncher.getInstance().addDirectory();
-		controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
+		Player.getInstance().addDirectory();
+		controller.getPlaylistList().set(0, Player.getInstance().getMasterPlaylist());
 		controller.refreshTables();
 		controller.focus(controller.getPlaylistTable(), 0);
 	}
 
 	public void removeDirectory() {
-		if (AppLauncher.getInstance().removeDirectory()) {
-			AppLauncher.getInstance().refresh();
-			controller.getPlaylistList().set(0, AppLauncher.getInstance().getMasterPlaylist());
+		if (Player.getInstance().removeDirectory()) {
+			Player.getInstance().refresh();
+			controller.getPlaylistList().set(0, Player.getInstance().getMasterPlaylist());
 			controller.refreshTables();
-			if (AppLauncher.getInstance().getNowPlaying() != null && !AppLauncher.getInstance().getMasterPlaylist()
-					.contains(AppLauncher.getInstance().getNowPlaying())) {
-				AppLauncher.getInstance().stopPlayback();
+			if (Player.getInstance().getNowPlaying() != null && !Player.getInstance().getMasterPlaylist()
+					.contains(Player.getInstance().getNowPlaying())) {
+				Player.getInstance().stopPlayback();
 			}
 		}
 	}

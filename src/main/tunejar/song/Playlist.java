@@ -8,9 +8,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +23,7 @@ import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
+import tunejar.config.Constants;
 
 /**
  * An ordered collection of Song objects.
@@ -27,7 +32,7 @@ public class Playlist implements List<Song> {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final List<Song> list = new ArrayList<Song>();
+	private final List<Song> list = Collections.synchronizedList(new ArrayList<Song>());
 	private final SimpleStringProperty name;
 
 	// --------------- Constructors --------------- //
@@ -64,12 +69,25 @@ public class Playlist implements List<Song> {
 
 		// Add each song line by line.
 		BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
+		ExecutorService executor = Executors.newWorkStealingPool();
 		for (String nextLine; (nextLine = reader.readLine()) != null;) {
-			try {
-				add(SongFactory.getInstance().fromFile(new File(nextLine)));
-			} catch (UnsupportedTagException | InvalidDataException | IOException e) {
-				LOGGER.error("Failed to add song: " + nextLine, e);
-			}
+			String file = nextLine;
+			executor.submit(() -> {
+				try {
+					add(SongFactory.getInstance().fromFile(new File(file)));
+				} catch (UnsupportedTagException | InvalidDataException | IOException e) {
+					LOGGER.error("Failed to add song: " + file, e);
+				}
+			});
+		}
+
+		// Block until all of the songs have been added.
+		executor.shutdown();
+		try {
+			executor.awaitTermination(Constants.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			LOGGER.error("Thread was interrupted.", e);
 		}
 
 		reader.close();
@@ -104,9 +122,9 @@ public class Playlist implements List<Song> {
 	}
 
 	// --------------- Method Overriding --------------- //
+
 	/**
-	 * Similar to java.util.Arraylist.add(E e), but uses the copy constructor
-	 * instead of directly adding the argument.
+	 * Uses the copy constructor instead of directly adding the argument.
 	 */
 	@Override
 	public boolean add(Song s) {
@@ -135,6 +153,7 @@ public class Playlist implements List<Song> {
 	}
 
 	// --------------- Delegation --------------- //
+
 	@Override
 	public int size() {
 		return list.size();

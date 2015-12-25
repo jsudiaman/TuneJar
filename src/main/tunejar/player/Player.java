@@ -1,4 +1,4 @@
-package tunejar.app;
+package tunejar.player;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,15 +42,16 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import tunejar.config.Constants;
 import tunejar.menu.PlaylistMenu;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
 import tunejar.song.SongFactory;
 
-public class AppLauncher extends Application {
+public class Player extends Application {
 
 	// Singleton Object
-	private static AppLauncher instance;
+	private static Player instance;
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -58,17 +59,13 @@ public class AppLauncher extends Application {
 	private MediaPlayer player;
 	private Song nowPlaying;
 	private Stage primaryStage;
-	private AppController controller;
+	private PlayerController controller;
 
 	// Data
 	private Playlist masterPlaylist;
 	private Set<File> directories;
 
-	// Constants
-	private static final String DIRECTORY_FILENAME = "directories.dat";
-	private static final long TIMEOUT = Long.MAX_VALUE;
-
-	public AppLauncher() {
+	public Player() {
 		if (instance != null)
 			throw new IllegalStateException("An instance of this object already exists.");
 	}
@@ -111,7 +108,7 @@ public class AppLauncher extends Application {
 	private void init(Stage primaryStage) throws IOException {
 		// Load the FXML file and display the interface.
 		this.primaryStage = primaryStage;
-		URL location = getClass().getResource("GUI.fxml");
+		URL location = getClass().getResource("Player.fxml");
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		Parent root = fxmlLoader.load(location.openStream());
 
@@ -121,7 +118,6 @@ public class AppLauncher extends Application {
 		primaryStage.setTitle("TuneJar");
 		primaryStage.setScene(scene);
 		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
-		primaryStage.show();
 
 		// Load the directories. If none are present, prompt the user for one.
 		try {
@@ -169,18 +165,27 @@ public class AppLauncher extends Application {
 	 * available directories.
 	 */
 	public void refresh() {
+		primaryStage.hide();
 		masterPlaylist = new Playlist("All Music");
 
 		// Then add all songs found in the directories to the master playlist.
 		if (directories != null) {
+			ExecutorService executor = Executors.newWorkStealingPool();
 			LOGGER.info("Found directories: " + directories);
+			LOGGER.info("Populating the master playlist...");
 			for (File directory : directories) {
-				LOGGER.info("Now adding songs from directory " + directory);
-				Collection<Song> songs = getSongs(directory);
-				masterPlaylist.addAll(songs);
+				executor.submit(() -> masterPlaylist.addAll(getSongs(directory)));
+			}
+			executor.shutdown();
+			try {
+				executor.awaitTermination(Constants.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				LOGGER.error("Thread was interrupted.", e);
 			}
 		}
 		LOGGER.info("Refresh successful");
+		primaryStage.show();
 	}
 
 	// ------------------- Media Player Controls ------------------- //
@@ -196,15 +201,16 @@ public class AppLauncher extends Application {
 			nowPlaying.stop();
 		}
 		nowPlaying = song;
-		LOGGER.info("Playing: " + nowPlaying);
 		String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
 		try {
 			player = new MediaPlayer(new Media(uriString));
+			LOGGER.debug("Loaded: " + uriString);
 		} catch (MediaException e) {
 			controller.getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
 		}
-		player.setVolume(AppController.getInstance().getVolumeSlider().getValue());
+		player.setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
+		LOGGER.info("Playing: " + nowPlaying);
 		player.play();
 	}
 
@@ -266,11 +272,11 @@ public class AppLauncher extends Application {
 		return masterPlaylist;
 	}
 
-	private static void setInstance(AppLauncher instance) {
-		AppLauncher.instance = instance;
+	private static void setInstance(Player instance) {
+		Player.instance = instance;
 	}
 
-	public static AppLauncher getInstance() {
+	public static Player getInstance() {
 		return instance;
 	}
 
@@ -341,7 +347,7 @@ public class AppLauncher extends Application {
 	 *            The stage that will hold the dialog box
 	 * @return The directory specified by the user, or null if the user cancels
 	 */
-	public File chooseDirectory(Stage stage) {
+	private File chooseDirectory(Stage stage) {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Where are your songs?");
 		return chooser.showDialog(stage);
@@ -354,7 +360,7 @@ public class AppLauncher extends Application {
 	 *            The stage that will hold the dialog box
 	 * @return A directory chosen by the user, or null if the user cancels
 	 */
-	public File initialDirectory(Stage stage) {
+	private File initialDirectory(Stage stage) {
 		// Alert the user that no directories were found
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Welcome!");
@@ -381,11 +387,11 @@ public class AppLauncher extends Application {
 	 * @throws IOException
 	 *             The file cannot be found or accessed
 	 */
-	public Set<File> readDirectories() throws IOException {
+	private Set<File> readDirectories() throws IOException {
 		Set<File> dirSet = new HashSet<>();
 
 		// Read in the directories line by line.
-		BufferedReader reader = new BufferedReader(new FileReader(DIRECTORY_FILENAME));
+		BufferedReader reader = new BufferedReader(new FileReader(Constants.DIRECTORY_FILENAME));
 		for (String nextLine; (nextLine = reader.readLine()) != null;) {
 			dirSet.add(new File(nextLine));
 		}
@@ -403,8 +409,8 @@ public class AppLauncher extends Application {
 	 * @throws IOException
 	 *             Unable to write the output to the file
 	 */
-	public void writeFiles(Collection<File> files) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(DIRECTORY_FILENAME, false));
+	private void writeFiles(Collection<File> files) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.DIRECTORY_FILENAME, false));
 		for (File f : files) {
 			writer.write(f.getAbsoluteFile().toString());
 			writer.newLine();
@@ -418,13 +424,12 @@ public class AppLauncher extends Application {
 	 * objects to be wrapped up in a collection.
 	 *
 	 * @param directory
-	 *            A File object that is a directory.
 	 * @return A collection containing all the Song objects.
 	 */
-	public Collection<Song> getSongs(File directory) {
+	private Collection<Song> getSongs(File directory) {
 		// Initialization
 		Collection<Song> songs = ConcurrentHashMultiset.create();
-		ExecutorService executor = Executors.newCachedThreadPool();
+		ExecutorService executor = Executors.newWorkStealingPool();
 
 		// If the directory is null, or not a directory, return an empty
 		// collection
@@ -446,10 +451,8 @@ public class AppLauncher extends Application {
 				executor.submit(() -> {
 					try {
 						Song song = SongFactory.getInstance().fromFile(f);
-						if (song != null) {
+						if (song != null)
 							songs.add(song);
-							LOGGER.debug("Added song: " + song);
-						}
 					} catch (Exception e) {
 						LOGGER.error("Failed to construct a song object from file: " + f, e);
 					}
@@ -459,7 +462,7 @@ public class AppLauncher extends Application {
 
 		executor.shutdown();
 		try {
-			executor.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+			executor.awaitTermination(Constants.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
@@ -477,7 +480,9 @@ public class AppLauncher extends Application {
 	 * @throws IOException
 	 *             Unable to access the working directory
 	 */
-	public Collection<Playlist> getPlaylists() throws IOException {
+	private Collection<Playlist> getPlaylists() throws IOException {
+		primaryStage.hide();
+
 		// Initialization
 		Collection<Playlist> multiset = HashMultiset.create();
 		File[] fileList = new File(".").listFiles();
@@ -494,6 +499,7 @@ public class AppLauncher extends Application {
 			}
 		}
 
+		primaryStage.show();
 		return multiset;
 	}
 

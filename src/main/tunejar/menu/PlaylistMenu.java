@@ -16,8 +16,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import tunejar.app.AppController;
-import tunejar.app.AppLauncher;
+import tunejar.player.Player;
+import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
 
@@ -31,10 +31,10 @@ public class PlaylistMenu {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private AppController controller;
+	private PlayerController controller;
 
 	private PlaylistMenu() {
-		this.controller = AppController.getInstance();
+		this.controller = PlayerController.getInstance();
 	}
 
 	/**
@@ -52,11 +52,10 @@ public class PlaylistMenu {
 		controller.getSongTable().setItems(controller.getSongList());
 		LOGGER.info("Loaded playlist: " + p.getName());
 
-		// Enable the user to add songs to the playlist (unless the playlist is
-		// MainView::masterPlaylist).
 		if (p.getName().equals("All Music")) {
 			return;
 		}
+		// Enable the user to add songs to the playlist.
 		MenuItem m = new MenuItem(p.getName());
 		controller.getAddToPlaylist().getItems().add(m);
 		m.setOnAction(event -> {
@@ -91,10 +90,10 @@ public class PlaylistMenu {
 		}
 
 		Collections.shuffle(controller.getSongList());
-		if (AppLauncher.getInstance().getNowPlaying() != null
-				&& controller.getSongList().indexOf(AppLauncher.getInstance().getNowPlaying()) >= 0) {
+		if (Player.getInstance().getNowPlaying() != null
+				&& controller.getSongList().indexOf(Player.getInstance().getNowPlaying()) >= 0) {
 			Collections.swap(controller.getSongList(), 0,
-					controller.getSongList().indexOf(AppLauncher.getInstance().getNowPlaying()));
+					controller.getSongList().indexOf(Player.getInstance().getNowPlaying()));
 		} else {
 			PlaybackMenu.getInstance().play(0);
 		}
