@@ -30,9 +30,7 @@ import tunejar.song.Song;
  */
 public class SongMenu {
 
-	// Singleton Object
-	private static SongMenu instance = new SongMenu();
-
+	private static final SongMenu INSTANCE = new SongMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private PlayerController controller;
@@ -238,7 +236,7 @@ public class SongMenu {
 	}
 
 	public static SongMenu getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 
 }

@@ -19,9 +19,7 @@ import tunejar.song.Playlist;
  */
 public class FileMenu {
 
-	// Singleton Object
-	private static FileMenu instance = new FileMenu();
-
+	private static final FileMenu INSTANCE = new FileMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private PlayerController controller;
@@ -105,15 +103,15 @@ public class FileMenu {
 			Player.getInstance().refresh();
 			controller.getPlaylistList().set(0, Player.getInstance().getMasterPlaylist());
 			controller.refreshTables();
-			if (Player.getInstance().getNowPlaying() != null && !Player.getInstance().getMasterPlaylist()
-					.contains(Player.getInstance().getNowPlaying())) {
+			if (Player.getInstance().getNowPlaying() != null
+					&& !Player.getInstance().getMasterPlaylist().contains(Player.getInstance().getNowPlaying())) {
 				Player.getInstance().stopPlayback();
 			}
 		}
 	}
 
 	public static FileMenu getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 
 }

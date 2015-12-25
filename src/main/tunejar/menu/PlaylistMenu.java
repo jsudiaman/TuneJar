@@ -26,9 +26,7 @@ import tunejar.song.Song;
  */
 public class PlaylistMenu {
 
-	// Singleton Object
-	private static PlaylistMenu instance = new PlaylistMenu();
-
+	private static final PlaylistMenu INSTANCE = new PlaylistMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private PlayerController controller;
@@ -195,7 +193,7 @@ public class PlaylistMenu {
 	}
 
 	public static PlaylistMenu getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 
 }

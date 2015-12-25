@@ -1,5 +1,8 @@
 package tunejar.config;
 
+/**
+ * ID3 versions for MP3 songs.
+ */
 public class ID3Version {
 
 	private ID3Version() {

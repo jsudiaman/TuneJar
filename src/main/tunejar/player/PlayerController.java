@@ -30,7 +30,6 @@ import tunejar.song.Song;
 
 public class PlayerController implements Initializable {
 
-	// Singleton Object
 	private static PlayerController instance;
 
 	// Lists
@@ -84,10 +83,10 @@ public class PlayerController implements Initializable {
 	 *
 	 * @param location
 	 *            The location used to resolve relative paths for the root
-	 *            object, or null if the location is not known.
+	 *            object, or <code>null</code> if the location is not known.
 	 * @param resources
-	 *            The resources used to localize the root object, or null if the
-	 *            root object was not localized.
+	 *            The resources used to localize the root object, or
+	 *            <code>null</code> if the root object was not localized.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {

@@ -10,7 +10,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -50,9 +54,7 @@ import tunejar.song.SongFactory;
 
 public class Player extends Application {
 
-	// Singleton Object
 	private static Player instance;
-
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	// GUI
@@ -71,12 +73,28 @@ public class Player extends Application {
 	}
 
 	/**
-	 * Calls {@link Application#launch(String...)}.
+	 * Cleans up excessive log files, then calls
+	 * {@link Application#launch(String...)}.
 	 *
 	 * @param args
 	 *            The command line arguments
 	 */
 	public static void main(String[] args) {
+		// If there too many log files, repeatedly delete the oldest ones until
+		// there is one less than the limit.
+		try {
+			for (int i = 0; i < Constants.MAX_LOOPS; i++) {
+				Path logsFolder = Paths.get(Constants.LOG_FOLDER);
+				String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".log"));
+				if (files.length <= Constants.LOG_FILE_LIMIT)
+					break;
+				Arrays.sort(files);
+				Files.delete(logsFolder.resolve(files[0]));
+			}
+		} catch (IOException e) {
+			LOGGER.error("Log file cleanup failed.", e);
+		}
+
 		launch(args);
 	}
 

@@ -12,9 +12,7 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 
 public class SongFactory {
 
-	// Singleton object
-	private static SongFactory instance = new SongFactory();
-	
+	private static final SongFactory INSTANCE = new SongFactory();
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private SongFactory() {
@@ -24,7 +22,9 @@ public class SongFactory {
 	 * Constructs a {@link Song} out of a file.
 	 * 
 	 * @param file
-	 * @return The constructed {@link Song}.
+	 *            The file to be used.
+	 * @return The constructed {@link Song}, or <code>null</code> if the file
+	 *         type is not supported.
 	 * @throws IOException
 	 * @throws InvalidDataException
 	 * @throws UnsupportedTagException
@@ -34,7 +34,7 @@ public class SongFactory {
 			LOGGER.debug("From file: " + file);
 			return new Mp3Song(new Mp3File(file));
 		}
-		
+
 		// Unsupported file type
 		return null;
 	}
@@ -43,18 +43,21 @@ public class SongFactory {
 	 * Duplicates a {@link Song} by using its copy constructor (if applicable).
 	 * 
 	 * @param song
-	 * @return The duplicate {@link Song}.
+	 *            The song to be used.
+	 * @return The duplicate {@link Song}, or <code>null</code> if the
+	 *         {@link Song} does not support copy construction.
 	 */
 	public Song fromSong(Song song) {
-		if (song instanceof Mp3Song)
+		if (song instanceof Mp3Song) {
 			return new Mp3Song((Mp3Song) song);
+		}
 
 		// Song does not support copy construction
 		return null;
 	}
 
 	public static SongFactory getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 
 }

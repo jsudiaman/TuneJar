@@ -11,9 +11,7 @@ import tunejar.player.PlayerController;
  */
 public class PlaybackMenu {
 
-	// Singleton Object
-	private static PlaybackMenu instance = new PlaybackMenu();
-
+	private static final PlaybackMenu INSTANCE = new PlaybackMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private PlayerController controller;
@@ -139,7 +137,7 @@ public class PlaybackMenu {
 	}
 
 	public static PlaybackMenu getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 
 }
