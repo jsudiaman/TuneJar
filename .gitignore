@@ -2,4 +2,4 @@
 /logs/
 .project
 .classpath
-directories.dat
+*.json

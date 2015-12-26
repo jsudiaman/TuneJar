@@ -23,7 +23,7 @@ import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
-import tunejar.config.Constants;
+import tunejar.config.Defaults;
 
 /**
  * An ordered collection of Song objects.
@@ -84,7 +84,7 @@ public class Playlist implements List<Song> {
 		// Block until all of the songs have been added.
 		executor.shutdown();
 		try {
-			executor.awaitTermination(Constants.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+			executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);

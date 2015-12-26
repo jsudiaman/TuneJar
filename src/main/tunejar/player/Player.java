@@ -1,11 +1,7 @@
 package tunejar.player;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONArray;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.HashMultiset;
@@ -46,7 +43,8 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import tunejar.config.Constants;
+import tunejar.config.Defaults;
+import tunejar.config.Options;
 import tunejar.menu.PlaylistMenu;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
@@ -83,10 +81,10 @@ public class Player extends Application {
 		// If there too many log files, repeatedly delete the oldest ones until
 		// there is one less than the limit.
 		try {
-			for (int i = 0; i < Constants.MAX_LOOPS; i++) {
-				Path logsFolder = Paths.get(Constants.LOG_FOLDER);
+			for (int i = 0; i < Defaults.MAX_LOOPS; i++) {
+				Path logsFolder = Paths.get(Defaults.LOG_FOLDER);
 				String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".log"));
-				if (files.length <= Constants.LOG_FILE_LIMIT)
+				if (files.length <= Defaults.LOG_FILE_LIMIT)
 					break;
 				Arrays.sort(files);
 				Files.delete(logsFolder.resolve(files[0]));
@@ -126,16 +124,16 @@ public class Player extends Application {
 	private void init(Stage primaryStage) throws IOException {
 		// Load the FXML file and display the interface.
 		this.primaryStage = primaryStage;
-		URL location = getClass().getResource("Player.fxml");
+		URL location = getClass().getResource(Defaults.PLAYER_FXML);
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		Parent root = fxmlLoader.load(location.openStream());
 
 		Scene scene = new Scene(root, 1000, 600);
-		scene.getStylesheets().add(getClass().getResource("DarkTheme.css").toString());
+		scene.getStylesheets().add(getClass().getResource(Options.getInstance().getTheme()).toString());
 
 		primaryStage.setTitle("TuneJar");
 		primaryStage.setScene(scene);
-		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
 
 		// Load the directories. If none are present, prompt the user for one.
 		try {
@@ -157,7 +155,7 @@ public class Player extends Application {
 
 		// Save the directories.
 		try {
-			writeFiles(directories);
+			writeDirectories();
 			controller.getStatus().setText("");
 		} catch (IOException e) {
 			LOGGER.error("Failed to save directories.", e);
@@ -196,7 +194,7 @@ public class Player extends Application {
 			}
 			executor.shutdown();
 			try {
-				executor.awaitTermination(Constants.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+				executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				LOGGER.error("Thread was interrupted.", e);
@@ -310,7 +308,7 @@ public class Player extends Application {
 		}
 		directories.add(directory);
 		try {
-			writeFiles(directories);
+			writeDirectories();
 		} catch (Exception e) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Failed");
@@ -345,7 +343,7 @@ public class Player extends Application {
 		if (result.isPresent()) {
 			directories.remove(result.get());
 			try {
-				writeFiles(directories);
+				writeDirectories();
 				controller.getStatus().setText("Directory removed.");
 				LOGGER.info("Directory removed. Remaining directories:" + directories);
 				return true;
@@ -399,41 +397,29 @@ public class Player extends Application {
 	}
 
 	/**
-	 * Read in a list of directories, line by line, from a text file.
-	 *
-	 * @return A collection containing all of the specified directories
+	 * Reads directories from the options file.
+	 * 
+	 * @return A set containing the directories
 	 * @throws IOException
-	 *             The file cannot be found or accessed
 	 */
+	@SuppressWarnings("unchecked")
 	private Set<File> readDirectories() throws IOException {
 		Set<File> dirSet = new HashSet<>();
-
-		// Read in the directories line by line.
-		BufferedReader reader = new BufferedReader(new FileReader(Constants.DIRECTORY_FILENAME));
-		for (String nextLine; (nextLine = reader.readLine()) != null;) {
-			dirSet.add(new File(nextLine));
-		}
-
-		// Close the text file.
-		reader.close();
+		JSONArray arr = Options.getInstance().getDirectories();
+		arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
 		return dirSet;
 	}
 
 	/**
-	 * Output the contents of a collection of files, line by line.
-	 *
-	 * @param files
-	 *            A collection of files
+	 * Writes directories to the options file.
+	 * 
 	 * @throws IOException
-	 *             Unable to write the output to the file
 	 */
-	private void writeFiles(Collection<File> files) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.DIRECTORY_FILENAME, false));
-		for (File f : files) {
-			writer.write(f.getAbsoluteFile().toString());
-			writer.newLine();
-		}
-		writer.close();
+	@SuppressWarnings("unchecked")
+	private void writeDirectories() throws IOException {
+		JSONArray arr = new JSONArray();
+		directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
+		Options.getInstance().setDirectories(arr);
 	}
 
 	/**
@@ -480,7 +466,7 @@ public class Player extends Application {
 
 		executor.shutdown();
 		try {
-			executor.awaitTermination(Constants.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+			executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
