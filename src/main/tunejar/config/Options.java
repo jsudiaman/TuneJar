@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+// Documentation: http://code.google.com/p/json-simple/
 public class Options {
 
 	private static final Options INSTANCE = new Options();
@@ -47,7 +48,7 @@ public class Options {
 
 	private void write() throws IOException {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Defaults.OPTIONS_FILE, false))) {
-			writer.write(options.toJSONString());
+			options.writeJSONString(writer);
 		}
 	}
 

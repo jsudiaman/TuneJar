@@ -102,12 +102,12 @@
     <bottom>
       <HBox>
          <children>
-              <ToolBar prefHeight="43.0" HBox.hgrow="ALWAYS">
+              <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                   <items>
                       <Label fx:id="status" focusTraversable="false" />
                   </items>
               </ToolBar>
-            <ToolBar fx:id="shortcutBar" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
+            <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
                <items>
                   <Button mnemonicParsing="false" onAction="#playNext" text="Next" />
                   <Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />

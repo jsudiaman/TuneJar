@@ -136,9 +136,8 @@ public class Player extends Application {
 		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
 
 		// Load the directories. If none are present, prompt the user for one.
-		try {
-			directories = readDirectories();
-		} catch (FileNotFoundException e) {
+		directories = readDirectories();
+		if (directories.isEmpty()) {
 			directories = new HashSet<>();
 			File directory = initialDirectory(primaryStage);
 			if (directory != null) {
