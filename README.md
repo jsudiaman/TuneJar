@@ -12,7 +12,5 @@ Here's a few reasons why TuneJar might just be the right player for you.
 - Metadata (Title/Artist/Album) can be edited directly.
 - TuneJar is skinnable via CSS and will ship with multiple premade themes.
 
-Soon there will be a Wiki set up with more detailed information. Stay tuned!
-
 ## Issues
 If you run into any issues, please submit them [here](https://github.com/sudiamanj/TuneJar/issues).
