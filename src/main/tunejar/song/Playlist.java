@@ -92,7 +92,7 @@ public class Playlist implements List<Song> {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
-			PlayerController.getInstance().getStatus().setText("Timed out, some songs may be missing.");
+			PlayerController.getInstance().getStatus().setText("Interrupted, some songs may be missing.");
 		}
 
 		reader.close();

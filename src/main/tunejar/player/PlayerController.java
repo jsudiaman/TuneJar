@@ -1,10 +1,18 @@
 package tunejar.player;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,6 +29,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import tunejar.config.Defaults;
+import tunejar.config.Options;
 import tunejar.menu.FileMenu;
 import tunejar.menu.PlaybackMenu;
 import tunejar.menu.PlaylistMenu;
@@ -31,6 +41,7 @@ import tunejar.song.Song;
 public class PlayerController implements Initializable {
 
 	private static PlayerController instance;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Lists
 	private ObservableList<Song> songList;
@@ -67,6 +78,9 @@ public class PlayerController implements Initializable {
 
 	@FXML
 	private Label status = new Label();
+
+	@FXML
+	private Menu themeMenu = new Menu();
 
 	@FXML
 	private Slider volumeSlider = new Slider();
@@ -152,6 +166,36 @@ public class PlayerController implements Initializable {
 		volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			Player.getInstance().setVolume(newValue.doubleValue());
 		});
+
+		// Preserve SSD life by only writing upon slider release.
+		volumeSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+			if (!newValue) {
+				Options.getInstance().setVolume(volumeSlider.getValue());
+			}
+		});
+
+		// Initailize the theme menu.
+		File[] themeFiles = new File(Defaults.THEME_DIR)
+				.listFiles((FileFilter) file -> file.getName().endsWith(".css"));
+		if (themeFiles != null) {
+			for (File themeFile : themeFiles) {
+				String themeName = themeFile.getName().substring(0, themeFile.getName().lastIndexOf(".css"));
+				MenuItem nextItem = new MenuItem(themeName);
+				nextItem.setOnAction(event -> {
+					try {
+						Player.getInstance().getScene().getStylesheets().set(0, themeFile.toURI().toURL().toString());
+						Options.getInstance().setTheme(themeName);
+					} catch (MalformedURLException e) {
+						LOGGER.catching(Level.ERROR, e);
+						status.setText("Failed to change theme.");
+					}
+				});
+				themeMenu.getItems().add(nextItem);
+			}
+		} else {
+			LOGGER.error("List of theme files was null.");
+			status.setText("Failed to change theme.");
+		}
 	}
 
 	// --------------- File --------------- //

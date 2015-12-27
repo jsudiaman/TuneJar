@@ -75,6 +75,7 @@ public class Options {
 		options = new JSONObject();
 		setTheme(Defaults.THEME);
 		setDirectories(new JSONArray());
+		setVolume(Defaults.VOLUME);
 	}
 
 	public String getTheme() {
@@ -94,6 +95,16 @@ public class Options {
 	@SuppressWarnings("unchecked")
 	public void setDirectories(JSONArray directories) {
 		options.put("directories", directories);
+		write();
+	}
+	
+	public Double getVolume() {
+		return (Double) options.get("volume");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setVolume(Double volume) {
+		options.put("volume", volume);
 		write();
 	}
 

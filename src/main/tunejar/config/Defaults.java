@@ -21,8 +21,9 @@ public class Defaults {
 	public static final int MAX_LOOPS = 1000;
 	public static final String PLAYER_FXML = "fxml/Player.fxml";
 	public static final String THEME_DIR = new File(Player.class.getResource("theme").getFile()).toString();
-	public static final String THEME = "Default.css";
+	public static final String THEME = "Modena";
 	public static final String ICON = "img/icon.png";
 	public static final String OPTIONS_FILE = "options.json";
+	public static final double VOLUME = 1.0;
 
 }

@@ -58,6 +58,7 @@ public class Player extends Application {
 	private MediaPlayer player;
 	private Song nowPlaying;
 	private Stage primaryStage;
+	private Scene scene;
 	private PlayerController controller;
 
 	// Data
@@ -132,8 +133,9 @@ public class Player extends Application {
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		Parent root = fxmlLoader.load(location.openStream());
 
-		Scene scene = new Scene(root, 1000, 600);
-		String theme = Paths.get(Defaults.THEME_DIR, Options.getInstance().getTheme()).toUri().toURL().toString();
+		scene = new Scene(root, 1000, 600);
+		String theme = Paths.get(Defaults.THEME_DIR, Options.getInstance().getTheme() + ".css").toUri().toURL()
+				.toString();
 		scene.getStylesheets().add(theme);
 		LOGGER.debug("Loaded theme: " + theme);
 
@@ -172,6 +174,7 @@ public class Player extends Application {
 			playlistSet.forEach(PlaylistMenu.getInstance()::loadPlaylist);
 		}
 		controller.focus(controller.getPlaylistTable(), 0);
+		controller.getVolumeSlider().setValue(Options.getInstance().getVolume());
 	}
 
 	/**
@@ -199,7 +202,7 @@ public class Player extends Application {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				LOGGER.error("Thread was interrupted.", e);
-				controller.getStatus().setText("Timed out, some songs may be missing.");
+				controller.getStatus().setText("Interrupted, some songs may be missing.");
 			}
 		}
 		LOGGER.info("Refresh successful");
@@ -227,7 +230,7 @@ public class Player extends Application {
 			controller.getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
 		}
-		player.setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
+		setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
 		LOGGER.info("Playing: " + nowPlaying);
 		player.play();
 	}
@@ -292,6 +295,14 @@ public class Player extends Application {
 
 	private static void setInstance(Player instance) {
 		Player.instance = instance;
+	}
+
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
+
+	public Scene getScene() {
+		return scene;
 	}
 
 	public static Player getInstance() {
@@ -466,7 +477,7 @@ public class Player extends Application {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
-			controller.getStatus().setText("Timed out, some songs may be missing.");
+			controller.getStatus().setText("Interrupted, some songs may be missing.");
 		}
 		return songs;
 	}

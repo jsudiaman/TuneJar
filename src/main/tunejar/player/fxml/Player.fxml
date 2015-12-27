@@ -71,6 +71,7 @@
                         <MenuItem fx:id="menuDeletePlaylist" mnemonicParsing="false" onAction="#deletePlaylist" text="Delete" />
                     </items>
                   </Menu>
+                  <Menu fx:id="themeMenu" mnemonicParsing="false" text="Theme" />
                   </menus>
               </MenuBar>
             <MenuBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="ALWAYS">
