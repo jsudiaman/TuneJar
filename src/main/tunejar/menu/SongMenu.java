@@ -138,6 +138,8 @@ public class SongMenu {
 				pl.save();
 			} catch (IOException e) {
 				LOGGER.catching(Level.ERROR, e);
+			} finally {
+				PlayerController.getInstance().refreshTables();
 			}
 		}
 	}

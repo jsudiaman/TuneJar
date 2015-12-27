@@ -1,7 +1,6 @@
 package tunejar.player;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -84,8 +83,13 @@ public class Player extends Application {
 			for (int i = 0; i < Defaults.MAX_LOOPS; i++) {
 				Path logsFolder = Paths.get(Defaults.LOG_FOLDER);
 				String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".log"));
-				if (files.length <= Defaults.LOG_FILE_LIMIT)
+				if (files == null) {
+					LOGGER.error("Log file cleanup failed.");
 					break;
+				}
+				if (files.length <= Defaults.LOG_FILE_LIMIT) {
+					break;
+				}
 				Arrays.sort(files);
 				Files.delete(logsFolder.resolve(files[0]));
 			}
@@ -129,7 +133,9 @@ public class Player extends Application {
 		Parent root = fxmlLoader.load(location.openStream());
 
 		Scene scene = new Scene(root, 1000, 600);
-		scene.getStylesheets().add(getClass().getResource(Options.getInstance().getTheme()).toString());
+		String theme = Paths.get(Defaults.THEME_DIR, Options.getInstance().getTheme()).toUri().toURL().toString();
+		scene.getStylesheets().add(theme);
+		LOGGER.debug("Loaded theme: " + theme);
 
 		primaryStage.setTitle("TuneJar");
 		primaryStage.setScene(scene);
@@ -138,7 +144,6 @@ public class Player extends Application {
 		// Load the directories. If none are present, prompt the user for one.
 		directories = readDirectories();
 		if (directories.isEmpty()) {
-			directories = new HashSet<>();
 			File directory = initialDirectory(primaryStage);
 			if (directory != null) {
 				directories.add(directory);
@@ -153,13 +158,7 @@ public class Player extends Application {
 		PlaylistMenu.getInstance().loadPlaylist(masterPlaylist);
 
 		// Save the directories.
-		try {
-			writeDirectories();
-			controller.getStatus().setText("");
-		} catch (IOException e) {
-			LOGGER.error("Failed to save directories.", e);
-			controller.getStatus().setText("Failed to save directories.");
-		}
+		writeDirectories();
 
 		// Finally, load in all playlists from the working directory.
 		Collection<Playlist> playlistSet = null;
@@ -193,10 +192,14 @@ public class Player extends Application {
 			}
 			executor.shutdown();
 			try {
-				executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+				if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
+					LOGGER.warn("Executor timed out.");
+					controller.getStatus().setText("Timed out, some songs may be missing.");
+				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				LOGGER.error("Thread was interrupted.", e);
+				controller.getStatus().setText("Timed out, some songs may be missing.");
 			}
 		}
 		LOGGER.info("Refresh successful");
@@ -219,7 +222,7 @@ public class Player extends Application {
 		String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
 		try {
 			player = new MediaPlayer(new Media(uriString));
-			LOGGER.debug("Loaded: " + uriString);
+			LOGGER.debug("Loaded song: " + uriString);
 		} catch (MediaException e) {
 			controller.getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
@@ -341,16 +344,10 @@ public class Player extends Application {
 		// Remove the chosen folder unless the user pressed "cancel".
 		if (result.isPresent()) {
 			directories.remove(result.get());
-			try {
-				writeDirectories();
-				controller.getStatus().setText("Directory removed.");
-				LOGGER.info("Directory removed. Remaining directories:" + directories);
-				return true;
-			} catch (IOException e) {
-				controller.getStatus().setText("Failed to remove directory.");
-				LOGGER.catching(Level.ERROR, e);
-				return false;
-			}
+			writeDirectories();
+			controller.getStatus().setText("Directory removed.");
+			LOGGER.info("Directory removed. Remaining directories:" + directories);
+			return true;
 		}
 		return false;
 	}
@@ -399,10 +396,9 @@ public class Player extends Application {
 	 * Reads directories from the options file.
 	 * 
 	 * @return A set containing the directories
-	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private Set<File> readDirectories() throws IOException {
+	private Set<File> readDirectories() {
 		Set<File> dirSet = new HashSet<>();
 		JSONArray arr = Options.getInstance().getDirectories();
 		arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
@@ -411,11 +407,9 @@ public class Player extends Application {
 
 	/**
 	 * Writes directories to the options file.
-	 * 
-	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private void writeDirectories() throws IOException {
+	private void writeDirectories() {
 		JSONArray arr = new JSONArray();
 		directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
 		Options.getInstance().setDirectories(arr);
@@ -465,10 +459,14 @@ public class Player extends Application {
 
 		executor.shutdown();
 		try {
-			executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
+				LOGGER.warn("Executor timed out.");
+				controller.getStatus().setText("Timed out, some songs may be missing.");
+			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
+			controller.getStatus().setText("Timed out, some songs may be missing.");
 		}
 		return songs;
 	}

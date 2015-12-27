@@ -29,7 +29,7 @@ public class Mp3Song implements Song {
 	private SimpleStringProperty artist;
 	private SimpleStringProperty album;
 	private boolean paused;
-	private int id3Version;
+	private ID3Version id3Version;
 	private Mp3File mp3file;
 
 	/**
@@ -139,11 +139,11 @@ public class Mp3Song implements Song {
 	public void setTitle(String title) {
 		this.title.set(title);
 		switch (id3Version) {
-		case ID3Version.ID3_V2:
+		case ID3_V2:
 			ID3v2 ID3v2Tag = mp3file.getId3v2Tag();
 			ID3v2Tag.setTitle(title);
 			break;
-		case ID3Version.ID3_V1:
+		case ID3_V1:
 			ID3v1 ID3v1Tag = mp3file.getId3v1Tag();
 			ID3v1Tag.setTitle(title);
 			break;
@@ -171,11 +171,11 @@ public class Mp3Song implements Song {
 	public void setArtist(String artist) {
 		this.artist.set(artist);
 		switch (id3Version) {
-		case ID3Version.ID3_V2:
+		case ID3_V2:
 			ID3v2 ID3v2Tag = mp3file.getId3v2Tag();
 			ID3v2Tag.setArtist(artist);
 			break;
-		case ID3Version.ID3_V1:
+		case ID3_V1:
 			ID3v1 ID3v1Tag = mp3file.getId3v1Tag();
 			ID3v1Tag.setArtist(artist);
 			break;
@@ -203,11 +203,11 @@ public class Mp3Song implements Song {
 	public void setAlbum(String album) {
 		this.album.set(album);
 		switch (id3Version) {
-		case ID3Version.ID3_V2:
+		case ID3_V2:
 			ID3v2 ID3v2Tag = mp3file.getId3v2Tag();
 			ID3v2Tag.setAlbum(album);
 			break;
-		case ID3Version.ID3_V1:
+		case ID3_V1:
 			ID3v1 ID3v1Tag = mp3file.getId3v1Tag();
 			ID3v1Tag.setAlbum(album);
 			break;

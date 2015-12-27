@@ -24,6 +24,7 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javafx.beans.property.SimpleStringProperty;
 import tunejar.config.Defaults;
+import tunejar.player.PlayerController;
 
 /**
  * An ordered collection of Song objects.
@@ -65,7 +66,7 @@ public class Playlist implements List<Song> {
 	 */
 	public Playlist(File m3uFile) throws IOException {
 		// Take the filename to be the name of the playlist.
-		this.name = new SimpleStringProperty(m3uFile.getName().substring(0, m3uFile.getName().indexOf(".m3u")));
+		this.name = new SimpleStringProperty(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
 
 		// Add each song line by line.
 		BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
@@ -84,10 +85,14 @@ public class Playlist implements List<Song> {
 		// Block until all of the songs have been added.
 		executor.shutdown();
 		try {
-			executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS);
+			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
+				LOGGER.warn("Executor timed out.");
+				PlayerController.getInstance().getStatus().setText("Timed out, some songs may be missing.");
+			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
+			PlayerController.getInstance().getStatus().setText("Timed out, some songs may be missing.");
 		}
 
 		reader.close();
