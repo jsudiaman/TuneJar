@@ -21,7 +21,6 @@ import com.cedarsoftware.util.io.JsonWriter;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-// Documentation: http://code.google.com/p/json-simple/
 public class Options {
 
 	private static final Options INSTANCE = new Options();
@@ -97,11 +96,11 @@ public class Options {
 		options.put("directories", directories);
 		write();
 	}
-	
+
 	public Double getVolume() {
 		return (Double) options.get("volume");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void setVolume(Double volume) {
 		options.put("volume", volume);
