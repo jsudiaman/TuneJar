@@ -1,5 +1,9 @@
 /bin/
 /logs/
+/target/
+
 .project
 .classpath
+.settings
+
 *.json
