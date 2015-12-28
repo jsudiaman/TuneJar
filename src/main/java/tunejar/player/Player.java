@@ -138,8 +138,7 @@ public class Player extends Application {
 		Parent root = fxmlLoader.load(location.openStream());
 
 		scene = new Scene(root, 1000, 600);
-		String theme = Paths.get(Defaults.THEME_DIR, Options.getInstance().getTheme() + ".css").toUri().toURL()
-				.toString();
+		String theme = Defaults.THEME_MAP.get(Options.getInstance().getTheme());
 		scene.getStylesheets().add(theme);
 		LOGGER.debug("Loaded theme: " + theme);
 

@@ -1,6 +1,8 @@
 package tunejar.config;
 
-import java.io.File;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import tunejar.player.Player;
 
@@ -19,11 +21,11 @@ public class Defaults {
 	public static final String LOG_FOLDER;
 	public static final int MAX_LOOPS;
 	public static final String PLAYER_FXML;
-	public static final String THEME_DIR;
 	public static final String THEME;
 	public static final String ICON;
 	public static final String OPTIONS_FILE;
 	public static final double VOLUME;
+	public static final Map<String, String> THEME_MAP;
 
 	static {
 		GET_SONGS_TIMEOUT = 5 * 60;
@@ -32,11 +34,18 @@ public class Defaults {
 		LOG_FOLDER = "logs";
 		MAX_LOOPS = 1000;
 		PLAYER_FXML = "/fxml/Player.fxml";
-		THEME_DIR = new File(Player.class.getResource("/theme").getFile()).toString();
 		THEME = "Modena";
 		ICON = "/img/icon.png";
 		OPTIONS_FILE = "options.json";
 		VOLUME = 1.0;
+
+		// Theme Map
+		String modena = Player.class.getResource("/theme/Modena.css").toString();
+		String darkTheme = Player.class.getResource("/theme/Dark Theme.css").toString();
+		Map<String, String> themeMap = new LinkedHashMap<>();
+		themeMap.put("Modena", modena);
+		themeMap.put("Dark Theme", darkTheme);
+		THEME_MAP = Collections.unmodifiableMap(themeMap);
 	}
 
 }
