@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +65,9 @@ public class Player extends Application {
 	// Data
 	private Playlist masterPlaylist;
 	private Set<File> directories;
+
+	// Latches
+	private static final CountDownLatch INIT_LATCH = new CountDownLatch(1);
 
 	public Player() {
 		if (instance != null)
@@ -175,6 +179,7 @@ public class Player extends Application {
 		}
 		controller.focus(controller.getPlaylistTable(), 0);
 		controller.getVolumeSlider().setValue(Options.getInstance().getVolume());
+		INIT_LATCH.countDown();
 	}
 
 	/**
@@ -305,6 +310,10 @@ public class Player extends Application {
 		return scene;
 	}
 
+	public static CountDownLatch getInitLatch() {
+		return INIT_LATCH;
+	}
+	
 	public static Player getInstance() {
 		return instance;
 	}
