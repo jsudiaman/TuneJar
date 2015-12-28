@@ -14,6 +14,7 @@ public class Mp3SongTest {
 
 	// NOTE: Variables that begin with '_' should not be modified outside of
 	// setUp() and tearDown().
+	private String _mp3File;
 	private Song _song;
 	private String _originalTitle;
 	private String _originalArtist;
@@ -21,7 +22,8 @@ public class Mp3SongTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_song = SongFactory.getInstance().fromFile(new File(Defaults.TEST_MP3_FILE));
+		_mp3File = getClass().getResource(Defaults.TEST_MP3).getFile();
+		_song = SongFactory.getInstance().fromFile(new File(_mp3File));
 		_originalTitle = _song.getTitle();
 		_originalArtist = _song.getArtist();
 		_originalAlbum = _song.getAlbum();
@@ -29,7 +31,7 @@ public class Mp3SongTest {
 
 	@After
 	public void tearDown() throws Exception {
-		_song = SongFactory.getInstance().fromFile(new File(Defaults.TEST_MP3_FILE));
+		_song = SongFactory.getInstance().fromFile(new File(_mp3File));
 		_song.setTitle(_originalTitle);
 		_song.setArtist(_originalArtist);
 		_song.setAlbum(_originalAlbum);
@@ -44,7 +46,7 @@ public class Mp3SongTest {
 		_song.setTitle("TEST");
 
 		// Assertion: ONLY the title has changed in the metadata.
-		Song song = SongFactory.getInstance().fromFile(new File(Defaults.TEST_MP3_FILE));
+		Song song = SongFactory.getInstance().fromFile(new File(_mp3File));
 		assertEquals("TEST", song.getTitle());
 		assertEquals(_originalArtist, song.getArtist());
 		assertEquals(_originalAlbum, song.getAlbum());
@@ -59,7 +61,7 @@ public class Mp3SongTest {
 		_song.setArtist("TEST");
 
 		// Assertion: ONLY the artist has changed in the metadata.
-		Song song = SongFactory.getInstance().fromFile(new File(Defaults.TEST_MP3_FILE));
+		Song song = SongFactory.getInstance().fromFile(new File(_mp3File));
 		assertEquals(_originalTitle, song.getTitle());
 		assertEquals("TEST", song.getArtist());
 		assertEquals(_originalAlbum, song.getAlbum());
@@ -74,7 +76,7 @@ public class Mp3SongTest {
 		_song.setAlbum("TEST");
 
 		// Assertion: ONLY the album has changed in the metadata.
-		Song song = SongFactory.getInstance().fromFile(new File(Defaults.TEST_MP3_FILE));
+		Song song = SongFactory.getInstance().fromFile(new File(_mp3File));
 		assertEquals(_originalTitle, song.getTitle());
 		assertEquals(_originalArtist, song.getArtist());
 		assertEquals("TEST", song.getAlbum());
