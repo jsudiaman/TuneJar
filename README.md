@@ -43,7 +43,7 @@ If using Eclipse, I strongly suggest installing the [**e(fx)clipse**](http://www
 #### Running TuneJar
 If using an IDE, import as a **Maven project**.  Then run ``src/main/java/tunejar.player.Player.java``.
 
-If you aren't using an IDE, you can run TuneJar by entering the following commands:
+If you aren't using an IDE, you can run TuneJar using the following Maven commands:
 ```
 mvn compile
 mvn exec:java -Dexec.mainClass="tunejar.player.Player"
