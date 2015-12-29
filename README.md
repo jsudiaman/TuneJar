@@ -32,13 +32,15 @@ Follow these steps if you would like to run TuneJar in a proper development envi
 #### Prerequisite Software:
 - [JDK 8u40 or later](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [Git](https://git-scm.com/downloads) (Optional)
-- An IDE with Maven support, such as [Eclipse](https://eclipse.org/downloads/), [IntelliJ](https://www.jetbrains.com/idea/download/), or [NetBeans](https://netbeans.org/downloads/) (Optional)
-- [Apache Maven](http://maven.apache.org/download.cgi) (Required if you **don't** have an IDE with Maven support)
+
+Since this is a **Maven** project, you will need at least one of the following:
+- [Apache Maven](http://maven.apache.org/download.cgi)
+- An IDE with Maven support, such as [Eclipse](https://eclipse.org/downloads/), [IntelliJ](https://www.jetbrains.com/idea/download/), or [NetBeans](https://netbeans.org/downloads/)
+
+Note: If using Eclipse, I strongly suggest installing the [**e(fx)clipse**](http://www.eclipse.org/efxclipse/install.html) plugin as well.
 
 #### Installation
 If using Git, clone this repository using ``git clone https://github.com/sudiamanj/TuneJar.git <destination>``. Otherwise, simply [download the ZIP file](https://github.com/sudiamanj/TuneJar/archive/master.zip).
-
-If using Eclipse, I strongly suggest installing the [**e(fx)clipse**](http://www.eclipse.org/efxclipse/install.html) plugin.
 
 #### Running TuneJar
 If using an IDE, import as a **Maven project**.  Then run ``src/main/java/tunejar.player.Player.java``.
