@@ -33,9 +33,7 @@ Follow these steps if you would like to run TuneJar in a proper development envi
 - [JDK 8u40 or later](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [Git](https://git-scm.com/downloads) (Optional)
 
-Since this is a **Maven** project, you will also need at least one of the following:
-- [Apache Maven](http://maven.apache.org/download.cgi)
-- An IDE with Maven support, such as [Eclipse](https://eclipse.org/downloads/), [IntelliJ](https://www.jetbrains.com/idea/download/), or [NetBeans](https://netbeans.org/downloads/)
+Since this is a **Maven** project, you will also need an IDE with Maven support, such as [Eclipse](https://eclipse.org/downloads/), [IntelliJ](https://www.jetbrains.com/idea/download/), or [NetBeans](https://netbeans.org/downloads/). If you'd rather not use an IDE, you may also download [Apache Maven](http://maven.apache.org/download.cgi) directly.
 
 Note: If using Eclipse, I strongly suggest installing the [**e(fx)clipse**](http://www.eclipse.org/efxclipse/install.html) plugin as well.
 
