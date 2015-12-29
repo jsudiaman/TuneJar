@@ -15,7 +15,7 @@ Here's a few reasons why TuneJar might just be the right player for you.
 # Getting Started with TuneJar
 Follow these steps if you would like to use TuneJar.
 
-#### Prerequisite Software:
+#### Prerequisite Software
 - [Java 8u40 or later](https://java.com/)
 
 #### Installation
@@ -29,7 +29,7 @@ Unzip the zip file into a preferred location, such as your desktop. On **Windows
 # Getting Started with TuneJar Development
 Follow these steps if you would like to run TuneJar in a proper development environment.
 
-#### Prerequisite Software:
+#### Prerequisite Software
 - [JDK 8u40 or later](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [Git](https://git-scm.com/downloads) (Optional)
 
