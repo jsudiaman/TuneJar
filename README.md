@@ -20,7 +20,7 @@ Follow these steps if you would like to use TuneJar.
 
 #### Installation
 Since TuneJar runs off of a single jar file, no formal installation is required. You may download TuneJar binaries from either of the following sources:
-- [Releases](https://github.com/sudiamanj/TuneJar/releases), which are tested extensively
+- [Official Releases](https://github.com/sudiamanj/TuneJar/releases), which are tested extensively
 - [Nightly Builds](https://sourceforge.net/projects/tunejar/files/nightly/), which can be unstable
 
 #### Running TuneJar
