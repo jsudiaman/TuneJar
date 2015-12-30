@@ -41,9 +41,11 @@ public abstract class AbstractSongTest extends AbstractTest {
 	@After
 	public final void tearDown() throws Exception {
 		_song = SongFactory.getInstance().fromFile(new File(_songFile));
-		_song.setTitle(_originalTitle);
-		_song.setArtist(_originalArtist);
-		_song.setAlbum(_originalAlbum);
+		if (_song.canEdit()) {
+			_song.setTitle(_originalTitle);
+			_song.setArtist(_originalArtist);
+			_song.setAlbum(_originalAlbum);
+		}
 	}
 
 	@Test
