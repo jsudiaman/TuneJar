@@ -1,10 +1,15 @@
 package tunejar.test;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.BeforeClass;
 import org.loadui.testfx.GuiTest;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
+import tunejar.config.Options;
 import tunejar.player.Player;
 
 public abstract class AbstractTest {
@@ -19,6 +24,11 @@ public abstract class AbstractTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// To avoid seeing the blocking dialog box
+		Set<File> set = new HashSet<>();
+		set.add(new File("."));
+		Options.getInstance().setDirectories(set);
+
 		if (!initialized) {
 			new Thread(() -> Application.launch(Player.class)).start();
 			Player.getInitLatch().await();
