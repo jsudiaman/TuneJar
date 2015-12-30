@@ -38,10 +38,12 @@ public abstract class AbstractTest {
 	}
 
 	private static void init() throws Exception {
-		// Initialize directories seeing the blocking dialog box
-		Set<File> set = new HashSet<>();
-		set.add(new File("."));
-		Options.getInstance().setDirectories(set);
+		// Initialize directories to avoid being blocked by a dialog box
+		if (Options.getInstance().getDirectories().isEmpty()) {
+			Set<File> set = new HashSet<>();
+			set.add(new File("."));
+			Options.getInstance().setDirectories(set);
+		}
 
 		// Launch the application
 		new Thread(() -> Application.launch(Player.class)).start();
