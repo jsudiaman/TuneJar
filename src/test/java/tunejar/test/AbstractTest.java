@@ -24,23 +24,8 @@ public abstract class AbstractTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		// To avoid seeing the blocking dialog box
-		Set<File> set = new HashSet<>();
-		set.add(new File("."));
-		Options.getInstance().setDirectories(set);
-
-		if (!initialized) {
-			new Thread(() -> Application.launch(Player.class)).start();
-			Player.getInitLatch().await();
-			Thread.sleep(2 * 1000);
-			controller = new GuiTest() {
-				@Override
-				protected Parent getRootNode() {
-					return Player.getInstance().getScene().getRoot();
-				}
-			};
-			initialized = true;
-		}
+		if (!initialized)
+			init();
 	}
 
 	/**
@@ -50,6 +35,25 @@ public abstract class AbstractTest {
 	 */
 	public static GuiTest getController() {
 		return controller;
+	}
+
+	private static void init() throws Exception {
+		// Initialize directories seeing the blocking dialog box
+		Set<File> set = new HashSet<>();
+		set.add(new File("."));
+		Options.getInstance().setDirectories(set);
+
+		// Launch the application
+		new Thread(() -> Application.launch(Player.class)).start();
+		Player.getInitLatch().await();
+		Thread.sleep(2 * 1000);
+		controller = new GuiTest() {
+			@Override
+			protected Parent getRootNode() {
+				return Player.getInstance().getScene().getRoot();
+			}
+		};
+		initialized = true;
 	}
 
 }
