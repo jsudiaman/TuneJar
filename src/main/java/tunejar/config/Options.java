@@ -1,12 +1,17 @@
 package tunejar.config;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +26,7 @@ import com.cedarsoftware.util.io.JsonWriter;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
+@SuppressWarnings("unchecked")
 public class Options {
 
 	private static final Options INSTANCE = new Options();
@@ -73,37 +79,80 @@ public class Options {
 	private void reset() {
 		options = new JSONObject();
 		setTheme(Defaults.THEME);
-		setDirectories(new JSONArray());
+		setDirectories(Defaults.DIRECTORIES);
 		setVolume(Defaults.VOLUME);
+		setSortOrder(Defaults.SORT_ORDER);
 	}
 
 	public String getTheme() {
+		if (options.get("theme") == null)
+			setTheme(Defaults.THEME);
+
 		return (String) options.get("theme");
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setTheme(String theme) {
 		options.put("theme", theme);
 		write();
 	}
 
-	public JSONArray getDirectories() {
-		return (JSONArray) options.get("directories");
+	public Set<File> getDirectories() {
+		if (options.get("directories") == null)
+			setDirectories(Defaults.DIRECTORIES);
+
+		// Convert JSONArray to Set
+		Set<File> dirSet = new HashSet<>();
+		JSONArray arr = (JSONArray) options.get("directories");
+		arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
+
+		// Return the resulting set
+		return dirSet;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setDirectories(JSONArray directories) {
-		options.put("directories", directories);
+	public void setDirectories(Set<File> directories) {
+		// Convert Set to JSONArray
+		JSONArray arr = new JSONArray();
+		directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
+
+		// Store the resulting JSONArray
+		options.put("directories", arr);
 		write();
 	}
 
 	public Double getVolume() {
+		if (options.get("volume") == null)
+			setVolume(Defaults.VOLUME);
+
 		return (Double) options.get("volume");
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setVolume(Double volume) {
 		options.put("volume", volume);
+		write();
+	}
+
+	public String[] getSortOrder() {
+		if (options.get("sortOrder") == null)
+			setSortOrder(Defaults.SORT_ORDER);
+
+		// Convert JSONArray to String array
+		JSONArray arr = (JSONArray) options.get("sortOrder");
+		List<String> list = new ArrayList<>();
+		arr.forEach((o) -> list.add(o.toString()));
+
+		// Return the resulting String array
+		return list.toArray(new String[0]);
+	}
+
+	public void setSortOrder(String... sorts) {
+		// Convert String array to JSONArray
+		JSONArray arr = new JSONArray();
+		for (String s : sorts) {
+			arr.add(s);
+		}
+
+		// Store the resulting JSONArray
+		options.put("sortOrder", arr);
 		write();
 	}
 

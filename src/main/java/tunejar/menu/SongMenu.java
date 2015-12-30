@@ -112,11 +112,17 @@ public class SongMenu {
 
 		Optional<List<String>> newParams = editor.showAndWait();
 		newParams.ifPresent(list -> {
-			songToEdit.setTitle(list.get(0));
-			songToEdit.setArtist(list.get(1));
-			songToEdit.setAlbum(list.get(2));
-			controller.refreshTables();
-			controller.getStatus().setText("Edit successful.");
+			try {
+				songToEdit.setTitle(list.get(0));
+				songToEdit.setArtist(list.get(1));
+				songToEdit.setAlbum(list.get(2));
+				controller.refreshTables();
+				controller.getStatus().setText("Edit successful.");
+			} catch (Exception e) {
+				LOGGER.error("Edit unsuccessful.", e);
+				controller.refreshTables();
+				controller.getStatus().setText("Edit unsuccessful.");
+			}
 		});
 	}
 

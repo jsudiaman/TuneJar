@@ -1,6 +1,7 @@
 package tunejar.song;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.io.File;
 
@@ -47,8 +48,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 
 	@Test
 	public final void testSetTitle() throws Exception {
-		// Assertion: The song is editable.
-		assertTrue(_song.canEdit());
+		assumeTrue(_song.canEdit());
 
 		// Set the title.
 		_song.setTitle("TEST");
@@ -62,8 +62,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 
 	@Test
 	public final void testSetArtist() throws Exception {
-		// Assertion: The song is editable.
-		assertTrue(_song.canEdit());
+		assumeTrue(_song.canEdit());
 
 		// Set the artist.
 		_song.setArtist("TEST");
@@ -77,8 +76,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 
 	@Test
 	public final void testSetAlbum() throws Exception {
-		// Assertion: The song is editable.
-		assertTrue(_song.canEdit());
+		assumeTrue(_song.canEdit());
 
 		// Set the album.
 		_song.setAlbum("TEST");

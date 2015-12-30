@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +22,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import tunejar.config.Options;
 import tunejar.menu.FileMenu;
 import tunejar.menu.PlaybackMenu;
 import tunejar.menu.PlaylistMenu;
@@ -105,6 +107,11 @@ public class PlayerController implements Initializable {
 		album.setCellValueFactory(new PropertyValueFactory<>("Album"));
 		songTable.setItems(songList);
 		songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		songTable.getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
+			List<String> list = new ArrayList<String>();
+			songTable.getSortOrder().forEach(t -> list.add(t.getId()));
+			Options.getInstance().setSortOrder(list.toArray(new String[0]));
+		});
 
 		// Initialize the playlist table.
 		playlistList = FXCollections.observableArrayList();
@@ -266,8 +273,9 @@ public class PlayerController implements Initializable {
 
 	public void refreshTables() {
 		// Keep tabs on what was selected before.
-		List<Integer> playlistIndices = new ArrayList<>(playlistTable.getSelectionModel().getSelectedIndices());
-		List<Integer> songIndices = new ArrayList<>(songTable.getSelectionModel().getSelectedIndices());
+		List<Playlist> selectedPlaylists = new ArrayList<>(playlistTable.getSelectionModel().getSelectedItems());
+		List<Song> selectedSongs = new ArrayList<>(songTable.getSelectionModel().getSelectedItems());
+		List<TableColumn<Song, ?>> sorted = new ArrayList<>(songTable.getSortOrder());
 
 		// Where the actual "refreshing" is done
 		songTable.getColumns().get(0).setVisible(false);
@@ -279,18 +287,20 @@ public class PlayerController implements Initializable {
 		playlistTable.getSelectionModel().select(0);
 
 		// Re-select what was selected before.
-		if (!playlistIndices.isEmpty()) {
+		if (!selectedPlaylists.isEmpty()) {
 			playlistTable.getSelectionModel().clearSelection();
-			for (Integer i : playlistIndices) {
-				playlistTable.getSelectionModel().select(i);
+			for (Playlist p : selectedPlaylists) {
+				playlistTable.getSelectionModel().select(p);
 			}
 		}
-		if (!songIndices.isEmpty()) {
+		if (!selectedSongs.isEmpty()) {
 			songTable.getSelectionModel().clearSelection();
-			for (Integer i : songIndices) {
-				songTable.getSelectionModel().select(i);
+			for (Song s : selectedSongs) {
+				songTable.getSelectionModel().select(s);
 			}
 		}
+		songTable.getSortOrder().clear();
+		songTable.getSortOrder().addAll(sorted);
 	}
 
 	// --------------- Getters and Setters --------------- //
@@ -337,6 +347,18 @@ public class PlayerController implements Initializable {
 
 	public Menu getThemeMenu() {
 		return themeMenu;
+	}
+
+	public TableColumn<Song, String> getTitleColumn() {
+		return title;
+	}
+
+	public TableColumn<Song, String> getArtistColumn() {
+		return artist;
+	}
+
+	public TableColumn<Song, String> getAlbumColumn() {
+		return album;
 	}
 
 	public static void setInstance(PlayerController instance) {

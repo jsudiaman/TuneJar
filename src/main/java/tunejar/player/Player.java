@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONArray;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.HashMultiset;
@@ -34,6 +32,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
@@ -165,7 +164,7 @@ public class Player extends Application {
 		// Save the directories.
 		writeDirectories();
 
-		// Finally, load in all playlists from the working directory.
+		// Load in all playlists from the working directory.
 		Collection<Playlist> playlistSet = null;
 		try {
 			playlistSet = getPlaylists();
@@ -178,6 +177,27 @@ public class Player extends Application {
 		}
 		controller.focus(controller.getPlaylistTable(), 0);
 		controller.getVolumeSlider().setValue(Options.getInstance().getVolume());
+
+		// Finally, sort the song table.
+		String[] sortBy = Options.getInstance().getSortOrder();
+		controller.getSongTable().getSortOrder().clear();
+		List<TableColumn<Song, ?>> sortOrder = controller.getSongTable().getSortOrder();
+		for (String s : sortBy) {
+			switch (s) {
+			case "title":
+				sortOrder.add(controller.getTitleColumn());
+				break;
+			case "artist":
+				sortOrder.add(controller.getArtistColumn());
+				break;
+			case "album":
+				sortOrder.add(controller.getAlbumColumn());
+				break;
+			default:
+				break;
+			}
+		}
+		// controller.refreshTables();
 		INIT_LATCH.countDown();
 	}
 
@@ -312,7 +332,7 @@ public class Player extends Application {
 	public static CountDownLatch getInitLatch() {
 		return INIT_LATCH;
 	}
-	
+
 	public static Player getInstance() {
 		return instance;
 	}
@@ -416,22 +436,15 @@ public class Player extends Application {
 	 * 
 	 * @return A set containing the directories
 	 */
-	@SuppressWarnings("unchecked")
 	private Set<File> readDirectories() {
-		Set<File> dirSet = new HashSet<>();
-		JSONArray arr = Options.getInstance().getDirectories();
-		arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
-		return dirSet;
+		return Options.getInstance().getDirectories();
 	}
 
 	/**
 	 * Writes directories to the options file.
 	 */
-	@SuppressWarnings("unchecked")
 	private void writeDirectories() {
-		JSONArray arr = new JSONArray();
-		directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
-		Options.getInstance().setDirectories(arr);
+		Options.getInstance().setDirectories(directories);
 	}
 
 	/**

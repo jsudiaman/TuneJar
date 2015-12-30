@@ -19,9 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.UnsupportedTagException;
-
 import javafx.beans.property.SimpleStringProperty;
 import tunejar.config.Defaults;
 import tunejar.player.PlayerController;
@@ -76,7 +73,7 @@ public class Playlist implements List<Song> {
 			executor.submit(() -> {
 				try {
 					add(SongFactory.getInstance().fromFile(new File(file)));
-				} catch (UnsupportedTagException | InvalidDataException | IOException e) {
+				} catch (Exception e) {
 					LOGGER.error("Failed to add song: " + file, e);
 				}
 			});
