@@ -6,7 +6,5 @@ jdk:
   - oraclejdk8
 
 before_script:
-  - "export DISPLAY=:99.0"
-  - "export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/"
-  - "sh -e /etc/init.d/xvfb start"
+  - "Xvfb :21 -screen 0 1024x768x24 -extension RANDR &"
   - sleep 3
