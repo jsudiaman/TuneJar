@@ -92,6 +92,10 @@ public abstract class Song {
 	 * @return The absolute path
 	 */
 	public String getAbsoluteFilename() {
+		if (audioFile == null) {
+			return "null";
+		}
+
 		return audioFile.getAbsolutePath();
 	}
 
@@ -117,7 +121,7 @@ public abstract class Song {
 	public abstract void setTitle(String title) throws Exception;
 
 	public String getTitle() {
-		if (title.get().equals("") && getFilename() != null) {
+		if (title.get().equals("")) {
 			return new SimpleStringProperty(getFilename()).get();
 		} else {
 			return title.get();
