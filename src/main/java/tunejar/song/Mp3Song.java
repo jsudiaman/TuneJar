@@ -31,9 +31,9 @@ public class Mp3Song extends Song {
 				album.set(tag.getFirst(ID3v24Frames.FRAME_ID_ALBUM));
 			} else if (f.hasID3v1Tag()) {
 				ID3v1Tag tag = f.getID3v1Tag();
-				title.set(tag.getTitle().get(0).toString());
-				artist.set(tag.getArtist().get(0).toString());
-				album.set(tag.getAlbum().get(0).toString());
+				title.set(tag.getFirst(FieldKey.TITLE));
+				artist.set(tag.getFirst(FieldKey.ARTIST));
+				album.set(tag.getFirst(FieldKey.ALBUM));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Unable to parse: " + mp3File, e);
@@ -48,8 +48,8 @@ public class Mp3Song extends Song {
 	public boolean canEdit() {
 		try {
 			setTitle(getTitle());
-			setAlbum(getAlbum());
 			setArtist(getArtist());
+			setAlbum(getAlbum());
 			return true;
 		} catch (Exception e) {
 			LOGGER.error("Unable to edit song: " + toString(), e);

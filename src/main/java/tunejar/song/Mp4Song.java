@@ -37,8 +37,8 @@ public class Mp4Song extends Song {
 	public boolean canEdit() {
 		try {
 			setTitle(getTitle());
-			setAlbum(getAlbum());
 			setArtist(getArtist());
+			setAlbum(getAlbum());
 			return true;
 		} catch (Exception e) {
 			LOGGER.error("Unable to edit song: " + toString(), e);
