@@ -1,6 +1,8 @@
 package tunejar.song;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.beans.property.SimpleStringProperty;
 import tunejar.player.Player;
@@ -27,7 +29,7 @@ public abstract class Song {
 	 */
 	protected Song() {
 		// Disable JAudioTagger's logger.
-		java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
+		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
 
 		// Initailize values.
 		title = new SimpleStringProperty("");
