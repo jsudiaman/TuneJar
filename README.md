@@ -1,7 +1,6 @@
 # TuneJar
-![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/icon.png)  
-  
 [![Circle CI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=svg)](https://circleci.com/gh/sudiamanj/TuneJar)  
+![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/icon.png)
 
 ### What is TuneJar?
 TuneJar (powered by **Java**) is a music player that is **lightweight**, **cross-platform**, and best of all, **open source**.
