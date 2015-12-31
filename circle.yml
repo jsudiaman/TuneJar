@@ -2,7 +2,7 @@ machine:
   java:
     version: oraclejdk8
 
-depdendencies:
+dependencies:
     pre:
         - sudo apt-get install glib2.0
         - sudo apt-get install libavcodec53
