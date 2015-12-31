@@ -8,6 +8,7 @@ import java.io.File;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.testfx.api.FxRobot;
 
 import tunejar.player.Player;
 import tunejar.test.AbstractTest;
@@ -92,11 +93,12 @@ public abstract class AbstractSongTest extends AbstractTest {
 
 	@Test
 	public final void testMediaControls() throws Exception {
-		_song.play();
+		FxRobot robot = new FxRobot();
+		robot.interact(() -> _song.play());
 		assertEquals(_song, Player.getInstance().getNowPlaying());
-		_song.pause();
+		robot.interact(() -> _song.pause());
 		assertEquals(_song, Player.getInstance().getNowPlaying());
-		_song.stop();
+		robot.interact(() -> _song.stop());
 		assertNull(Player.getInstance().getNowPlaying());
 	}
 
