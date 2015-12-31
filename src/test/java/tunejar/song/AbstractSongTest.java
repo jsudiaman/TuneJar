@@ -95,6 +95,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 	public final void testMediaControls() throws Exception {
 		FxRobot robot = new FxRobot();
 		robot.interact(() -> _song.play());
+		assumeTrue(Player.getInstance().isPlayable());
 		assertEquals(_song, Player.getInstance().getNowPlaying());
 		robot.interact(() -> _song.pause());
 		assertEquals(_song, Player.getInstance().getNowPlaying());

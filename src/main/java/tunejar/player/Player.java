@@ -64,6 +64,7 @@ public class Player extends Application {
 	// Data
 	private Playlist masterPlaylist;
 	private Set<File> directories;
+	private boolean playable;
 
 	// Latches
 	private static final CountDownLatch INIT_LATCH = new CountDownLatch(1);
@@ -113,6 +114,7 @@ public class Player extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		setInstance(this);
+		playable = true;
 		try {
 			init(primaryStage);
 		} catch (Exception e) {
@@ -249,8 +251,10 @@ public class Player extends Application {
 		String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
 		try {
 			player = new MediaPlayer(new Media(uriString));
+			playable = true;
 			LOGGER.debug("Loaded song: " + uriString);
 		} catch (MediaException e) {
+			playable = false;
 			controller.getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
 		}
@@ -327,6 +331,10 @@ public class Player extends Application {
 
 	public Scene getScene() {
 		return scene;
+	}
+
+	public boolean isPlayable() {
+		return playable;
 	}
 
 	public static CountDownLatch getInitLatch() {
