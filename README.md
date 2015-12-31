@@ -1,4 +1,5 @@
 # TuneJar
+[![Circle CI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=svg)](https://circleci.com/gh/sudiamanj/TuneJar)
 ![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/screenshot.png)
 
 ### What is TuneJar?

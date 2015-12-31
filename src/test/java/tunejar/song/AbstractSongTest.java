@@ -9,7 +9,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javafx.application.Platform;
 import tunejar.player.Player;
 import tunejar.test.AbstractTest;
 
@@ -93,14 +92,12 @@ public abstract class AbstractSongTest extends AbstractTest {
 
 	@Test
 	public final void testMediaControls() throws Exception {
-		Platform.runLater(() -> {
-			_song.play();
-			assertEquals(_song, Player.getInstance().getNowPlaying());
-			_song.pause();
-			assertEquals(_song, Player.getInstance().getNowPlaying());
-			_song.stop();
-			assertNull(Player.getInstance().getNowPlaying());
-		});
+		_song.play();
+		assertEquals(_song, Player.getInstance().getNowPlaying());
+		_song.pause();
+		assertEquals(_song, Player.getInstance().getNowPlaying());
+		_song.stop();
+		assertNull(Player.getInstance().getNowPlaying());
 	}
 
 }
