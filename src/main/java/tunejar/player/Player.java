@@ -253,14 +253,14 @@ public class Player extends Application {
 			player = new MediaPlayer(new Media(uriString));
 			playable = true;
 			LOGGER.debug("Loaded song: " + uriString);
+			setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
+			LOGGER.info("Playing: " + nowPlaying);
+			player.play();
 		} catch (MediaException e) {
 			playable = false;
 			controller.getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
 		}
-		setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
-		LOGGER.info("Playing: " + nowPlaying);
-		player.play();
 	}
 
 	/**
