@@ -1,6 +1,5 @@
 # TuneJar
 [![Circle CI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=svg)](https://circleci.com/gh/sudiamanj/TuneJar)
-![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/screenshot.png)
 
 ### What is TuneJar?
 TuneJar (powered by **Java**) is a music player that is **lightweight**, **cross-platform**, and best of all, **open source**.
@@ -12,6 +11,9 @@ Here's a few reasons why TuneJar might just be the right player for you.
 - M3U playlists can be created, imported (e.g. from iTunes), and exported for use in other music players.
 - Metadata (Title/Artist/Album) can be edited directly.
 - TuneJar is skinnable via CSS and will ship with multiple premade themes.
+
+### Screenshot
+![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/screenshot.png)
 
 # Getting Started with TuneJar
 Follow these steps if you would like to use TuneJar.
