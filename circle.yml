@@ -1,3 +1,13 @@
 machine:
   java:
     version: oraclejdk8
+
+deployment:
+    staging:
+        branch: master
+        commands:
+            - ./build/build_script.sh
+
+general:
+  artifacts:
+    - "TuneJar.zip"
