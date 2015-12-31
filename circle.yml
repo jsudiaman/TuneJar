@@ -4,6 +4,6 @@ machine:
 
 dependencies:
     pre:
-        - sudo apt-get install glib2.0
+        - sudo apt-get install libglib2.0-dev
         - sudo apt-get install libavcodec53
         - sudo apt-get install libavformat53
