@@ -50,7 +50,7 @@ mvn compile
 mvn exec:java -Dexec.mainClass="tunejar.player.Player"
 ```
 
-Happy developing! Don't forget to submit proposed changes to the [issue tracker](https://github.com/sudiamanj/TuneJar/issues). For long code snippets, please use either [Gist](https://gist.github.com/), [PasteBin](http://pastebin.com/), or a [forked repository](https://help.github.com/articles/fork-a-repo/).
+Happy developing! Don't forget to submit proposed changes to the [issue tracker](http://code.fosshub.com/TuneJar/issues).
 
 # Issues
-If you run into any issues, please submit them [here](https://github.com/sudiamanj/TuneJar/issues).
+If you run into any issues, please submit them [here](http://code.fosshub.com/TuneJar/issues).
