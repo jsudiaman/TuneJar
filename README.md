@@ -20,9 +20,7 @@ Follow these steps if you would like to use TuneJar.
 - [Java 8u40 or later](https://java.com/)
 
 #### Installation
-Since TuneJar runs off of a single jar file, no formal installation is required. You may download TuneJar binaries from either of the following sources:
-- [Official Releases](https://github.com/sudiamanj/TuneJar/releases)
-- [Snapshot Builds](http://code.fosshub.com/TuneJar/downloads)
+Since TuneJar runs off of a single jar file, no formal installation is required. You may download TuneJar binaries [here](http://code.fosshub.com/TuneJar/downloads).
 
 #### Running TuneJar
 Unzip the zip file into a preferred location, such as your desktop. On **Windows**, it is recomended to use ``TuneJar.bat`` to start the program, as that will display the console logger in a command prompt. On **Mac or Linux**, you can either launch TuneJar directly from ``TuneJar.jar``, or by entering ``java -jar TuneJar.jar`` in Terminal (which will display the console logger).
