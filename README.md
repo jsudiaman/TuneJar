@@ -51,6 +51,3 @@ mvn exec:java -Dexec.mainClass="tunejar.player.Player"
 ```
 
 Happy developing!
-
-# Issues
-[Known Issues](https://github.com/sudiamanj/TuneJar/issues)
