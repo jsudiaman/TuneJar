@@ -13,7 +13,7 @@ Here's a few reasons why TuneJar might just be the right player for you.
 - Metadata (Title/Artist/Album) can be edited directly.
 - TuneJar is skinnable via CSS and will ship with multiple premade themes.
 
-# Getting Started with TuneJar
+## Getting Started with TuneJar
 Follow these steps if you would like to use TuneJar.
 
 #### Prerequisite Software
@@ -25,7 +25,7 @@ Since TuneJar runs off of a single jar file, no formal installation is required.
 #### Running TuneJar
 Unzip the zip file into a preferred location, such as your desktop. On **Windows**, it is recomended to use ``TuneJar.bat`` to start the program, as that will display the console logger in a command prompt. On **Mac or Linux**, you can either launch TuneJar directly from ``TuneJar.jar``, or by entering ``java -jar TuneJar.jar`` in Terminal (which will display the console logger).
 
-# Getting Started with TuneJar Development
+## Getting Started with TuneJar Development
 Follow these steps if you would like to run TuneJar in a proper development environment.
 
 #### Prerequisite Software
