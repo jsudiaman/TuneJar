@@ -2,7 +2,7 @@ package tunejar.song;
 
 import tunejar.config.Defaults;
 
-public class Mp3SongTest extends AbstractSongTest {
+public class Mp3SongTest extends SongTest {
 
 	@Override
 	public String getSongFile() {

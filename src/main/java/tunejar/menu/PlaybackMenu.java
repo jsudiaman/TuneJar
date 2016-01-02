@@ -3,21 +3,17 @@ package tunejar.menu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import tunejar.player.Player;
 import tunejar.player.PlayerController;
 
 /**
  * Helper class for handling the Playback menu.
  */
-public class PlaybackMenu {
+public class PlaybackMenu extends PlayerMenu {
 
-	private static final PlaybackMenu INSTANCE = new PlaybackMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private PlayerController controller;
-
-	private PlaybackMenu() {
-		this.controller = PlayerController.getInstance();
+	public PlaybackMenu(PlayerController controller) {
+		super(controller);
 	}
 
 	/**
@@ -44,11 +40,11 @@ public class PlaybackMenu {
 		try {
 			// Have the playlist point to the appropriate song, then play it
 			controller.getSongTable().getSelectionModel().clearAndSelect(row);
-			controller.getSongList().get(row).play();
-			Player.getInstance().setEndOfSongAction(controller::playNext);
+			controller.getPlayer().playSong(controller.getSongList().get(row));
+			controller.getPlayer().setEndOfSongAction(controller::playNext);
 
 			// Update the status bar accordingly
-			controller.getStatus().setText("Now Playing: " + Player.getInstance().getNowPlaying().toString());
+			controller.getStatus().setText("Now Playing: " + controller.getPlayer().getNowPlaying().toString());
 		} catch (NullPointerException e) {
 			if (controller.getSongList().isEmpty())
 				LOGGER.info("The playlist is empty.");
@@ -70,19 +66,19 @@ public class PlaybackMenu {
 	 * If it says anything else, the error will be logged.
 	 */
 	public void pause() {
-		if (Player.getInstance().getNowPlaying() == null) {
+		if (controller.getPlayer().getNowPlaying() == null) {
 			controller.getStatus().setText("No song is currently playing.");
 			return;
 		}
 
 		if (controller.getMenuPause().getText().equals("Pause")) {
-			controller.getStatus().setText("Paused: " + Player.getInstance().getNowPlaying().toString());
-			Player.getInstance().getNowPlaying().pause();
+			controller.getStatus().setText("Paused: " + controller.getPlayer().getNowPlaying().toString());
+			controller.getPlayer().pauseSong();
 			controller.getShortcutPause().setText("Resume");
 			controller.getMenuPause().setText("Resume");
 		} else if (controller.getMenuPause().getText().equals("Resume")) {
-			controller.getStatus().setText("Now Playing: " + Player.getInstance().getNowPlaying().toString());
-			Player.getInstance().getNowPlaying().play();
+			controller.getStatus().setText("Now Playing: " + controller.getPlayer().getNowPlaying().toString());
+			controller.getPlayer().resumeSong();
 			controller.getShortcutPause().setText("Pause");
 			controller.getMenuPause().setText("Pause");
 		} else {
@@ -95,7 +91,7 @@ public class PlaybackMenu {
 	 * Stops the currently playing song.
 	 */
 	public void stop() {
-		if (Player.getInstance().getNowPlaying() == null) {
+		if (controller.getPlayer().getNowPlaying() == null) {
 			controller.getStatus().setText("No song is currently playing.");
 			return;
 		}
@@ -103,19 +99,19 @@ public class PlaybackMenu {
 		controller.getStatus().setText("");
 		controller.getShortcutPause().setText("Pause");
 		controller.getMenuPause().setText("Pause");
-		Player.getInstance().getNowPlaying().stop();
+		controller.getPlayer().stopSong();
 	}
 
 	/**
 	 * Plays the previous song.
 	 */
 	public void playPrev() {
-		if (Player.getInstance().getNowPlaying() == null) {
+		if (controller.getPlayer().getNowPlaying() == null) {
 			controller.getStatus().setText("No song is currently playing.");
 			return;
 		}
 
-		int row = controller.getSongList().indexOf(Player.getInstance().getNowPlaying());
+		int row = controller.getSongList().indexOf(controller.getPlayer().getNowPlaying());
 		row = (row <= 0) ? 0 : row - 1;
 		play(row);
 		controller.getSongTable().getSelectionModel().select(row);
@@ -125,19 +121,15 @@ public class PlaybackMenu {
 	 * Plays the next song.
 	 */
 	public void playNext() {
-		if (Player.getInstance().getNowPlaying() == null) {
+		if (controller.getPlayer().getNowPlaying() == null) {
 			controller.getStatus().setText("No song is currently playing.");
 			return;
 		}
 
-		int row = controller.getSongList().indexOf(Player.getInstance().getNowPlaying());
+		int row = controller.getSongList().indexOf(controller.getPlayer().getNowPlaying());
 		row = (row + 1 >= controller.getSongList().size()) ? 0 : row + 1;
 		play(row);
 		controller.getSongTable().getSelectionModel().select(row);
-	}
-
-	public static PlaybackMenu getInstance() {
-		return INSTANCE;
 	}
 
 }

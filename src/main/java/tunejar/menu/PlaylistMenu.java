@@ -16,7 +16,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
-import tunejar.player.Player;
 import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
@@ -24,15 +23,12 @@ import tunejar.song.Song;
 /**
  * Helper class for handling the Playlist menu.
  */
-public class PlaylistMenu {
+public class PlaylistMenu extends PlayerMenu {
 
-	private static final PlaylistMenu INSTANCE = new PlaylistMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private PlayerController controller;
-
-	private PlaylistMenu() {
-		this.controller = PlayerController.getInstance();
+	public PlaylistMenu(PlayerController controller) {
+		super(controller);
 	}
 
 	/**
@@ -88,12 +84,12 @@ public class PlaylistMenu {
 		}
 
 		Collections.shuffle(controller.getSongList());
-		if (Player.getInstance().getNowPlaying() != null
-				&& controller.getSongList().indexOf(Player.getInstance().getNowPlaying()) >= 0) {
+		if (controller.getPlayer().getNowPlaying() != null
+				&& controller.getSongList().indexOf(controller.getPlayer().getNowPlaying()) >= 0) {
 			Collections.swap(controller.getSongList(), 0,
-					controller.getSongList().indexOf(Player.getInstance().getNowPlaying()));
+					controller.getSongList().indexOf(controller.getPlayer().getNowPlaying()));
 		} else {
-			PlaybackMenu.getInstance().play(0);
+			controller.getPlaybackMenu().play(0);
 		}
 		controller.focus(controller.getSongTable(), 0);
 	}
@@ -190,10 +186,6 @@ public class PlaylistMenu {
 		} else {
 			controller.getStatus().setText("Deletion failed.");
 		}
-	}
-
-	public static PlaylistMenu getInstance() {
-		return INSTANCE;
 	}
 
 }

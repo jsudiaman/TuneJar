@@ -22,7 +22,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import tunejar.config.Options;
 import tunejar.menu.FileMenu;
 import tunejar.menu.PlaybackMenu;
 import tunejar.menu.PlaylistMenu;
@@ -34,11 +33,17 @@ import tunejar.song.Song;
 
 public class PlayerController implements Initializable {
 
-	private static PlayerController instance;
-
 	// Lists
 	private ObservableList<Song> songList;
 	private ObservableList<Playlist> playlistList;
+
+	// Menus
+	private FileMenu fileMenu;
+	private PlaybackMenu playbackMenu;
+	private PlaylistMenu playlistMenu;
+	private SongMenu songMenu;
+	private ThemeMenu themeMenu;
+	private VolumeMenu volumeMenu;
 
 	// FXML Injections
 	@FXML
@@ -73,17 +78,12 @@ public class PlayerController implements Initializable {
 	private Label status = new Label();
 
 	@FXML
-	private Menu themeMenu = new Menu();
+	private Menu themeSelector = new Menu();
 
 	@FXML
 	private Slider volumeSlider = new Slider();
 
 	// --------------- Initialization --------------- //
-
-	public PlayerController() {
-		if (instance != null)
-			throw new IllegalStateException("An instance of this object already exists.");
-	}
 
 	/**
 	 * Sets up the playlist viewer.
@@ -97,8 +97,13 @@ public class PlayerController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// Initialize the singleton object.
-		setInstance(this);
+		// Initialize the menus.
+		fileMenu = new FileMenu(this);
+		playbackMenu = new PlaybackMenu(this);
+		playlistMenu = new PlaylistMenu(this);
+		songMenu = new SongMenu(this);
+		themeMenu = new ThemeMenu(this);
+		volumeMenu = new VolumeMenu(this);
 
 		// Initialize the song table.
 		songList = FXCollections.observableArrayList();
@@ -110,7 +115,7 @@ public class PlayerController implements Initializable {
 		songTable.getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
 			List<String> list = new ArrayList<String>();
 			songTable.getSortOrder().forEach(t -> list.add(t.getId()));
-			Options.getInstance().setSortOrder(list.toArray(new String[0]));
+			Player.getPlayer().getOptions().setSortOrder(list.toArray(new String[0]));
 		});
 
 		// Initialize the playlist table.
@@ -120,8 +125,8 @@ public class PlayerController implements Initializable {
 
 		// When a song is selected, update the status bar.
 		songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			status.setText(Player.getInstance().getNowPlaying() != null
-					? "Now Playing: " + Player.getInstance().getNowPlaying().toString() : "");
+			status.setText(Player.getPlayer().getNowPlaying() != null
+					? "Now Playing: " + Player.getPlayer().getNowPlaying().toString() : "");
 		});
 
 		// When a song is double clicked, play it.
@@ -170,19 +175,19 @@ public class PlayerController implements Initializable {
 	// --------------- File --------------- //
 
 	public void createPlaylistButton() {
-		FileMenu.getInstance().createPlaylist();
+		fileMenu.createPlaylist();
 	}
 
 	public void quit() {
-		FileMenu.getInstance().quit();
+		fileMenu.quit();
 	}
 
 	public void addDirectory() {
-		FileMenu.getInstance().addDirectory();
+		fileMenu.addDirectory();
 	}
 
 	public void removeDirectory() {
-		FileMenu.getInstance().removeDirectory();
+		fileMenu.removeDirectory();
 	}
 
 	// --------------- Playback --------------- //
@@ -191,67 +196,67 @@ public class PlayerController implements Initializable {
 	 * Plays or resumes the selected song.
 	 */
 	public void play() {
-		PlaybackMenu.getInstance().play();
+		playbackMenu.play();
 	}
 
 	public void pause() {
-		PlaybackMenu.getInstance().pause();
+		playbackMenu.pause();
 	}
 
 	public void stop() {
-		PlaybackMenu.getInstance().stop();
+		playbackMenu.stop();
 	}
 
 	public void playPrev() {
-		PlaybackMenu.getInstance().playPrev();
+		playbackMenu.playPrev();
 	}
 
 	public void playNext() {
-		PlaybackMenu.getInstance().playNext();
+		playbackMenu.playNext();
 	}
 
 	// --------------- Song --------------- //
 
 	public void editSong() {
-		SongMenu.getInstance().editSong();
+		songMenu.editSong();
 	}
 
 	public void toNewPlaylist() {
-		SongMenu.getInstance().toNewPlaylist();
+		songMenu.toNewPlaylist();
 	}
 
 	public void removeSong() {
-		SongMenu.getInstance().removeSong();
+		songMenu.removeSong();
 	}
 
 	public void search() {
-		SongMenu.getInstance().search();
+		songMenu.search();
 	}
 
 	// --------------- Playlist --------------- //
 
 	public void shuffle() {
-		PlaylistMenu.getInstance().shuffle();
+		playlistMenu.shuffle();
 	}
 
 	public void renamePlaylist() {
-		PlaylistMenu.getInstance().renamePlaylist();
+		playlistMenu.renamePlaylist();
 	}
 
 	public void deletePlaylist() {
-		PlaylistMenu.getInstance().deletePlaylist();
+		playlistMenu.deletePlaylist();
 	}
 
 	// --------------- Themes --------------- //
 
 	public void initThemes() {
-		ThemeMenu.getInstance().init();
+		themeMenu.init();
 	}
 
 	// --------------- Volume --------------- //
 
 	public void initVolume() {
-		VolumeMenu.getInstance().init();
+		volumeMenu.init();
 	}
 
 	// --------------- Utilities --------------- //
@@ -345,8 +350,8 @@ public class PlayerController implements Initializable {
 		this.songList = songList;
 	}
 
-	public Menu getThemeMenu() {
-		return themeMenu;
+	public Menu getThemeSelector() {
+		return themeSelector;
 	}
 
 	public TableColumn<Song, String> getTitleColumn() {
@@ -361,12 +366,20 @@ public class PlayerController implements Initializable {
 		return album;
 	}
 
-	public static void setInstance(PlayerController instance) {
-		PlayerController.instance = instance;
+	public Player getPlayer() {
+		return Player.getPlayer();
 	}
 
-	public static PlayerController getInstance() {
-		return instance;
+	public PlaybackMenu getPlaybackMenu() {
+		return playbackMenu;
+	}
+
+	public PlaylistMenu getPlaylistMenu() {
+		return playlistMenu;
+	}
+
+	public FileMenu getFileMenu() {
+		return fileMenu;
 	}
 
 }

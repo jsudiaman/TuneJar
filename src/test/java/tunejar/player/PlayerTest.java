@@ -1,4 +1,4 @@
-package tunejar.test;
+package tunejar.player;
 
 import java.io.File;
 import java.util.HashSet;
@@ -10,9 +10,8 @@ import org.loadui.testfx.GuiTest;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import tunejar.config.Options;
-import tunejar.player.Player;
 
-public abstract class AbstractTest {
+public abstract class PlayerTest {
 
 	private static boolean initialized = false;
 	private static GuiTest controller;
@@ -37,12 +36,17 @@ public abstract class AbstractTest {
 		return controller;
 	}
 
+	public static Player getPlayer() {
+		return Player.getPlayer();
+	}
+
 	private static void init() throws Exception {
 		// Initialize directories to avoid being blocked by a dialog box
-		if (Options.getInstance().getDirectories().isEmpty()) {
+		Options options = new Options();
+		if (options.getDirectories().isEmpty()) {
 			Set<File> set = new HashSet<>();
-			set.add(new File("."));
-			Options.getInstance().setDirectories(set);
+			set.add(new File(""));
+			options.setDirectories(set);
 		}
 
 		// Launch the application
@@ -52,7 +56,7 @@ public abstract class AbstractTest {
 		controller = new GuiTest() {
 			@Override
 			protected Parent getRootNode() {
-				return Player.getInstance().getScene().getRoot();
+				return Player.getPlayer().getScene().getRoot();
 			}
 		};
 		initialized = true;

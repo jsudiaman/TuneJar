@@ -8,17 +8,12 @@ import java.io.File;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.testfx.api.FxRobot;
-
-import tunejar.player.Player;
-import tunejar.test.AbstractTest;
 
 /**
  * Tests an implementation of the {@link Song} interface. Subclasses are
- * required to supply a song file by overriding
- * {@link AbstractSongTest#getSongFile()}.
+ * required to supply a song file by overriding {@link SongTest#getSongFile()}.
  */
-public abstract class AbstractSongTest extends AbstractTest {
+public abstract class SongTest {
 
 	// NOTE: Variables that begin with '_' should not be modified outside of
 	// setUp() and tearDown().
@@ -33,7 +28,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 	@Before
 	public final void setUp() throws Exception {
 		_songFile = getSongFile();
-		_song = SongFactory.getInstance().fromFile(new File(_songFile));
+		_song = Songs.create(new File(_songFile));
 		_originalTitle = _song.getTitle();
 		_originalArtist = _song.getArtist();
 		_originalAlbum = _song.getAlbum();
@@ -41,7 +36,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 
 	@After
 	public final void tearDown() throws Exception {
-		_song = SongFactory.getInstance().fromFile(new File(_songFile));
+		_song = Songs.create(new File(_songFile));
 		if (_song.canEdit()) {
 			_song.setTitle(_originalTitle);
 			_song.setArtist(_originalArtist);
@@ -57,7 +52,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 		_song.setTitle("TEST");
 
 		// Assertion: ONLY the title has changed in the metadata.
-		Song song = SongFactory.getInstance().fromFile(new File(_songFile));
+		Song song = Songs.create(new File(_songFile));
 		assertEquals("TEST", song.getTitle());
 		assertEquals(_originalArtist, song.getArtist());
 		assertEquals(_originalAlbum, song.getAlbum());
@@ -71,7 +66,7 @@ public abstract class AbstractSongTest extends AbstractTest {
 		_song.setArtist("TEST");
 
 		// Assertion: ONLY the artist has changed in the metadata.
-		Song song = SongFactory.getInstance().fromFile(new File(_songFile));
+		Song song = Songs.create(new File(_songFile));
 		assertEquals(_originalTitle, song.getTitle());
 		assertEquals("TEST", song.getArtist());
 		assertEquals(_originalAlbum, song.getAlbum());
@@ -85,22 +80,10 @@ public abstract class AbstractSongTest extends AbstractTest {
 		_song.setAlbum("TEST");
 
 		// Assertion: ONLY the album has changed in the metadata.
-		Song song = SongFactory.getInstance().fromFile(new File(_songFile));
+		Song song = Songs.create(new File(_songFile));
 		assertEquals(_originalTitle, song.getTitle());
 		assertEquals(_originalArtist, song.getArtist());
 		assertEquals("TEST", song.getAlbum());
-	}
-
-	@Test
-	public final void testMediaControls() throws Exception {
-		FxRobot robot = new FxRobot();
-		robot.interact(() -> _song.play());
-		assumeTrue(Player.getInstance().isPlayable());
-		assertEquals(_song, Player.getInstance().getNowPlaying());
-		robot.interact(() -> _song.pause());
-		assertEquals(_song, Player.getInstance().getNowPlaying());
-		robot.interact(() -> _song.stop());
-		assertNull(Player.getInstance().getNowPlaying());
 	}
 
 }

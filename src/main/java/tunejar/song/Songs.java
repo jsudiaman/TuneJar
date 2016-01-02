@@ -5,12 +5,11 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SongFactory {
+public class Songs {
 
-	private static final SongFactory INSTANCE = new SongFactory();
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private SongFactory() {
+	private Songs() {
 	}
 
 	/**
@@ -21,7 +20,7 @@ public class SongFactory {
 	 * @return The constructed {@link Song}, or <code>null</code> if the file
 	 *         type is not supported.
 	 */
-	public Song fromFile(File file) {
+	public static Song create(File file) {
 		if (file.getName().endsWith("mp3")) {
 			LOGGER.debug("From file: " + file);
 			return new Mp3Song(file);
@@ -41,7 +40,7 @@ public class SongFactory {
 	 *            The song to be used.
 	 * @return The duplicate {@link Song}.
 	 */
-	public Song fromSong(Song song) {
+	public static Song duplicate(Song song) {
 		if (song instanceof Mp3Song) {
 			return new Mp3Song((Mp3Song) song);
 		} else if (song instanceof Mp4Song) {
@@ -49,12 +48,7 @@ public class SongFactory {
 		}
 
 		// All implementations of Song should have a copy constructor.
-		LOGGER.error("From song: " + song + " failed and threw AssertionError.");
 		throw new AssertionError();
-	}
-
-	public static SongFactory getInstance() {
-		return INSTANCE;
 	}
 
 }

@@ -15,13 +15,13 @@ import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javafx.beans.property.SimpleStringProperty;
 import tunejar.config.Defaults;
-import tunejar.player.PlayerController;
 
 /**
  * An ordered collection of Song objects.
@@ -60,39 +60,32 @@ public class Playlist implements List<Song> {
 	 *
 	 * @throws IOException
 	 *             Failed to read the .m3u file
+	 * @throws TimeoutException
+	 * @throws InterruptedException
 	 */
-	public Playlist(File m3uFile) throws IOException {
+	public Playlist(File m3uFile) throws IOException, TimeoutException, InterruptedException {
 		// Take the filename to be the name of the playlist.
 		this.name = new SimpleStringProperty(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
 
 		// Add each song line by line.
-		BufferedReader reader = new BufferedReader(new FileReader(m3uFile));
-		ExecutorService executor = Executors.newWorkStealingPool();
-		for (String nextLine; (nextLine = reader.readLine()) != null;) {
-			String file = nextLine;
-			executor.submit(() -> {
-				try {
-					add(SongFactory.getInstance().fromFile(new File(file)));
-				} catch (Exception e) {
-					LOGGER.error("Failed to add song: " + file, e);
-				}
-			});
-		}
-
-		// Block until all of the songs have been added.
-		executor.shutdown();
-		try {
-			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
-				LOGGER.warn("Executor timed out.");
-				PlayerController.getInstance().getStatus().setText("Timed out, some songs may be missing.");
+		try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
+			ExecutorService executor = Executors.newWorkStealingPool();
+			for (String nextLine; (nextLine = reader.readLine()) != null;) {
+				String file = nextLine;
+				executor.submit(() -> {
+					try {
+						add(Songs.create(new File(file)));
+					} catch (Exception e) {
+						LOGGER.error("Failed to add song: " + file, e);
+					}
+				});
 			}
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			LOGGER.error("Thread was interrupted.", e);
-			PlayerController.getInstance().getStatus().setText("Interrupted, some songs may be missing.");
-		}
 
-		reader.close();
+			// Block until all of the songs have been added.
+			executor.shutdown();
+			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS))
+				throw new TimeoutException();
+		}
 	}
 
 	// --------------- Getters and Setters --------------- //
@@ -130,7 +123,7 @@ public class Playlist implements List<Song> {
 	 */
 	@Override
 	public boolean add(Song s) {
-		return list.add(SongFactory.getInstance().fromSong(s));
+		return list.add(Songs.duplicate(s));
 	}
 
 	/**

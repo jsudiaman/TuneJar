@@ -3,20 +3,17 @@ package tunejar.song;
 import java.io.File;
 
 import javafx.beans.property.SimpleStringProperty;
-import tunejar.player.Player;
 
 public abstract class Song {
 
 	protected SimpleStringProperty title;
 	protected SimpleStringProperty artist;
 	protected SimpleStringProperty album;
-	protected boolean paused;
 	protected File audioFile;
 
 	static {
 		// Disable JAudioTagger's logger. (Note: In this case, fully qualified
-		// names are used to indicate that it is java.util.Logging and NOT
-		// Apache Log4j)
+		// names are used to indicate that it is JUL and NOT Apache Log4j)
 		java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
 	}
 
@@ -36,35 +33,6 @@ public abstract class Song {
 		title = new SimpleStringProperty("");
 		artist = new SimpleStringProperty("");
 		album = new SimpleStringProperty("");
-		paused = false;
-	}
-
-	/**
-	 * Plays the song.
-	 */
-	public void play() {
-		if (paused) {
-			paused = false;
-			Player.getInstance().resumePlayback();
-		} else {
-			Player.getInstance().load(this);
-		}
-	}
-
-	/**
-	 * Pauses the song.
-	 */
-	public void pause() {
-		paused = true;
-		Player.getInstance().pausePlayback();
-	}
-
-	/**
-	 * Stops the song.
-	 */
-	public void stop() {
-		paused = false;
-		Player.getInstance().stopPlayback();
 	}
 
 	/**

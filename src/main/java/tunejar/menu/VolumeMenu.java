@@ -1,28 +1,24 @@
 package tunejar.menu;
 
 import javafx.beans.value.ChangeListener;
-import tunejar.config.Options;
-import tunejar.player.Player;
 import tunejar.player.PlayerController;
 
-public class VolumeMenu {
+public class VolumeMenu extends PlayerMenu {
 
-	private static final VolumeMenu INSTANCE = new VolumeMenu();
-
-	public void init() {
-		PlayerController.getInstance().getVolumeSlider().valueProperty()
-				.addListener((obs, oldV, newV) -> Player.getInstance().setVolume(newV.doubleValue()));
-
-		// Preserve SSD life by only writing upon slider release.
-		PlayerController.getInstance().getVolumeSlider().valueChangingProperty()
-				.addListener((ChangeListener<Boolean>) (obs, oldV, newV) -> {
-					if (!newV)
-						Options.getInstance().setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
-				});
+	public VolumeMenu(PlayerController controller) {
+		super(controller);
 	}
 
-	public static VolumeMenu getInstance() {
-		return INSTANCE;
+	public void init() {
+		controller.getVolumeSlider().valueProperty()
+				.addListener((obs, oldV, newV) -> controller.getPlayer().setVolume(newV.doubleValue()));
+
+		// Preserve SSD life by only writing upon slider release.
+		controller.getVolumeSlider().valueChangingProperty()
+				.addListener((ChangeListener<Boolean>) (obs, oldV, newV) -> {
+					if (!newV)
+						controller.getPlayer().getOptions().setVolume(controller.getVolumeSlider().getValue());
+				});
 	}
 
 }

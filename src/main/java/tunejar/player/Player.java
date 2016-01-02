@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -44,15 +45,16 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import tunejar.config.Defaults;
 import tunejar.config.Options;
-import tunejar.menu.PlaylistMenu;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
-import tunejar.song.SongFactory;
+import tunejar.song.Songs;
 
 public class Player extends Application {
 
+	// Static
 	private static Player instance;
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final CountDownLatch INIT_LATCH = new CountDownLatch(1);
 
 	// GUI
 	private MediaPlayer player;
@@ -64,15 +66,7 @@ public class Player extends Application {
 	// Data
 	private Playlist masterPlaylist;
 	private Set<File> directories;
-	private boolean playable;
-
-	// Latches
-	private static final CountDownLatch INIT_LATCH = new CountDownLatch(1);
-
-	public Player() {
-		if (instance != null)
-			throw new IllegalStateException("An instance of this object already exists.");
-	}
+	private Options options;
 
 	/**
 	 * Cleans up excessive log files, then calls
@@ -113,8 +107,6 @@ public class Player extends Application {
 	 */
 	@Override
 	public void start(Stage primaryStage) {
-		setInstance(this);
-		playable = true;
 		try {
 			init(primaryStage);
 		} catch (Exception e) {
@@ -132,6 +124,10 @@ public class Player extends Application {
 	 *             Failed to load the FXML, or could not load/save a file.
 	 */
 	private void init(Stage primaryStage) throws IOException {
+		// Initialization.
+		setInstance(this);
+		options = new Options();
+
 		// Load the FXML file and display the interface.
 		this.primaryStage = primaryStage;
 		URL location = getClass().getResource(Defaults.PLAYER_FXML);
@@ -139,7 +135,7 @@ public class Player extends Application {
 		Parent root = fxmlLoader.load(location.openStream());
 
 		scene = new Scene(root, 1000, 600);
-		String theme = Defaults.THEME_MAP.get(Options.getInstance().getTheme());
+		String theme = Defaults.THEME_MAP.get(options.getTheme());
 		scene.getStylesheets().add(theme);
 		LOGGER.debug("Loaded theme: " + theme);
 
@@ -161,7 +157,7 @@ public class Player extends Application {
 		// Create and display a playlist containing all songs from each
 		// directory.
 		refresh();
-		PlaylistMenu.getInstance().loadPlaylist(masterPlaylist);
+		controller.getPlaylistMenu().loadPlaylist(masterPlaylist);
 
 		// Save the directories.
 		writeDirectories();
@@ -175,13 +171,13 @@ public class Player extends Application {
 			exitWithAlert(e);
 		}
 		if (playlistSet != null) {
-			playlistSet.forEach(PlaylistMenu.getInstance()::loadPlaylist);
+			playlistSet.forEach(controller.getPlaylistMenu()::loadPlaylist);
 		}
 		controller.focus(controller.getPlaylistTable(), 0);
-		controller.getVolumeSlider().setValue(Options.getInstance().getVolume());
+		controller.getVolumeSlider().setValue(options.getVolume());
 
 		// Finally, sort the song table.
-		String[] sortBy = Options.getInstance().getSortOrder();
+		String[] sortBy = options.getSortOrder();
 		controller.getSongTable().getSortOrder().clear();
 		List<TableColumn<Song, ?>> sortOrder = controller.getSongTable().getSortOrder();
 		for (String s : sortBy) {
@@ -243,21 +239,22 @@ public class Player extends Application {
 	 * @param song
 	 *            The song to play
 	 */
-	public void load(Song song) {
-		if (nowPlaying != null) {
-			nowPlaying.stop();
+	public void playSong(Song song) {
+		if (nowPlaying == song) {
+			resumeSong();
+			return;
+		} else if (nowPlaying != null) {
+			stopSong();
 		}
 		nowPlaying = song;
 		String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
 		try {
 			player = new MediaPlayer(new Media(uriString));
-			playable = true;
 			LOGGER.debug("Loaded song: " + uriString);
-			setVolume(PlayerController.getInstance().getVolumeSlider().getValue());
+			setVolume(controller.getVolumeSlider().getValue());
 			LOGGER.info("Playing: " + nowPlaying);
 			player.play();
 		} catch (MediaException e) {
-			playable = false;
 			controller.getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
 		}
@@ -266,7 +263,7 @@ public class Player extends Application {
 	/**
 	 * Resumes the media player.
 	 */
-	public void resumePlayback() {
+	public void resumeSong() {
 		if (player != null && nowPlaying != null) {
 			LOGGER.info("Resuming: " + nowPlaying);
 			player.play();
@@ -276,7 +273,7 @@ public class Player extends Application {
 	/**
 	 * Pauses the media player.
 	 */
-	public void pausePlayback() {
+	public void pauseSong() {
 		if (player != null && nowPlaying != null) {
 			LOGGER.info("Pausing: " + nowPlaying);
 			player.pause();
@@ -286,7 +283,7 @@ public class Player extends Application {
 	/**
 	 * Stops the media player.
 	 */
-	public void stopPlayback() {
+	public void stopSong() {
 		if (player != null && nowPlaying != null) {
 			LOGGER.info("Stopping: " + nowPlaying);
 			player.stop();
@@ -325,6 +322,10 @@ public class Player extends Application {
 		Player.instance = instance;
 	}
 
+	protected static Player getPlayer() {
+		return instance;
+	}
+
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
@@ -333,16 +334,12 @@ public class Player extends Application {
 		return scene;
 	}
 
-	public boolean isPlayable() {
-		return playable;
-	}
-
 	public static CountDownLatch getInitLatch() {
 		return INIT_LATCH;
 	}
 
-	public static Player getInstance() {
-		return instance;
+	public Options getOptions() {
+		return options;
 	}
 
 	// ------------------- File Manipulation ------------------- //
@@ -445,14 +442,14 @@ public class Player extends Application {
 	 * @return A set containing the directories
 	 */
 	private Set<File> readDirectories() {
-		return Options.getInstance().getDirectories();
+		return options.getDirectories();
 	}
 
 	/**
 	 * Writes directories to the options file.
 	 */
 	private void writeDirectories() {
-		Options.getInstance().setDirectories(directories);
+		options.setDirectories(directories);
 	}
 
 	/**
@@ -487,7 +484,7 @@ public class Player extends Application {
 			} else {
 				executor.submit(() -> {
 					try {
-						Song song = SongFactory.getInstance().fromFile(f);
+						Song song = Songs.create(f);
 						if (song != null)
 							songs.add(song);
 					} catch (Exception e) {
@@ -535,8 +532,13 @@ public class Player extends Application {
 		// Iterate through each file in the working directory.
 		for (File f : fileList) {
 			if (f.toString().endsWith(".m3u")) {
-				Playlist playlist = new Playlist(f);
-				multiset.add(playlist);
+				try {
+					Playlist playlist = new Playlist(f);
+					multiset.add(playlist);
+				} catch (TimeoutException | InterruptedException e) {
+					controller.getStatus().setText("Timed out, some songs may be missing.");
+					LOGGER.catching(Level.ERROR, e);
+				}
 			}
 		}
 

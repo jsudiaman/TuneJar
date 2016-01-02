@@ -28,15 +28,12 @@ import tunejar.song.Song;
 /**
  * Helper class for handling the Song menu.
  */
-public class SongMenu {
+public class SongMenu extends PlayerMenu {
 
-	private static final SongMenu INSTANCE = new SongMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private PlayerController controller;
-
-	private SongMenu() {
-		this.controller = PlayerController.getInstance();
+	public SongMenu(PlayerController controller) {
+		super(controller);
 	}
 
 	/**
@@ -138,14 +135,14 @@ public class SongMenu {
 		}
 
 		Playlist pl;
-		if ((pl = FileMenu.getInstance().createPlaylist()) != null) {
+		if ((pl = controller.getFileMenu().createPlaylist()) != null) {
 			pl.addAll(songs);
 			try {
 				pl.save();
 			} catch (IOException e) {
 				LOGGER.catching(Level.ERROR, e);
 			} finally {
-				PlayerController.getInstance().refreshTables();
+				controller.refreshTables();
 			}
 		}
 	}
@@ -241,10 +238,6 @@ public class SongMenu {
 			controller.getSongTable().getSelectionModel().select(i);
 		}
 		return count;
-	}
-
-	public static SongMenu getInstance() {
-		return INSTANCE;
 	}
 
 }

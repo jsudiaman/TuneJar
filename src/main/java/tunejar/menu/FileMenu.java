@@ -10,22 +10,18 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
-import tunejar.player.Player;
 import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 
 /**
  * Helper class for handling the File menu.
  */
-public class FileMenu {
+public class FileMenu extends PlayerMenu {
 
-	private static final FileMenu INSTANCE = new FileMenu();
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private PlayerController controller;
-
-	private FileMenu() {
-		this.controller = PlayerController.getInstance();
+	public FileMenu(PlayerController controller) {
+		super(controller);
 	}
 
 	/**
@@ -60,7 +56,7 @@ public class FileMenu {
 			Playlist p = new Playlist(pName);
 			try {
 				p.save();
-				PlaylistMenu.getInstance().loadPlaylist(p);
+				controller.getPlaylistMenu().loadPlaylist(p);
 				return p;
 			} catch (IOException e) {
 				// Playlist creation fails if it cannot be successfully saved.
@@ -92,26 +88,22 @@ public class FileMenu {
 	}
 
 	public void addDirectory() {
-		Player.getInstance().addDirectory();
-		controller.getPlaylistList().set(0, Player.getInstance().getMasterPlaylist());
+		controller.getPlayer().addDirectory();
+		controller.getPlaylistList().set(0, controller.getPlayer().getMasterPlaylist());
 		controller.refreshTables();
 		controller.focus(controller.getPlaylistTable(), 0);
 	}
 
 	public void removeDirectory() {
-		if (Player.getInstance().removeDirectory()) {
-			Player.getInstance().refresh();
-			controller.getPlaylistList().set(0, Player.getInstance().getMasterPlaylist());
+		if (controller.getPlayer().removeDirectory()) {
+			controller.getPlayer().refresh();
+			controller.getPlaylistList().set(0, controller.getPlayer().getMasterPlaylist());
 			controller.refreshTables();
-			if (Player.getInstance().getNowPlaying() != null
-					&& !Player.getInstance().getMasterPlaylist().contains(Player.getInstance().getNowPlaying())) {
-				Player.getInstance().stopPlayback();
+			if (controller.getPlayer().getNowPlaying() != null
+					&& !controller.getPlayer().getMasterPlaylist().contains(controller.getPlayer().getNowPlaying())) {
+				controller.getPlayer().stopSong();
 			}
 		}
-	}
-
-	public static FileMenu getInstance() {
-		return INSTANCE;
 	}
 
 }

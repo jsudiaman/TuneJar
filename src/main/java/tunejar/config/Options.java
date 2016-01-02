@@ -29,14 +29,12 @@ import javafx.scene.control.Alert.AlertType;
 @SuppressWarnings("unchecked")
 public class Options {
 
-	private static final Options INSTANCE = new Options();
-
 	private final Logger logger;
 	private final Path optionsFile;
 	private JSONObject options;
 	private boolean writeEnabled;
 
-	private Options() {
+	public Options() {
 		logger = LogManager.getLogger();
 		optionsFile = Paths.get(Defaults.OPTIONS_FILE);
 		writeEnabled = true;
@@ -76,6 +74,9 @@ public class Options {
 		}
 	}
 
+	/**
+	 * Resets options back to their default settings.
+	 */
 	private void reset() {
 		options = new JSONObject();
 		setTheme(Defaults.THEME);
@@ -181,10 +182,6 @@ public class Options {
 		// Disable write access, then reset.
 		writeEnabled = false;
 		reset();
-	}
-
-	public static Options getInstance() {
-		return INSTANCE;
 	}
 
 }
