@@ -1,6 +1,7 @@
 package tunejar.player;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -523,7 +524,7 @@ public class Player extends Application {
 
 		// Initialization
 		Collection<Playlist> multiset = HashMultiset.create();
-		File[] fileList = new File(".").listFiles();
+		File[] fileList = new File(".").listFiles((FilenameFilter) (dir, name) -> name.endsWith(".m3u"));
 		if (fileList == null) {
 			LOGGER.error("Unable to access the working directory.");
 			return multiset;
@@ -531,14 +532,15 @@ public class Player extends Application {
 
 		// Iterate through each file in the working directory.
 		for (File f : fileList) {
-			if (f.toString().endsWith(".m3u")) {
-				try {
-					Playlist playlist = new Playlist(f);
-					multiset.add(playlist);
-				} catch (TimeoutException | InterruptedException e) {
-					controller.getStatus().setText("Timed out, some songs may be missing.");
-					LOGGER.catching(Level.ERROR, e);
-				}
+			try {
+				Playlist playlist = new Playlist(f);
+				multiset.add(playlist);
+			} catch (TimeoutException e) {
+				LOGGER.error("Executor timed out.", e);
+				controller.getStatus().setText("Timed out, some playlists may be missing.");
+			} catch (InterruptedException e) {
+				LOGGER.error("Thread was interrupted.", e);
+				controller.getStatus().setText("Interrupted, some playlists may be missing.");
 			}
 		}
 
