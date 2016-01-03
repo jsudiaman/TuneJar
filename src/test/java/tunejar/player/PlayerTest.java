@@ -41,13 +41,11 @@ public abstract class PlayerTest {
 	}
 
 	private static void init() throws Exception {
-		// Initialize directories to avoid being blocked by a dialog box
+		// Set directories
 		Options options = new Options();
-		if (options.getDirectories().isEmpty()) {
-			Set<File> set = new HashSet<>();
-			set.add(new File("src/test/resources/"));
-			options.setDirectories(set);
-		}
+		Set<File> set = new HashSet<>();
+		set.add(new File("src/test/resources/"));
+		options.setDirectories(set);
 
 		// Launch the application
 		new Thread(() -> Application.launch(Player.class)).start();
