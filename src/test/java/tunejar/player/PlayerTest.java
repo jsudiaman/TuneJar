@@ -45,7 +45,7 @@ public abstract class PlayerTest {
 		Options options = new Options();
 		if (options.getDirectories().isEmpty()) {
 			Set<File> set = new HashSet<>();
-			set.add(new File(""));
+			set.add(new File("src/test/resources/"));
 			options.setDirectories(set);
 		}
 

@@ -48,6 +48,10 @@ public class Defaults {
 		OPTIONS_FILE = Paths.get(TUNEJAR_HOME, "options.json").toString();
 		PLAYLISTS_FOLDER = Paths.get(TUNEJAR_HOME, "Playlists").toString();
 
+		// Make directories
+		new File(Defaults.TUNEJAR_HOME).mkdirs();
+		new File(Defaults.PLAYLISTS_FOLDER).mkdirs();
+
 		// Misc. constants
 		DIRECTORIES = new HashSet<>();
 		GET_SONGS_TIMEOUT = 5 * 60;

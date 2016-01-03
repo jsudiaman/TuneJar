@@ -70,8 +70,7 @@ public class Player extends Application {
 	private Options options;
 
 	/**
-	 * Cleans up excessive log files, sets up the TuneJar home directory, then
-	 * calls {@link Application#launch(String...)}.
+	 * Main method.
 	 *
 	 * @param args
 	 *            The command line arguments
@@ -95,10 +94,6 @@ public class Player extends Application {
 		} catch (IOException e) {
 			LOGGER.error("Log file cleanup failed.", e);
 		}
-
-		// Make directories.
-		new File(Defaults.TUNEJAR_HOME).mkdirs();
-		new File(Defaults.PLAYLISTS_FOLDER).mkdirs();
 
 		launch(args);
 	}
