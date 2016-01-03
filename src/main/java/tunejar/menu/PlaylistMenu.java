@@ -2,6 +2,8 @@ package tunejar.menu;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +18,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
+import tunejar.config.Defaults;
 import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 import tunejar.song.Song;
@@ -100,7 +103,7 @@ public class PlaylistMenu extends PlayerMenu {
 	public void renamePlaylist() {
 		Playlist pl = controller.getPlaylistTable().getSelectionModel().getSelectedItem();
 		String oldName = pl.getName();
-		File oldFile = new File(oldName + ".m3u");
+		File oldFile = Paths.get(Defaults.PLAYLISTS_FOLDER, oldName + ".m3u").toFile();
 
 		// Prompt the user for a playlist name.
 		TextInputDialog dialog = new TextInputDialog(oldName);
@@ -128,9 +131,7 @@ public class PlaylistMenu extends PlayerMenu {
 			// Rename the playlist and attempt to save changes.
 			pl.setName(playlistName.get());
 			pl.save();
-			if (!oldFile.delete()) {
-				controller.getStatus().setText("Could not delete the old file.");
-			}
+			Files.delete(Paths.get(oldFile.toURI()));
 			controller.refreshTables();
 
 			// Also, rename the playlist in the "Song -> Add to...<PLAYLIST>"
@@ -144,7 +145,7 @@ public class PlaylistMenu extends PlayerMenu {
 				}
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			controller.getStatus().setText("Rename failed.");
 			LOGGER.catching(Level.ERROR, e);
 		}
@@ -167,7 +168,8 @@ public class PlaylistMenu extends PlayerMenu {
 		if (result.get() != ButtonType.OK) {
 			return;
 		}
-		if (new File(pl.getName() + ".m3u").delete()) {
+		try {
+			Files.delete(Paths.get(Defaults.PLAYLISTS_FOLDER, pl.getName() + ".m3u"));
 			controller.getPlaylistList().remove(pl);
 
 			// Remove the playlist from the "Song -> Add To..." menu.
@@ -183,8 +185,9 @@ public class PlaylistMenu extends PlayerMenu {
 			}
 
 			controller.refreshTables();
-		} else {
+		} catch (Exception e) {
 			controller.getStatus().setText("Deletion failed.");
+			LOGGER.catching(Level.ERROR, e);
 		}
 	}
 

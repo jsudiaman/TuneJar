@@ -70,15 +70,14 @@ public class Player extends Application {
 	private Options options;
 
 	/**
-	 * Cleans up excessive log files, then calls
-	 * {@link Application#launch(String...)}.
+	 * Cleans up excessive log files, sets up the TuneJar home directory, then
+	 * calls {@link Application#launch(String...)}.
 	 *
 	 * @param args
 	 *            The command line arguments
 	 */
 	public static void main(String[] args) {
-		// If there too many log files, repeatedly delete the oldest ones until
-		// there is one less than the limit.
+		// Delete old log files.
 		try {
 			for (int i = 0; i < Defaults.MAX_LOOPS; i++) {
 				Path logsFolder = Paths.get(Defaults.LOG_FOLDER);
@@ -96,6 +95,10 @@ public class Player extends Application {
 		} catch (IOException e) {
 			LOGGER.error("Log file cleanup failed.", e);
 		}
+
+		// Make directories.
+		new File(Defaults.TUNEJAR_HOME).mkdirs();
+		new File(Defaults.PLAYLISTS_FOLDER).mkdirs();
 
 		launch(args);
 	}
@@ -524,7 +527,8 @@ public class Player extends Application {
 
 		// Initialization
 		Collection<Playlist> multiset = HashMultiset.create();
-		File[] fileList = new File(".").listFiles((FilenameFilter) (dir, name) -> name.endsWith(".m3u"));
+		FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
+		File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
 		if (fileList == null) {
 			LOGGER.error("Unable to access the working directory.");
 			return multiset;

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,7 +108,8 @@ public class Playlist implements List<Song> {
 	 *             Failed to save the playlist
 	 */
 	public void save() throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(name.get() + ".m3u", false));
+		File outFile = Paths.get(Defaults.PLAYLISTS_FOLDER, name.get() + ".m3u").toFile();
+		BufferedWriter writer = new BufferedWriter(new FileWriter(outFile, false));
 		for (Song song : this) {
 			writer.write(song.getAbsoluteFilename());
 			writer.newLine();
