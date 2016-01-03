@@ -47,6 +47,7 @@ public class Defaults {
 		TUNEJAR_HOME = Paths.get(System.getProperty("user.home"), "Documents", "TuneJar").toString();
 		OPTIONS_FILE = Paths.get(TUNEJAR_HOME, "options.json").toString();
 		PLAYLISTS_FOLDER = Paths.get(TUNEJAR_HOME, "Playlists").toString();
+		LOG_FOLDER = Paths.get(TUNEJAR_HOME, "Logs").toString();
 
 		// Make directories
 		new File(Defaults.TUNEJAR_HOME).mkdirs();
@@ -57,7 +58,6 @@ public class Defaults {
 		GET_SONGS_TIMEOUT = 5 * 60;
 		ICON = "/img/icon.png";
 		LOG_FILE_LIMIT = 5;
-		LOG_FOLDER = "logs";
 		MAX_LOOPS = 1000;
 		PLAYER_FXML = "/fxml/Player.fxml";
 		SORT_ORDER = new String[0];
