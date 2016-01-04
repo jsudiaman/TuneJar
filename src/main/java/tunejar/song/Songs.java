@@ -24,7 +24,7 @@ public class Songs {
 		if (file.getName().endsWith("mp3")) {
 			LOGGER.debug("From file: " + file);
 			return new Mp3Song(file);
-		} else if (file.getName().endsWith("mp4") || file.getName().endsWith("m4a") || file.getName().endsWith("m4v")) {
+		} else if (file.getName().endsWith("mp4") || file.getName().endsWith("m4a")) {
 			LOGGER.debug("From file: " + file);
 			return new Mp4Song(file);
 		}
