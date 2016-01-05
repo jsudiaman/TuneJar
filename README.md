@@ -15,4 +15,4 @@ Here's a few reasons why TuneJar might just be the right player for you.
 - TuneJar is skinnable via CSS and will ship with multiple premade themes.
 
 ### No Java? No Problem!
-TuneJar comes with platform-tailored binaries which can be run without ever installing Java on your machine. Enjoy **full functionality** with **no hassle**.
+TuneJar comes with platform-tailored binaries which can be used without ever installing Java on your machine. Enjoy **full functionality** with **no hassle**.
