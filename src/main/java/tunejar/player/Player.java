@@ -15,11 +15,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +55,6 @@ public class Player extends Application {
 	// Static
 	private static Player instance;
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final CountDownLatch INIT_LATCH = new CountDownLatch(1);
 
 	// GUI
 	private MediaPlayer player;
@@ -65,6 +64,7 @@ public class Player extends Application {
 	private PlayerController controller;
 
 	// Data
+	private AtomicBoolean initialized = new AtomicBoolean(false);
 	private Playlist masterPlaylist;
 	private Set<File> directories;
 	private Options options;
@@ -80,7 +80,7 @@ public class Player extends Application {
 		try {
 			for (int i = 0; i < Defaults.MAX_LOOPS; i++) {
 				Path logsFolder = Paths.get(Defaults.LOG_FOLDER);
-				String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".log"));
+				String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".xml"));
 				if (files == null) {
 					LOGGER.error("Log file cleanup failed.");
 					break;
@@ -194,8 +194,8 @@ public class Player extends Application {
 				break;
 			}
 		}
-		// controller.refreshTables();
-		INIT_LATCH.countDown();
+		
+		initialized.set(true);
 	}
 
 	/**
@@ -333,8 +333,8 @@ public class Player extends Application {
 		return scene;
 	}
 
-	public static CountDownLatch getInitLatch() {
-		return INIT_LATCH;
+	public boolean isInitialized() {
+		return initialized.get();
 	}
 
 	public Options getOptions() {

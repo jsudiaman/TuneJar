@@ -10,16 +10,16 @@ public class ThemeMenuTest extends PlayerTest {
 
 	@Test
 	public void testDarkTheme() throws Exception {
-		getController().clickOn("#themeSelector");
-		getController().clickOn("Dark Theme");
+		getDriver().clickOn("#themeSelector");
+		getDriver().clickOn("Dark Theme");
 		assertTrue(getPlayer().getScene().getStylesheets().get(0).endsWith("Dark%20Theme.css"));
 		assertTrue(getPlayer().getOptions().getTheme().equals("Dark Theme"));
 	}
 	
 	@Test
 	public void testModena() throws Exception {
-		getController().clickOn("#themeSelector");
-		getController().clickOn("Modena");
+		getDriver().clickOn("#themeSelector");
+		getDriver().clickOn("Modena");
 		assertTrue(getPlayer().getScene().getStylesheets().get(0).endsWith("Modena.css"));
 		assertTrue(getPlayer().getOptions().getTheme().equals("Modena"));
 	}

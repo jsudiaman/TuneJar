@@ -10,11 +10,6 @@ import java.util.Set;
 
 import tunejar.player.Player;
 
-/**
- * These constants should only be modified by TuneJar developers. They are
- * <b>not</b> meant to be user-configurable. User configuration can be done via
- * options.json.
- */
 public class Defaults {
 
 	public static final Set<File> DIRECTORIES;

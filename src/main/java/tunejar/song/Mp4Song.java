@@ -34,19 +34,6 @@ public class Mp4Song extends Song {
 	}
 
 	@Override
-	public boolean canEdit() {
-		try {
-			setTitle(getTitle());
-			setArtist(getArtist());
-			setAlbum(getAlbum());
-			return true;
-		} catch (Exception e) {
-			LOGGER.error("Unable to edit song: " + toString(), e);
-			return false;
-		}
-	}
-
-	@Override
 	public void setTitle(String title) throws Exception {
 		AudioFile f = AudioFileIO.read(audioFile);
 		Mp4Tag tag = (Mp4Tag) f.getTag();

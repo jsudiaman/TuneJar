@@ -21,12 +21,15 @@ public class Songs {
 	 *         type is not supported.
 	 */
 	public static Song create(File file) {
-		if (file.getName().endsWith("mp3")) {
+		if (file.getName().endsWith(".mp3")) {
 			LOGGER.debug("From file: " + file);
 			return new Mp3Song(file);
-		} else if (file.getName().endsWith("mp4") || file.getName().endsWith("m4a")) {
+		} else if (file.getName().endsWith(".mp4") || file.getName().endsWith(".m4a")) {
 			LOGGER.debug("From file: " + file);
 			return new Mp4Song(file);
+		} else if (file.getName().endsWith(".wav")) {
+			LOGGER.debug("From file: " + file);
+			return new WavSong(file);
 		}
 
 		// Unsupported file type.
@@ -45,6 +48,8 @@ public class Songs {
 			return new Mp3Song((Mp3Song) song);
 		} else if (song instanceof Mp4Song) {
 			return new Mp4Song((Mp4Song) song);
+		} else if (song instanceof WavSong) {
+			return new WavSong((WavSong) song);
 		}
 
 		// All implementations of Song should have a copy constructor.
