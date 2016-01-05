@@ -1,6 +1,7 @@
 package tunejar.player;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -14,6 +15,7 @@ import com.jayway.awaitility.Awaitility;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
+import tunejar.config.Defaults;
 import tunejar.config.Options;
 
 public abstract class PlayerTest {
@@ -33,26 +35,12 @@ public abstract class PlayerTest {
 			init();
 	}
 
-	/**
-	 * Used to manipulate the TuneJar player.
-	 * 
-	 * @see GuiTest
-	 */
-	public static GuiTest getDriver() {
-		return driver;
-	}
-
-	public static Player getPlayer() {
-		return Player.getPlayer();
-	}
-
-	public static FxRobot getRobot() {
-		return robot;
-	}
-
 	private static void init() throws Exception {
-		// Initialization
-		robot = new FxRobot();
+		// Delete all playlists
+		File[] files = new File(Defaults.PLAYLISTS_FOLDER).listFiles();
+		for (File f : files) {
+			Files.delete(f.toPath());
+		}
 
 		// Set directories
 		Options options = new Options();
@@ -77,6 +65,30 @@ public abstract class PlayerTest {
 			}
 		};
 		initialized = true;
+	}
+
+	public static PlayerController getController() {
+		return getPlayer().getController();
+	}
+
+	/**
+	 * Used to manipulate the TuneJar player.
+	 * 
+	 * @see GuiTest
+	 */
+	public static GuiTest getDriver() {
+		return driver;
+	}
+
+	public static Player getPlayer() {
+		return Player.getPlayer();
+	}
+
+	public static FxRobot getRobot() {
+		if (robot == null) {
+			robot = new FxRobot();
+		}
+		return robot;
 	}
 
 }

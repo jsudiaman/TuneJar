@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+import tunejar.config.Defaults;
 import tunejar.player.PlayerController;
 import tunejar.song.Playlist;
 
@@ -31,7 +32,7 @@ public class FileMenu extends PlayerMenu {
 	 */
 	public Playlist createPlaylist() {
 		// Prompt the user for a playlist name.
-		TextInputDialog dialog = new TextInputDialog("Untitled Playlist");
+		TextInputDialog dialog = new TextInputDialog(Defaults.PLAYLIST_NAME);
 		dialog.setTitle("New Playlist");
 		dialog.setHeaderText("Create a new playlist");
 		dialog.setContentText("Playlist name:");

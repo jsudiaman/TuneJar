@@ -194,7 +194,7 @@ public class Player extends Application {
 				break;
 			}
 		}
-		
+
 		initialized.set(true);
 	}
 
@@ -323,6 +323,10 @@ public class Player extends Application {
 
 	protected static Player getPlayer() {
 		return instance;
+	}
+
+	protected PlayerController getController() {
+		return controller;
 	}
 
 	public Stage getPrimaryStage() {

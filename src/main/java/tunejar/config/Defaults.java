@@ -28,6 +28,7 @@ public class Defaults {
 	public static final Map<String, String> THEME_MAP;
 	public static final String TUNEJAR_HOME;
 	public static final double VOLUME;
+	public static final String PLAYLIST_NAME;
 
 	static {
 		// Theme map
@@ -60,6 +61,7 @@ public class Defaults {
 		TEST_MP4 = "/BitQuest.m4a";
 		THEME = "Modena";
 		VOLUME = 1.0;
+		PLAYLIST_NAME = "Untitled Playlist";
 	}
 
 	private Defaults() {
