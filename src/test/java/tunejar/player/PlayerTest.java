@@ -12,6 +12,7 @@ import org.loadui.testfx.GuiTest;
 import org.testfx.api.FxRobot;
 
 import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.core.ConditionFactory;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -44,13 +45,16 @@ public abstract class PlayerTest {
 
 		// Set directories
 		Options options = new Options();
-		Set<File> set = new HashSet<>();
-		set.add(new File("src/test/resources/"));
-		options.setDirectories(set);
+		Set<File> dirs = new HashSet<>();
+		dirs.add(new File("src/test/resources/"));
+		options.setDirectories(dirs);
 
-		// Launch the application
+		// Set robot
+		robot = new FxRobot();
+
+		// Launch application
 		new Thread(() -> Application.launch(Player.class)).start();
-		Awaitility.await().atMost(30, TimeUnit.SECONDS).until((Callable<Boolean>) () -> {
+		getWait().until((Callable<Boolean>) () -> {
 			try {
 				return getPlayer().isInitialized();
 			} catch (NullPointerException e) {
@@ -58,12 +62,16 @@ public abstract class PlayerTest {
 			}
 		});
 		getRobot().sleep(1000);
+
+		// Set driver
 		driver = new GuiTest() {
 			@Override
 			protected Parent getRootNode() {
 				return Player.getPlayer().getScene().getRoot();
 			}
 		};
+
+		// Initialization complete
 		initialized = true;
 	}
 
@@ -85,10 +93,11 @@ public abstract class PlayerTest {
 	}
 
 	public static FxRobot getRobot() {
-		if (robot == null) {
-			robot = new FxRobot();
-		}
 		return robot;
+	}
+
+	public static ConditionFactory getWait() {
+		return Awaitility.await().atMost(30, TimeUnit.SECONDS);
 	}
 
 }
