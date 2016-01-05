@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.BeforeClass;
 import org.loadui.testfx.GuiTest;
-import org.testfx.api.FxRobot;
 
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionFactory;
@@ -23,7 +22,6 @@ public abstract class PlayerTest {
 
 	private static boolean initialized = false;
 	private static GuiTest driver;
-	private static FxRobot robot;
 
 	/**
 	 * Starts the TuneJar player.
@@ -39,8 +37,10 @@ public abstract class PlayerTest {
 	private static void init() throws Exception {
 		// Delete all playlists
 		File[] files = new File(Defaults.PLAYLISTS_FOLDER).listFiles();
-		for (File f : files) {
-			Files.delete(f.toPath());
+		if (files != null) {
+			for (File f : files) {
+				Files.delete(f.toPath());
+			}
 		}
 
 		// Set directories
@@ -49,19 +49,11 @@ public abstract class PlayerTest {
 		dirs.add(new File("src/test/resources/"));
 		options.setDirectories(dirs);
 
-		// Set robot
-		robot = new FxRobot();
-
 		// Launch application
 		new Thread(() -> Application.launch(Player.class)).start();
-		getWait().until((Callable<Boolean>) () -> {
-			try {
-				return getPlayer().isInitialized();
-			} catch (NullPointerException e) {
-				return false;
-			}
-		});
-		getRobot().sleep(1000);
+		getWait().ignoreException(NullPointerException.class)
+				.until((Callable<Boolean>) () -> getPlayer().isInitialized());
+		TimeUnit.SECONDS.sleep(1);
 
 		// Set driver
 		driver = new GuiTest() {
@@ -75,7 +67,7 @@ public abstract class PlayerTest {
 		initialized = true;
 	}
 
-	public static PlayerController getController() {
+	protected static PlayerController getController() {
 		return getPlayer().getController();
 	}
 
@@ -84,19 +76,15 @@ public abstract class PlayerTest {
 	 * 
 	 * @see GuiTest
 	 */
-	public static GuiTest getDriver() {
+	protected static GuiTest getDriver() {
 		return driver;
 	}
 
-	public static Player getPlayer() {
+	protected static Player getPlayer() {
 		return Player.getPlayer();
 	}
 
-	public static FxRobot getRobot() {
-		return robot;
-	}
-
-	public static ConditionFactory getWait() {
+	protected static ConditionFactory getWait() {
 		return Awaitility.await().atMost(30, TimeUnit.SECONDS);
 	}
 

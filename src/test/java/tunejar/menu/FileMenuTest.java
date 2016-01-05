@@ -1,5 +1,9 @@
 package tunejar.menu;
 
+import static org.junit.Assert.*;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
@@ -21,10 +25,11 @@ public class FileMenuTest extends PlayerTest {
 
 		getDriver().clickOn("File").clickOn("New...").clickOn("Playlist");
 		TextField name = GuiTest.find(Defaults.PLAYLIST_NAME);
-		getRobot().type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T, KeyCode.DIGIT0);
-		getWait().until((Callable<Boolean>) () -> name.getText().equals("test0"));
+		getDriver().type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T, KeyCode.DIGIT0);
+		assertTrue(name.getText().equals("test0"));
 		getDriver().clickOn("OK");
-		getWait().until((Callable<Boolean>) () -> items.call().get(index).getName().equals("test0"));
+		assertTrue(items.call().get(index).getName().equals("test0"));
+		assertTrue(Files.exists(Paths.get(Defaults.PLAYLISTS_FOLDER, "test0.m3u")));
 	}
 
 }
