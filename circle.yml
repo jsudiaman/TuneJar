@@ -5,6 +5,9 @@ machine:
 general:
     artifacts:
         - "target/TuneJar-v0.1-beta-jar-with-dependencies.jar"
+    branches:
+        ignore:
+            - gh-pages
 
 test:
   post:
