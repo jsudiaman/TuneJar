@@ -1,6 +1,6 @@
 # TuneJar
 [![Circle CI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar)  
-![](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/icon.png)  
+
 [Downloads](https://github.com/sudiamanj/TuneJar/releases) | [Docs](https://github.com/sudiamanj/TuneJar/wiki) | [Issues](https://github.com/sudiamanj/TuneJar/issues)
 
 ### What is TuneJar?
