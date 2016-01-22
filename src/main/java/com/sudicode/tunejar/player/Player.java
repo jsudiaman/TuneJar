@@ -57,7 +57,7 @@ public class Player extends Application {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	// GUI
-	private MediaPlayer player;
+	private MediaPlayer mediaPlayer;
 	private Song nowPlaying;
 	private Stage primaryStage;
 	private Scene scene;
@@ -125,21 +125,21 @@ public class Player extends Application {
 	private void init(Stage primaryStage) throws IOException {
 		// Initialization.
 		setInstance(this);
-		options = new Options();
+		setOptions(new Options());
 
 		// Load the FXML file and display the interface.
-		this.primaryStage = primaryStage;
+		this.setPrimaryStage(primaryStage);
 		URL location = getClass().getResource(Defaults.PLAYER_FXML);
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		Parent root = fxmlLoader.load(location.openStream());
 
-		scene = new Scene(root, 1000, 600);
-		String theme = Defaults.THEME_MAP.get(options.getTheme());
-		scene.getStylesheets().add(theme);
+		setScene(new Scene(root, 1000, 600));
+		String theme = Defaults.THEME_MAP.get(getOptions().getTheme());
+		getScene().getStylesheets().add(theme);
 		LOGGER.debug("Loaded theme: " + theme);
 
 		primaryStage.setTitle("TuneJar");
-		primaryStage.setScene(scene);
+		primaryStage.setScene(getScene());
 		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
 
 		// Load the directories. If none are present, prompt the user for one.
@@ -151,12 +151,12 @@ public class Player extends Application {
 			}
 		}
 
-		controller = fxmlLoader.getController();
+		setController(fxmlLoader.getController());
 
 		// Create and display a playlist containing all songs from each
 		// directory.
 		refresh();
-		controller.getPlaylistMenu().loadPlaylist(masterPlaylist);
+		getController().getPlaylistMenu().loadPlaylist(masterPlaylist);
 
 		// Save the directories.
 		writeDirectories();
@@ -170,25 +170,25 @@ public class Player extends Application {
 			exitWithAlert(e);
 		}
 		if (playlistSet != null) {
-			playlistSet.forEach(controller.getPlaylistMenu()::loadPlaylist);
+			playlistSet.forEach(getController().getPlaylistMenu()::loadPlaylist);
 		}
-		controller.focus(controller.getPlaylistTable(), 0);
-		controller.getVolumeSlider().setValue(options.getVolume());
+		getController().focus(getController().getPlaylistTable(), 0);
+		getController().getVolumeSlider().setValue(getOptions().getVolume());
 
 		// Finally, sort the song table.
-		String[] sortBy = options.getSortOrder();
-		controller.getSongTable().getSortOrder().clear();
-		List<TableColumn<Song, ?>> sortOrder = controller.getSongTable().getSortOrder();
+		String[] sortBy = getOptions().getSortOrder();
+		getController().getSongTable().getSortOrder().clear();
+		List<TableColumn<Song, ?>> sortOrder = getController().getSongTable().getSortOrder();
 		for (String s : sortBy) {
 			switch (s) {
 			case "title":
-				sortOrder.add(controller.getTitleColumn());
+				sortOrder.add(getController().getTitleColumn());
 				break;
 			case "artist":
-				sortOrder.add(controller.getArtistColumn());
+				sortOrder.add(getController().getArtistColumn());
 				break;
 			case "album":
-				sortOrder.add(controller.getAlbumColumn());
+				sortOrder.add(getController().getAlbumColumn());
 				break;
 			default:
 				break;
@@ -203,7 +203,7 @@ public class Player extends Application {
 	 * available directories.
 	 */
 	public void refresh() {
-		primaryStage.hide();
+		getPrimaryStage().hide();
 		masterPlaylist = new Playlist("All Music");
 
 		// Then add all songs found in the directories to the master playlist.
@@ -218,16 +218,16 @@ public class Player extends Application {
 			try {
 				if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
 					LOGGER.warn("Executor timed out.");
-					controller.getStatus().setText("Timed out, some songs may be missing.");
+					getController().getStatus().setText("Timed out, some songs may be missing.");
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				LOGGER.error("Thread was interrupted.", e);
-				controller.getStatus().setText("Interrupted, some songs may be missing.");
+				getController().getStatus().setText("Interrupted, some songs may be missing.");
 			}
 		}
 		LOGGER.info("Refresh successful");
-		primaryStage.show();
+		getPrimaryStage().show();
 	}
 
 	// ------------------- Media Player Controls ------------------- //
@@ -239,22 +239,22 @@ public class Player extends Application {
 	 *            The song to play
 	 */
 	public void playSong(Song song) {
-		if (nowPlaying == song) {
+		if (getNowPlaying() == song) {
 			resumeSong();
 			return;
-		} else if (nowPlaying != null) {
+		} else if (getNowPlaying() != null) {
 			stopSong();
 		}
-		nowPlaying = song;
+		setNowPlaying(song);
 		String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
 		try {
-			player = new MediaPlayer(new Media(uriString));
+			mediaPlayer = new MediaPlayer(new Media(uriString));
 			LOGGER.debug("Loaded song: " + uriString);
-			setVolume(controller.getVolumeSlider().getValue());
-			LOGGER.info("Playing: " + nowPlaying);
-			player.play();
+			setVolume(getController().getVolumeSlider().getValue());
+			LOGGER.info("Playing: " + getNowPlaying());
+			mediaPlayer.play();
 		} catch (MediaException e) {
-			controller.getStatus().setText("Failed to play the song.");
+			getController().getStatus().setText("Failed to play the song.");
 			LOGGER.catching(Level.ERROR, e);
 		}
 	}
@@ -263,9 +263,9 @@ public class Player extends Application {
 	 * Resumes the media player.
 	 */
 	public void resumeSong() {
-		if (player != null && nowPlaying != null) {
-			LOGGER.info("Resuming: " + nowPlaying);
-			player.play();
+		if (mediaPlayer != null && getNowPlaying() != null) {
+			LOGGER.info("Resuming: " + getNowPlaying());
+			mediaPlayer.play();
 		}
 	}
 
@@ -273,9 +273,9 @@ public class Player extends Application {
 	 * Pauses the media player.
 	 */
 	public void pauseSong() {
-		if (player != null && nowPlaying != null) {
-			LOGGER.info("Pausing: " + nowPlaying);
-			player.pause();
+		if (mediaPlayer != null && getNowPlaying() != null) {
+			LOGGER.info("Pausing: " + getNowPlaying());
+			mediaPlayer.pause();
 		}
 	}
 
@@ -283,66 +283,11 @@ public class Player extends Application {
 	 * Stops the media player.
 	 */
 	public void stopSong() {
-		if (player != null && nowPlaying != null) {
-			LOGGER.info("Stopping: " + nowPlaying);
-			player.stop();
+		if (mediaPlayer != null && getNowPlaying() != null) {
+			LOGGER.info("Stopping: " + getNowPlaying());
+			mediaPlayer.stop();
 		}
-		nowPlaying = null;
-	}
-
-	// ------------------- Getters and Setters ------------------- //
-
-	/**
-	 * Sets up the media player to perform a specified action at the end of
-	 * every song.
-	 *
-	 * @param action
-	 *            An action wrapped in a Runnable
-	 */
-	public void setEndOfSongAction(Runnable action) {
-		player.setOnEndOfMedia(action);
-	}
-
-	public Song getNowPlaying() {
-		return nowPlaying;
-	}
-
-	public void setVolume(double value) {
-		if (player != null) {
-			player.setVolume(value);
-		}
-	}
-
-	public Playlist getMasterPlaylist() {
-		return masterPlaylist;
-	}
-
-	private static void setInstance(Player instance) {
-		Player.instance = instance;
-	}
-
-	protected static Player getPlayer() {
-		return instance;
-	}
-
-	protected PlayerController getController() {
-		return controller;
-	}
-
-	public Stage getPrimaryStage() {
-		return primaryStage;
-	}
-
-	public Scene getScene() {
-		return scene;
-	}
-
-	public boolean isInitialized() {
-		return initialized.get();
-	}
-
-	public Options getOptions() {
-		return options;
+		setNowPlaying(null);
 	}
 
 	// ------------------- File Manipulation ------------------- //
@@ -351,7 +296,7 @@ public class Player extends Application {
 	 * Adds a user-selected directory to the directory collection.
 	 */
 	public void addDirectory() {
-		File directory = chooseDirectory(primaryStage);
+		File directory = chooseDirectory(getPrimaryStage());
 		if (directory == null) {
 			return;
 		}
@@ -375,7 +320,7 @@ public class Player extends Application {
 	 */
 	public boolean removeDirectory() {
 		if (directories.isEmpty()) {
-			controller.getStatus().setText("No folders found.");
+			getController().getStatus().setText("No folders found.");
 			return false;
 		}
 
@@ -392,7 +337,7 @@ public class Player extends Application {
 		if (result.isPresent()) {
 			directories.remove(result.get());
 			writeDirectories();
-			controller.getStatus().setText("Directory removed.");
+			getController().getStatus().setText("Directory removed.");
 			LOGGER.info("Directory removed. Remaining directories:" + directories);
 			return true;
 		}
@@ -445,14 +390,14 @@ public class Player extends Application {
 	 * @return A set containing the directories
 	 */
 	private Set<File> readDirectories() {
-		return options.getDirectories();
+		return getOptions().getDirectories();
 	}
 
 	/**
 	 * Writes directories to the options file.
 	 */
 	private void writeDirectories() {
-		options.setDirectories(directories);
+		getOptions().setDirectories(directories);
 	}
 
 	/**
@@ -501,12 +446,12 @@ public class Player extends Application {
 		try {
 			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
 				LOGGER.warn("Executor timed out.");
-				controller.getStatus().setText("Timed out, some songs may be missing.");
+				getController().getStatus().setText("Timed out, some songs may be missing.");
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			LOGGER.error("Thread was interrupted.", e);
-			controller.getStatus().setText("Interrupted, some songs may be missing.");
+			getController().getStatus().setText("Interrupted, some songs may be missing.");
 		}
 		return songs;
 	}
@@ -522,7 +467,7 @@ public class Player extends Application {
 	 *             Unable to access the working directory
 	 */
 	private Collection<Playlist> getPlaylists() throws IOException {
-		primaryStage.hide();
+		getPrimaryStage().hide();
 
 		// Initialization
 		Collection<Playlist> multiset = HashMultiset.create();
@@ -540,14 +485,14 @@ public class Player extends Application {
 				multiset.add(playlist);
 			} catch (TimeoutException e) {
 				LOGGER.error("Executor timed out.", e);
-				controller.getStatus().setText("Timed out, some playlists may be missing.");
+				getController().getStatus().setText("Timed out, some playlists may be missing.");
 			} catch (InterruptedException e) {
 				LOGGER.error("Thread was interrupted.", e);
-				controller.getStatus().setText("Interrupted, some playlists may be missing.");
+				getController().getStatus().setText("Interrupted, some playlists may be missing.");
 			}
 		}
 
-		primaryStage.show();
+		getPrimaryStage().show();
 		return multiset;
 	}
 
@@ -590,6 +535,81 @@ public class Player extends Application {
 		alert.getDialogPane().setExpandableContent(gridPane);
 		alert.showAndWait();
 		System.exit(-1);
+	}
+
+	// ------------------- Getters and Setters ------------------- //
+
+	/**
+	 * Sets up the media player to perform a specified action at the end of
+	 * every song.
+	 *
+	 * @param action
+	 *            An action wrapped in a Runnable
+	 */
+	public void setEndOfSongAction(Runnable action) {
+		mediaPlayer.setOnEndOfMedia(action);
+	}
+
+	public Song getNowPlaying() {
+		return nowPlaying;
+	}
+
+	private void setNowPlaying(Song nowPlaying) {
+		this.nowPlaying = nowPlaying;
+	}
+
+	public void setVolume(double value) {
+		if (mediaPlayer != null) {
+			mediaPlayer.setVolume(value);
+		}
+	}
+
+	public Playlist getMasterPlaylist() {
+		return masterPlaylist;
+	}
+
+	private static void setInstance(Player instance) {
+		Player.instance = instance;
+	}
+
+	protected static Player getPlayer() {
+		return instance;
+	}
+
+	protected PlayerController getController() {
+		return controller;
+	}
+
+	private void setController(PlayerController controller) {
+		this.controller = controller;
+	}
+
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
+
+	private void setPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+	}
+
+	public Scene getScene() {
+		return scene;
+	}
+
+	private void setScene(Scene scene) {
+		this.scene = scene;
+	}
+
+	public boolean isInitialized() {
+		return initialized.get();
+	}
+
+	public Options getOptions() {
+		return options;
+	}
+
+	private void setOptions(Options options) {
+		this.options = options;
 	}
 
 }

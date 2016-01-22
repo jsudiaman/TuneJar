@@ -99,39 +99,39 @@ public class PlayerController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// Initialize the menus.
-		fileMenu = new FileMenu(this);
-		playbackMenu = new PlaybackMenu(this);
-		playlistMenu = new PlaylistMenu(this);
+		setFileMenu(new FileMenu(this));
+		setPlaybackMenu(new PlaybackMenu(this));
+		setPlaylistMenu(new PlaylistMenu(this));
 		songMenu = new SongMenu(this);
 		themeMenu = new ThemeMenu(this);
 		volumeMenu = new VolumeMenu(this);
 
 		// Initialize the song table.
-		songList = FXCollections.observableArrayList();
-		title.setCellValueFactory(new PropertyValueFactory<>("Title"));
-		artist.setCellValueFactory(new PropertyValueFactory<>("Artist"));
-		album.setCellValueFactory(new PropertyValueFactory<>("Album"));
-		songTable.setItems(songList);
-		songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		songTable.getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
+		setSongList(FXCollections.observableArrayList());
+		getTitleColumn().setCellValueFactory(new PropertyValueFactory<>("Title"));
+		getArtistColumn().setCellValueFactory(new PropertyValueFactory<>("Artist"));
+		getAlbumColumn().setCellValueFactory(new PropertyValueFactory<>("Album"));
+		getSongTable().setItems(getSongList());
+		getSongTable().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		getSongTable().getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
 			List<String> list = new ArrayList<String>();
-			songTable.getSortOrder().forEach(t -> list.add(t.getId()));
+			getSongTable().getSortOrder().forEach(t -> list.add(t.getId()));
 			Player.getPlayer().getOptions().setSortOrder(list.toArray(new String[0]));
 		});
 
 		// Initialize the playlist table.
-		playlistList = FXCollections.observableArrayList();
+		setPlaylistList(FXCollections.observableArrayList());
 		name.setCellValueFactory(new PropertyValueFactory<>("Name"));
-		playlistTable.setItems(playlistList);
+		getPlaylistTable().setItems(getPlaylistList());
 
 		// When a song is selected, update the status bar.
-		songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			status.setText(Player.getPlayer().getNowPlaying() != null
+		getSongTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			getStatus().setText(Player.getPlayer().getNowPlaying() != null
 					? "Now Playing: " + Player.getPlayer().getNowPlaying().toString() : "");
 		});
 
 		// When a song is double clicked, play it.
-		songTable.setRowFactory(param -> {
+		getSongTable().setRowFactory(param -> {
 			TableRow<Song> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 2 && !row.isEmpty() && event.getButton().equals(MouseButton.PRIMARY)) {
@@ -142,7 +142,7 @@ public class PlayerController implements Initializable {
 		});
 
 		// When ENTER is pressed and a song is focused, play the focused song.
-		songTable.setOnKeyPressed(event -> {
+		getSongTable().setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				play();
 			}
@@ -150,14 +150,14 @@ public class PlayerController implements Initializable {
 
 		// Add listeners to all playlists in the playlist table.
 		menuRemoveSong.setDisable(true);
-		playlistTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+		getPlaylistTable().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null) {
 				return;
 			}
 
 			// When a playlist is selected, display it.
-			songList = FXCollections.observableArrayList(playlistTable.getSelectionModel().getSelectedItem());
-			songTable.setItems(songList);
+			setSongList(FXCollections.observableArrayList(getPlaylistTable().getSelectionModel().getSelectedItem()));
+			getSongTable().setItems(getSongList());
 
 			// The master playlist cannot be renamed, deleted, or altered,
 			// so disable that functionality if the master playlist is selected.
@@ -176,19 +176,19 @@ public class PlayerController implements Initializable {
 	// --------------- File --------------- //
 
 	public void createPlaylistButton() {
-		fileMenu.createPlaylist();
+		getFileMenu().createPlaylist();
 	}
 
 	public void quit() {
-		fileMenu.quit();
+		getFileMenu().quit();
 	}
 
 	public void addDirectory() {
-		fileMenu.addDirectory();
+		getFileMenu().addDirectory();
 	}
 
 	public void removeDirectory() {
-		fileMenu.removeDirectory();
+		getFileMenu().removeDirectory();
 	}
 
 	// --------------- Playback --------------- //
@@ -197,23 +197,23 @@ public class PlayerController implements Initializable {
 	 * Plays or resumes the selected song.
 	 */
 	public void play() {
-		playbackMenu.play();
+		getPlaybackMenu().play();
 	}
 
 	public void pause() {
-		playbackMenu.pause();
+		getPlaybackMenu().pause();
 	}
 
 	public void stop() {
-		playbackMenu.stop();
+		getPlaybackMenu().stop();
 	}
 
 	public void playPrev() {
-		playbackMenu.playPrev();
+		getPlaybackMenu().playPrev();
 	}
 
 	public void playNext() {
-		playbackMenu.playNext();
+		getPlaybackMenu().playNext();
 	}
 
 	// --------------- Song --------------- //
@@ -237,15 +237,15 @@ public class PlayerController implements Initializable {
 	// --------------- Playlist --------------- //
 
 	public void shuffle() {
-		playlistMenu.shuffle();
+		getPlaylistMenu().shuffle();
 	}
 
 	public void renamePlaylist() {
-		playlistMenu.renamePlaylist();
+		getPlaylistMenu().renamePlaylist();
 	}
 
 	public void deletePlaylist() {
-		playlistMenu.deletePlaylist();
+		getPlaylistMenu().deletePlaylist();
 	}
 
 	// --------------- Themes --------------- //
@@ -279,40 +279,44 @@ public class PlayerController implements Initializable {
 
 	public void refreshTables() {
 		// Keep tabs on what was selected before.
-		List<Playlist> selectedPlaylists = new ArrayList<>(playlistTable.getSelectionModel().getSelectedItems());
-		List<Song> selectedSongs = new ArrayList<>(songTable.getSelectionModel().getSelectedItems());
-		List<TableColumn<Song, ?>> sorted = new ArrayList<>(songTable.getSortOrder());
+		List<Playlist> selectedPlaylists = new ArrayList<>(getPlaylistTable().getSelectionModel().getSelectedItems());
+		List<Song> selectedSongs = new ArrayList<>(getSongTable().getSelectionModel().getSelectedItems());
+		List<TableColumn<Song, ?>> sorted = new ArrayList<>(getSongTable().getSortOrder());
 
 		// Where the actual "refreshing" is done
-		songTable.getColumns().get(0).setVisible(false);
-		songTable.getColumns().get(0).setVisible(true);
-		songTable.getSelectionModel().select(0);
+		getSongTable().getColumns().get(0).setVisible(false);
+		getSongTable().getColumns().get(0).setVisible(true);
+		getSongTable().getSelectionModel().select(0);
 
-		playlistTable.getColumns().get(0).setVisible(false);
-		playlistTable.getColumns().get(0).setVisible(true);
-		playlistTable.getSelectionModel().select(0);
+		getPlaylistTable().getColumns().get(0).setVisible(false);
+		getPlaylistTable().getColumns().get(0).setVisible(true);
+		getPlaylistTable().getSelectionModel().select(0);
 
 		// Re-select what was selected before.
 		if (!selectedPlaylists.isEmpty()) {
-			playlistTable.getSelectionModel().clearSelection();
+			getPlaylistTable().getSelectionModel().clearSelection();
 			for (Playlist p : selectedPlaylists) {
-				playlistTable.getSelectionModel().select(p);
+				getPlaylistTable().getSelectionModel().select(p);
 			}
 		}
 		if (!selectedSongs.isEmpty()) {
-			songTable.getSelectionModel().clearSelection();
+			getSongTable().getSelectionModel().clearSelection();
 			for (Song s : selectedSongs) {
-				songTable.getSelectionModel().select(s);
+				getSongTable().getSelectionModel().select(s);
 			}
 		}
-		songTable.getSortOrder().clear();
-		songTable.getSortOrder().addAll(sorted);
+		getSongTable().getSortOrder().clear();
+		getSongTable().getSortOrder().addAll(sorted);
 	}
 
 	// --------------- Getters and Setters --------------- //
 
 	public ObservableList<Playlist> getPlaylistList() {
 		return playlistList;
+	}
+
+	private void setPlaylistList(ObservableList<Playlist> playlistList) {
+		this.playlistList = playlistList;
 	}
 
 	public TableView<Playlist> getPlaylistTable() {
@@ -375,12 +379,24 @@ public class PlayerController implements Initializable {
 		return playbackMenu;
 	}
 
+	private void setPlaybackMenu(PlaybackMenu playbackMenu) {
+		this.playbackMenu = playbackMenu;
+	}
+
 	public PlaylistMenu getPlaylistMenu() {
 		return playlistMenu;
 	}
 
+	private void setPlaylistMenu(PlaylistMenu playlistMenu) {
+		this.playlistMenu = playlistMenu;
+	}
+
 	public FileMenu getFileMenu() {
 		return fileMenu;
+	}
+
+	private void setFileMenu(FileMenu fileMenu) {
+		this.fileMenu = fileMenu;
 	}
 
 }

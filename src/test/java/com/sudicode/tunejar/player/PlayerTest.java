@@ -58,12 +58,12 @@ public abstract class PlayerTest {
 		TimeUnit.SECONDS.sleep(1);
 
 		// Set driver
-		driver = new GuiTest() {
+		setDriver(new GuiTest() {
 			@Override
 			protected Parent getRootNode() {
 				return Player.getPlayer().getScene().getRoot();
 			}
-		};
+		});
 
 		// Initialization complete
 		initialized = true;
@@ -80,6 +80,10 @@ public abstract class PlayerTest {
 	 */
 	protected static GuiTest getDriver() {
 		return driver;
+	}
+
+	private static void setDriver(GuiTest driver) {
+		PlayerTest.driver = driver;
 	}
 
 	protected static Player getPlayer() {
