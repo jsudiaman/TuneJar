@@ -168,7 +168,7 @@ public class Player extends Application {
 		Collection<Playlist> playlistSet = null;
 		try {
 			playlistSet = getPlaylists();
-		} catch (IOException | NullPointerException e) {
+		} catch (NullPointerException e) {
 			LOGGER.fatal("Failed to load playlists from the working directory.", e);
 			exitWithAlert(e);
 		}
@@ -459,11 +459,8 @@ public class Player extends Application {
 	 * collection and returned.
 	 *
 	 * @return All of the created playlists
-	 *
-	 * @throws IOException
-	 *             Unable to access the working directory
 	 */
-	private Collection<Playlist> getPlaylists() throws IOException {
+	private Collection<Playlist> getPlaylists() {
 		getPrimaryStage().hide();
 
 		// Initialization
