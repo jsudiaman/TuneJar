@@ -13,7 +13,7 @@ import com.sudicode.tunejar.player.Player;
 public class Defaults {
 
 	public static final Set<File> DIRECTORIES;
-	public static final long GET_SONGS_TIMEOUT;
+	public static final long TIMEOUT;
 	public static final String ICON;
 	public static final int LOG_FILE_LIMIT;
 	public static final String LOG_FOLDER;
@@ -51,7 +51,7 @@ public class Defaults {
 
 		// Misc. constants
 		DIRECTORIES = new HashSet<>();
-		GET_SONGS_TIMEOUT = 5 * 60;
+		TIMEOUT = 5 * 60;
 		ICON = "/img/icon.png";
 		LOG_FILE_LIMIT = 5;
 		MAX_LOOPS = 1000;

@@ -9,18 +9,20 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.HashMultiset;
 import com.sudicode.tunejar.config.Defaults;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -32,7 +34,7 @@ public class Playlist implements List<Song> {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final List<Song> list = Collections.synchronizedList(new ArrayList<Song>());
+	private final List<Song> list = new ArrayList<>();
 	private final SimpleStringProperty name;
 
 	// --------------- Constructors --------------- //
@@ -65,28 +67,36 @@ public class Playlist implements List<Song> {
 	 * @throws TimeoutException
 	 * @throws InterruptedException
 	 */
-	public Playlist(File m3uFile) throws IOException, TimeoutException, InterruptedException {
+	public Playlist(File m3uFile) {
+		Collection<Future<Song>> futures = HashMultiset.create();
+
 		// Take the filename to be the name of the playlist.
 		this.name = new SimpleStringProperty(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
 
-		// Add each song line by line.
+		// Get each song, line by line.
 		try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
 			ExecutorService executor = Executors.newWorkStealingPool();
 			for (String nextLine; (nextLine = reader.readLine()) != null;) {
-				String file = nextLine;
-				executor.submit(() -> {
-					try {
-						add(Songs.create(new File(file)));
-					} catch (Exception e) {
-						LOGGER.error("Failed to add song: " + file, e);
-					}
-				});
+				final String file = nextLine;
+				futures.add(executor.submit(() -> Songs.create(new File(file))));
 			}
-
-			// Block until all of the songs have been added.
 			executor.shutdown();
-			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS))
-				throw new TimeoutException();
+		} catch (IOException e) {
+			LOGGER.error("Failed to create playlist from file: " + m3uFile, e);
+		}
+
+		// Add each song to the playlist.
+		for (Future<Song> fut : futures) {
+			try {
+				add(fut.get(Defaults.TIMEOUT, TimeUnit.SECONDS));
+			} catch (InterruptedException e) {
+				LOGGER.error("Interrupted.", e);
+				Thread.currentThread().interrupt();
+			} catch (TimeoutException e) {
+				LOGGER.error("Timed out.", e);
+			} catch (ExecutionException e) {
+				LOGGER.catching(e);
+			}
 		}
 	}
 

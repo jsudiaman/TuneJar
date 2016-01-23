@@ -15,17 +15,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.HashMultiset;
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.config.Options;
@@ -156,7 +159,7 @@ public class Player extends Application {
 		// Create and display a playlist containing all songs from each
 		// directory.
 		refresh();
-		getController().getPlaylistMenu().loadPlaylist(masterPlaylist);
+		getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
 
 		// Save the directories.
 		writeDirectories();
@@ -204,26 +207,31 @@ public class Player extends Application {
 	 */
 	public void refresh() {
 		getPrimaryStage().hide();
-		masterPlaylist = new Playlist("All Music");
+		setMasterPlaylist(new Playlist("All Music"));
 
-		// Then add all songs found in the directories to the master playlist.
 		if (directories != null) {
+			// Create one future for each directory.
+			Collection<Future<Collection<Song>>> futures = HashMultiset.create();
 			ExecutorService executor = Executors.newWorkStealingPool();
 			LOGGER.info("Found directories: " + directories);
 			LOGGER.info("Populating the master playlist...");
 			for (File directory : directories) {
-				executor.submit(() -> masterPlaylist.addAll(getSongs(directory)));
+				futures.add(executor.submit(() -> getSongs(directory)));
 			}
 			executor.shutdown();
-			try {
-				if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
-					LOGGER.warn("Executor timed out.");
-					getController().getStatus().setText("Timed out, some songs may be missing.");
+
+			// Get each future and add its contents to the master playlist.
+			for (Future<Collection<Song>> fut : futures) {
+				try {
+					getMasterPlaylist().addAll(fut.get(Defaults.TIMEOUT, TimeUnit.SECONDS));
+				} catch (InterruptedException e) {
+					LOGGER.error("Interrupted.", e);
+					Thread.currentThread().interrupt();
+				} catch (TimeoutException e) {
+					LOGGER.error("Timed out.", e);
+				} catch (ExecutionException e) {
+					LOGGER.catching(e);
 				}
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				LOGGER.error("Thread was interrupted.", e);
-				getController().getStatus().setText("Interrupted, some songs may be missing.");
 			}
 		}
 		LOGGER.info("Refresh successful");
@@ -410,49 +418,38 @@ public class Player extends Application {
 	 */
 	private Collection<Song> getSongs(File directory) {
 		// Initialization
-		Collection<Song> songs = ConcurrentHashMultiset.create();
+		Collection<Song> songs = HashMultiset.create();
+		Collection<Future<Song>> futures = HashMultiset.create();
 		ExecutorService executor = Executors.newWorkStealingPool();
 
 		// If the directory is null, or not a directory, return an empty
 		// collection
 		if (directory == null || !directory.isDirectory()) {
-			LOGGER.error("Failed to access directory: " + (directory == null ? "null" : directory) + ", skipping...");
+			LOGGER.error("Failed to access directory: " + directory + ", skipping...");
 			return songs;
 		}
 
-		// If the file list is null, return an empty collection
-		File[] files = directory.listFiles();
-		if (files == null)
-			return songs;
+		try (Stream<Path> str = Files.walk(directory.toPath())) {
+			// Depth first search for all supported music files
+			str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
+					.forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
+			executor.shutdown();
 
-		// Iterate through each file in the directory.
-		for (File f : files) {
-			if (f.isDirectory()) {
-				songs.addAll(getSongs(f));
-			} else {
-				executor.submit(() -> {
-					try {
-						Song song = Songs.create(f);
-						if (song != null)
-							songs.add(song);
-					} catch (Exception e) {
-						LOGGER.error("Failed to construct a song object from file: " + f, e);
-					}
-				});
+			// Add them to the song collection
+			for (Future<Song> fut : futures) {
+				songs.add(fut.get(Defaults.TIMEOUT, TimeUnit.SECONDS));
 			}
-		}
-
-		executor.shutdown();
-		try {
-			if (!executor.awaitTermination(Defaults.GET_SONGS_TIMEOUT, TimeUnit.SECONDS)) {
-				LOGGER.warn("Executor timed out.");
-				getController().getStatus().setText("Timed out, some songs may be missing.");
-			}
+		} catch (IOException e) {
+			LOGGER.error("Failed to access directory: " + directory, e);
 		} catch (InterruptedException e) {
+			LOGGER.error("Interrupted.", e);
 			Thread.currentThread().interrupt();
-			LOGGER.error("Thread was interrupted.", e);
-			getController().getStatus().setText("Interrupted, some songs may be missing.");
+		} catch (TimeoutException e) {
+			LOGGER.error("Timed out.", e);
+		} catch (ExecutionException e) {
+			LOGGER.catching(e);
 		}
+
 		return songs;
 	}
 
@@ -480,16 +477,8 @@ public class Player extends Application {
 
 		// Iterate through each file in the working directory.
 		for (File f : fileList) {
-			try {
-				Playlist playlist = new Playlist(f);
-				multiset.add(playlist);
-			} catch (TimeoutException e) {
-				LOGGER.error("Executor timed out.", e);
-				getController().getStatus().setText("Timed out, some playlists may be missing.");
-			} catch (InterruptedException e) {
-				LOGGER.error("Thread was interrupted.", e);
-				getController().getStatus().setText("Interrupted, some playlists may be missing.");
-			}
+			Playlist playlist = new Playlist(f);
+			multiset.add(playlist);
 		}
 
 		getPrimaryStage().show();
@@ -566,6 +555,10 @@ public class Player extends Application {
 
 	public Playlist getMasterPlaylist() {
 		return masterPlaylist;
+	}
+
+	private void setMasterPlaylist(Playlist masterPlaylist) {
+		this.masterPlaylist = masterPlaylist;
 	}
 
 	private static void setInstance(Player instance) {
