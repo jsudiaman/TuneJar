@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -78,6 +80,11 @@ public class Player extends Application {
 	private Set<File> directories;
 	private Options options;
 
+	static {
+		System.setOut(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.INFO)));
+		System.setErr(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.ERROR)));
+	}
+
 	/**
 	 * Deletes old log files, then starts the application.
 	 *
@@ -102,8 +109,6 @@ public class Player extends Application {
 		} catch (IOException e) {
 			LOGGER.error("Log file cleanup failed.", e);
 		}
-		System.setOut(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.INFO)));
-		System.setErr(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.ERROR)));
 		launch(args);
 	}
 
@@ -199,8 +204,18 @@ public class Player extends Application {
 			getController().getStatus().setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal));
 		});
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.submit(refresher);
+		Future<?> future = executor.submit(refresher);
 		executor.shutdown();
+		new Thread(() -> {
+			try {
+				future.get(Defaults.TIMEOUT, TimeUnit.SECONDS);
+			} catch (ExecutionException | InterruptedException | TimeoutException e) {
+				LOGGER.catching(Level.ERROR, e);
+				Platform.runLater(() -> {
+					getController().getStatus().setText("An error has occured: " + e.getClass().getSimpleName());
+				});
+			}
+		}).start();
 	}
 
 	/**
@@ -223,6 +238,7 @@ public class Player extends Application {
 				if (!isInitialized()) {
 					getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
 					playlists.forEach(getController().getPlaylistMenu()::loadPlaylist);
+					getController().getVolumeSlider().setValue(getOptions().getVolume());
 				} else {
 					getController().getPlaylistList().set(0, getMasterPlaylist());
 				}

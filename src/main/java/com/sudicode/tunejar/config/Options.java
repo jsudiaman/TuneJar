@@ -57,20 +57,24 @@ public class Options {
 	}
 
 	private JSONObject read() throws IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		return (JSONObject) parser.parse(new FileReader(optionsFile.toFile()));
+		synchronized (Options.class) {
+			JSONParser parser = new JSONParser();
+			return (JSONObject) parser.parse(new FileReader(optionsFile.toFile()));
+		}
 	}
 
 	private void write() {
-		if (writeEnabled) {
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(Defaults.OPTIONS_FILE, false))) {
-				writer.write(JsonWriter.formatJson(options.toJSONString()));
-				logger.info("Settings saved successfully to: " + Defaults.OPTIONS_FILE);
-			} catch (IOException e) {
-				handleIOException(e);
+		synchronized (Options.class) {
+			if (writeEnabled) {
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(Defaults.OPTIONS_FILE, false))) {
+					writer.write(JsonWriter.formatJson(options.toJSONString()));
+					logger.info("Settings saved successfully to: " + Defaults.OPTIONS_FILE);
+				} catch (IOException e) {
+					handleIOException(e);
+				}
+			} else {
+				logger.info("Write is disabled.");
 			}
-		} else {
-			logger.info("Write is disabled.");
 		}
 	}
 
@@ -157,7 +161,7 @@ public class Options {
 		write();
 	}
 
-	private void handleParseException(Exception e) {
+	private void handleParseException(ParseException e) {
 		// Log the error and alert the user.
 		logger.catching(Level.ERROR, e);
 		Alert alert = new Alert(AlertType.ERROR);
@@ -170,7 +174,7 @@ public class Options {
 		reset();
 	}
 
-	private void handleIOException(Exception e) {
+	private void handleIOException(IOException e) {
 		// Log the error and alert the user.
 		logger.catching(Level.ERROR, e);
 		Alert alert = new Alert(AlertType.ERROR);
