@@ -99,12 +99,6 @@ public class FileMenu extends PlayerMenu {
 	public void removeDirectory() {
 		if (controller.getPlayer().removeDirectory()) {
 			controller.getPlayer().refresh();
-			controller.getPlaylistList().set(0, controller.getPlayer().getMasterPlaylist());
-			controller.refreshTables();
-			if (controller.getPlayer().getNowPlaying() != null
-					&& !controller.getPlayer().getMasterPlaylist().contains(controller.getPlayer().getNowPlaying())) {
-				controller.getPlayer().stopSong();
-			}
 		}
 	}
 

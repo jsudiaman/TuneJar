@@ -20,12 +20,6 @@ public abstract class Song {
 	protected SimpleStringProperty album;
 	protected File audioFile;
 
-	static {
-		// Disable JAudioTagger's logger. (Note: In this case, fully qualified
-		// names are used to indicate that it is JUL and NOT Apache Log4j)
-		java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-	}
-
 	/**
 	 * <p>
 	 * Constructs a new Song.

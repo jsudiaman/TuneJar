@@ -53,8 +53,9 @@ public abstract class PlayerTest {
 
 		// Launch application
 		new Thread(() -> Application.launch(Player.class)).start();
-		getWait().ignoreException(NullPointerException.class)
-				.until((Callable<Boolean>) () -> getPlayer().isInitialized());
+		getWait().ignoreException(NullPointerException.class).until((Callable<Boolean>) () -> {
+			return getPlayer().isInitialized();
+		});
 		TimeUnit.SECONDS.sleep(1);
 
 		// Set driver

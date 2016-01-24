@@ -1,26 +1,27 @@
 package com.sudicode.tunejar.player;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -35,8 +36,12 @@ import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
 import com.sudicode.tunejar.song.Songs;
+import com.sudicode.tunejar.util.LoggingOutputStream;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -67,19 +72,18 @@ public class Player extends Application {
 	private PlayerController controller;
 
 	// Data
-	private AtomicBoolean initialized = new AtomicBoolean(false);
+	private AtomicBoolean initialized;
 	private Playlist masterPlaylist;
 	private Set<File> directories;
 	private Options options;
 
 	/**
-	 * Main method.
+	 * Deletes old log files, then starts the application.
 	 *
 	 * @param args
 	 *            The command line arguments
 	 */
 	public static void main(String[] args) {
-		// Delete old log files.
 		try {
 			for (int i = 0; i < Defaults.MAX_LOOPS; i++) {
 				Path logsFolder = Paths.get(Defaults.LOG_FOLDER);
@@ -97,7 +101,8 @@ public class Player extends Application {
 		} catch (IOException e) {
 			LOGGER.error("Log file cleanup failed.", e);
 		}
-
+		System.setOut(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.INFO)));
+		System.setErr(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.ERROR)));
 		launch(args);
 	}
 
@@ -120,65 +125,44 @@ public class Player extends Application {
 	/**
 	 * Handles program initialization.
 	 *
-	 * @param primaryStage
+	 * @param stage
 	 *            The stage that will hold the interface
 	 * @throws IOException
 	 *             Failed to load the FXML, or could not load/save a file.
 	 */
-	private void init(Stage primaryStage) throws IOException {
+	private void init(Stage stage) throws IOException {
 		// Initialization.
 		setInstance(this);
 		setOptions(new Options());
 
 		// Load the FXML file and display the interface.
-		this.setPrimaryStage(primaryStage);
+		this.setPrimaryStage(stage);
 		URL location = getClass().getResource(Defaults.PLAYER_FXML);
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		Parent root = fxmlLoader.load(location.openStream());
 
 		setScene(new Scene(root, 1000, 600));
+		setController(fxmlLoader.getController());
 		String theme = Defaults.THEME_MAP.get(getOptions().getTheme());
 		getScene().getStylesheets().add(theme);
 		LOGGER.debug("Loaded theme: " + theme);
 
-		primaryStage.setTitle("TuneJar");
-		primaryStage.setScene(getScene());
-		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
+		getPrimaryStage().setTitle("TuneJar");
+		getPrimaryStage().setScene(getScene());
+		getPrimaryStage().getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
+		getPrimaryStage().show();
 
 		// Load the directories. If none are present, prompt the user for one.
 		directories = readDirectories();
 		if (directories.isEmpty()) {
-			File directory = initialDirectory(primaryStage);
+			File directory = initialDirectory(getPrimaryStage());
 			if (directory != null) {
 				directories.add(directory);
 			}
 		}
-
-		setController(fxmlLoader.getController());
-
-		// Create and display a playlist containing all songs from each
-		// directory.
-		refresh();
-		getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
-
-		// Save the directories.
 		writeDirectories();
 
-		// Load in all playlists from the working directory.
-		Collection<Playlist> playlistSet = null;
-		try {
-			playlistSet = getPlaylists();
-		} catch (NullPointerException e) {
-			LOGGER.fatal("Failed to load playlists from the working directory.", e);
-			exitWithAlert(e);
-		}
-		if (playlistSet != null) {
-			playlistSet.forEach(getController().getPlaylistMenu()::loadPlaylist);
-		}
-		getController().focus(getController().getPlaylistTable(), 0);
-		getController().getVolumeSlider().setValue(getOptions().getVolume());
-
-		// Finally, sort the song table.
+		// Set the sort order.
 		String[] sortBy = getOptions().getSortOrder();
 		getController().getSongTable().getSortOrder().clear();
 		List<TableColumn<Song, ?>> sortOrder = getController().getSongTable().getSortOrder();
@@ -198,44 +182,115 @@ public class Player extends Application {
 			}
 		}
 
-		initialized.set(true);
+		// Create and display a playlist containing all songs from each
+		// directory.
+		refresh();
 	}
 
 	/**
-	 * The master playlist takes in all music files that can be found in
-	 * available directories.
+	 * First, adds all music files that can be found in available directories to
+	 * the master playlist. Then loads all available playlists from the working
+	 * directory.
 	 */
 	public void refresh() {
-		getPrimaryStage().hide();
-		setMasterPlaylist(new Playlist("All Music"));
+		Task<Void> task = refreshTask();
+		task.progressProperty().addListener((ChangeListener<Number>) (obs, oldVal, newVal) -> {
+			getController().getStatus().setText(task.getMessage() + new DecimalFormat("#0%").format(newVal));
+		});
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.submit(task);
+		executor.shutdown();
+	}
 
-		if (directories != null) {
-			// Create one future for each directory.
-			Collection<Future<Collection<Song>>> futures = HashMultiset.create();
-			ExecutorService executor = Executors.newWorkStealingPool();
-			LOGGER.info("Found directories: " + directories);
-			LOGGER.info("Populating the master playlist...");
-			for (File directory : directories) {
-				futures.add(executor.submit(() -> getSongs(directory)));
-			}
-			executor.shutdown();
+	/**
+	 * @return The {@link Task} associated with the <code>refresh()</code>
+	 *         method. This is an expensive operation, so it is <b>not</b>
+	 *         recommended to run it on the GUI thread. The simplest way to run
+	 *         this task would be to call
+	 *         <code>new Thread(refreshTask()).start()</code>.
+	 */
+	private Task<Void> refreshTask() {
+		return new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				// Populate the master playlist.
+				setMasterPlaylist(new Playlist("All Music"));
+				if (directories != null) {
+					LOGGER.info("Found directories: " + directories);
+					LOGGER.info("Populating the master playlist...");
 
-			// Get each future and add its contents to the master playlist.
-			for (Future<Collection<Song>> fut : futures) {
-				try {
-					getMasterPlaylist().addAll(fut.get(Defaults.TIMEOUT, TimeUnit.SECONDS));
-				} catch (InterruptedException e) {
-					LOGGER.error("Interrupted.", e);
-					Thread.currentThread().interrupt();
-				} catch (TimeoutException e) {
-					LOGGER.error("Timed out.", e);
-				} catch (ExecutionException e) {
-					LOGGER.catching(e);
+					Collection<Future<Song>> sFutures = getFutures(directories);
+					long workDone = 0;
+					long max = sFutures.size();
+					updateMessage("Updating songs... ");
+					for (Future<Song> song : sFutures) {
+						getMasterPlaylist().add(song.get());
+						updateProgress(++workDone, max);
+					}
 				}
+
+				// Retrieve playlists from the working directory.
+				Collection<Playlist> playlists = HashMultiset.create();
+				if (!isInitialized()) {
+					Collection<Future<Playlist>> pFutures = HashMultiset.create();
+					ExecutorService outerExec = Executors.newWorkStealingPool();
+
+					// Iterate through each file in the working directory.
+					FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
+					File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
+					if (fileList == null) {
+						LOGGER.error("Unable to access the working directory.");
+					} else {
+						for (File f : fileList) {
+							pFutures.add(outerExec.submit(() -> {
+								Playlist playlist;
+								playlist = new Playlist(f.getName().substring(0, f.getName().lastIndexOf(".m3u")));
+								Collection<Future<Song>> sFutures = HashMultiset.create();
+
+								// Get each song, line by line.
+								try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+									ExecutorService innerExec = Executors.newWorkStealingPool();
+									for (String nextLine; (nextLine = reader.readLine()) != null;) {
+										String s = nextLine;
+										sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
+									}
+									innerExec.shutdown();
+								}
+
+								// Add each song to the playlist.
+								long workDone = 0;
+								long max = sFutures.size();
+								for (Future<Song> song : sFutures) {
+									updateMessage("Updating " + playlist.getName() + "...");
+									playlist.add(song.get());
+									updateProgress(++workDone, max);
+								}
+								return playlist;
+							}));
+						}
+					}
+					outerExec.shutdown();
+					for (Future<Playlist> playlist : pFutures) {
+						playlists.add(playlist.get());
+					}
+				}
+
+				// Refresh the view.
+				Platform.runLater(() -> {
+					if (!isInitialized()) {
+						getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
+						playlists.forEach(getController().getPlaylistMenu()::loadPlaylist);
+					} else {
+						getController().getPlaylistList().set(0, getMasterPlaylist());
+					}
+					getController().refreshTables();
+					getController().focus(getController().getPlaylistTable(), 0);
+					setInitialized(true);
+				});
+
+				return null;
 			}
-		}
-		LOGGER.info("Refresh successful");
-		getPrimaryStage().show();
+		};
 	}
 
 	// ------------------- Media Player Controls ------------------- //
@@ -409,77 +464,35 @@ public class Player extends Application {
 	}
 
 	/**
-	 * Takes in a directory and recursively searches for all music files
-	 * contained within that directory. The files are then constructed as Song
-	 * objects to be wrapped up in a collection.
-	 *
-	 * @param directory
-	 * @return A collection containing all the Song objects.
+	 * Traverses each directory, obtaining all supported audio files. Each audio
+	 * file found is wrapped in a Future Song, which is then added to a
+	 * collection.
+	 * 
+	 * @return The collection of Future Songs
 	 */
-	private Collection<Song> getSongs(File directory) {
+	private Collection<Future<Song>> getFutures(Collection<File> directories) {
 		// Initialization
-		Collection<Song> songs = HashMultiset.create();
 		Collection<Future<Song>> futures = HashMultiset.create();
 		ExecutorService executor = Executors.newWorkStealingPool();
 
-		// If the directory is null, or not a directory, return an empty
-		// collection
-		if (directory == null || !directory.isDirectory()) {
-			LOGGER.error("Failed to access directory: " + directory + ", skipping...");
-			return songs;
-		}
-
-		try (Stream<Path> str = Files.walk(directory.toPath())) {
-			// Depth first search for all supported music files
-			str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
-					.forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
-			executor.shutdown();
-
-			// Add them to the song collection
-			for (Future<Song> fut : futures) {
-				songs.add(fut.get(Defaults.TIMEOUT, TimeUnit.SECONDS));
+		// Loop through directories
+		for (File directory : directories) {
+			if (directory == null || !directory.isDirectory()) {
+				LOGGER.error("Failed to access directory: " + directory + ", skipping...");
+				continue;
 			}
-		} catch (IOException e) {
-			LOGGER.error("Failed to access directory: " + directory, e);
-		} catch (InterruptedException e) {
-			LOGGER.error("Interrupted.", e);
-			Thread.currentThread().interrupt();
-		} catch (TimeoutException e) {
-			LOGGER.error("Timed out.", e);
-		} catch (ExecutionException e) {
-			LOGGER.catching(e);
+
+			// Depth first search through each directory for supported files
+			try (Stream<Path> str = Files.walk(directory.toPath())) {
+				str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
+						.forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
+			} catch (IOException e) {
+				LOGGER.error("Failed to access directory: " + directory, e);
+			}
 		}
+		executor.shutdown();
 
-		return songs;
-	}
-
-	/**
-	 * Searches the working directory for .m3u files and creates a playlist out
-	 * of each one. All of the created playlists are then wrapped into a
-	 * collection and returned.
-	 *
-	 * @return All of the created playlists
-	 */
-	private Collection<Playlist> getPlaylists() {
-		getPrimaryStage().hide();
-
-		// Initialization
-		Collection<Playlist> multiset = HashMultiset.create();
-		FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
-		File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
-		if (fileList == null) {
-			LOGGER.error("Unable to access the working directory.");
-			return multiset;
-		}
-
-		// Iterate through each file in the working directory.
-		for (File f : fileList) {
-			Playlist playlist = new Playlist(f);
-			multiset.add(playlist);
-		}
-
-		getPrimaryStage().show();
-		return multiset;
+		return futures;
 	}
 
 	// ------------------- Exception Handling ------------------- //
@@ -590,7 +603,16 @@ public class Player extends Application {
 		this.scene = scene;
 	}
 
+	public void setInitialized(boolean initialized) {
+		if (this.initialized == null)
+			this.initialized = new AtomicBoolean(initialized);
+		else
+			this.initialized.set(initialized);
+	}
+
 	public boolean isInitialized() {
+		if (this.initialized == null)
+			this.initialized = new AtomicBoolean();
 		return initialized.get();
 	}
 
