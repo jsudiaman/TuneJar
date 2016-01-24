@@ -193,104 +193,100 @@ public class Player extends Application {
 	 * directory.
 	 */
 	public void refresh() {
-		Task<Void> task = refreshTask();
-		task.progressProperty().addListener((ChangeListener<Number>) (obs, oldVal, newVal) -> {
-			getController().getStatus().setText(task.getMessage() + new DecimalFormat("#0%").format(newVal));
+		Task<?> refresher = new Refresher();
+		refresher.progressProperty().addListener((ChangeListener<Number>) (obs, oldVal, newVal) -> {
+			getController().getStatus().setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal));
 		});
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.submit(task);
+		executor.submit(refresher);
 		executor.shutdown();
 	}
 
 	/**
-	 * @return The {@link Task} associated with the <code>refresh()</code>
-	 *         method. This is an expensive operation, so it is <b>not</b>
-	 *         recommended to run it on the GUI thread. The simplest way to run
-	 *         this task would be to call
-	 *         <code>new Thread(refreshTask()).start()</code>.
+	 * The {@link Task} associated with the <code>refresh()</code> method. This
+	 * is an expensive operation, so it is <b>not</b> recommended to run it on
+	 * the GUI thread.
 	 */
-	private Task<Void> refreshTask() {
-		return new Task<Void>() {
-			@Override
-			protected Void call() throws Exception {
-				// Populate the master playlist.
-				setMasterPlaylist(new Playlist("All Music"));
-				if (directories != null) {
-					LOGGER.info("Found directories: " + directories);
-					LOGGER.info("Populating the master playlist...");
+	private final class Refresher extends Task<Void> {
+		@Override
+		protected Void call() throws Exception {
+			// Populate the master playlist.
+			setMasterPlaylist(new Playlist("All Music"));
+			if (directories != null) {
+				LOGGER.info("Found directories: " + directories);
+				LOGGER.info("Populating the master playlist...");
 
-					Collection<Future<Song>> sFutures = getFutures(directories);
-					long workDone = 0;
-					long max = sFutures.size();
-					updateMessage("Updating songs... ");
-					for (Future<Song> song : sFutures) {
-						getMasterPlaylist().add(song.get());
-						updateProgress(++workDone, max);
-					}
+				Collection<Future<Song>> sFutures = getFutures(directories);
+				long workDone = 0;
+				long max = sFutures.size();
+				updateMessage("Updating songs... ");
+				for (Future<Song> song : sFutures) {
+					getMasterPlaylist().add(song.get());
+					updateProgress(++workDone, max);
 				}
-
-				// Retrieve playlists from the working directory.
-				Collection<Playlist> playlists = HashMultiset.create();
-				if (!isInitialized()) {
-					Collection<Future<Playlist>> pFutures = HashMultiset.create();
-					ExecutorService outerExec = Executors.newWorkStealingPool();
-
-					// Iterate through each file in the working directory.
-					FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
-					File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
-					if (fileList == null) {
-						LOGGER.error("Unable to access the working directory.");
-					} else {
-						for (File f : fileList) {
-							pFutures.add(outerExec.submit(() -> {
-								Playlist playlist;
-								playlist = new Playlist(f.getName().substring(0, f.getName().lastIndexOf(".m3u")));
-								Collection<Future<Song>> sFutures = HashMultiset.create();
-
-								// Get each song, line by line.
-								try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
-									ExecutorService innerExec = Executors.newWorkStealingPool();
-									for (String nextLine; (nextLine = reader.readLine()) != null;) {
-										String s = nextLine;
-										sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
-									}
-									innerExec.shutdown();
-								}
-
-								// Add each song to the playlist.
-								long workDone = 0;
-								long max = sFutures.size();
-								for (Future<Song> song : sFutures) {
-									updateMessage("Updating " + playlist.getName() + "...");
-									playlist.add(song.get());
-									updateProgress(++workDone, max);
-								}
-								return playlist;
-							}));
-						}
-					}
-					outerExec.shutdown();
-					for (Future<Playlist> playlist : pFutures) {
-						playlists.add(playlist.get());
-					}
-				}
-
-				// Refresh the view.
-				Platform.runLater(() -> {
-					if (!isInitialized()) {
-						getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
-						playlists.forEach(getController().getPlaylistMenu()::loadPlaylist);
-					} else {
-						getController().getPlaylistList().set(0, getMasterPlaylist());
-					}
-					getController().refreshTables();
-					getController().focus(getController().getPlaylistTable(), 0);
-					setInitialized(true);
-				});
-
-				return null;
 			}
-		};
+
+			// Retrieve playlists from the working directory.
+			Collection<Playlist> playlists = HashMultiset.create();
+			if (!isInitialized()) {
+				Collection<Future<Playlist>> pFutures = HashMultiset.create();
+				ExecutorService outerExec = Executors.newWorkStealingPool();
+
+				// Iterate through each file in the working directory.
+				FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
+				File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
+				if (fileList == null) {
+					LOGGER.error("Unable to access the working directory.");
+				} else {
+					for (File f : fileList) {
+						pFutures.add(outerExec.submit(() -> {
+							Playlist playlist;
+							playlist = new Playlist(f.getName().substring(0, f.getName().lastIndexOf(".m3u")));
+							Collection<Future<Song>> sFutures = HashMultiset.create();
+
+							// Get each song, line by line.
+							try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+								ExecutorService innerExec = Executors.newWorkStealingPool();
+								for (String nextLine; (nextLine = reader.readLine()) != null;) {
+									String s = nextLine;
+									sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
+								}
+								innerExec.shutdown();
+							}
+
+							// Add each song to the playlist.
+							long workDone = 0;
+							long max = sFutures.size();
+							for (Future<Song> song : sFutures) {
+								updateMessage("Updating " + playlist.getName() + "...");
+								playlist.add(song.get());
+								updateProgress(++workDone, max);
+							}
+							return playlist;
+						}));
+					}
+				}
+				outerExec.shutdown();
+				for (Future<Playlist> playlist : pFutures) {
+					playlists.add(playlist.get());
+				}
+			}
+
+			// Refresh the view.
+			Platform.runLater(() -> {
+				if (!isInitialized()) {
+					getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
+					playlists.forEach(getController().getPlaylistMenu()::loadPlaylist);
+				} else {
+					getController().getPlaylistList().set(0, getMasterPlaylist());
+				}
+				getController().refreshTables();
+				getController().focus(getController().getPlaylistTable(), 0);
+				setInitialized(true);
+			});
+
+			return null;
+		}
 	}
 
 	// ------------------- Media Player Controls ------------------- //
