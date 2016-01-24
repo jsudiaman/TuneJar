@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -203,74 +204,19 @@ public class Player extends Application {
 	}
 
 	/**
-	 * The {@link Task} associated with the <code>refresh()</code> method. This
-	 * is an expensive operation, so it is <b>not</b> recommended to run it on
-	 * the GUI thread.
+	 * Inner class designed to handle expensive operations invoked by the
+	 * <code>refresh()</code> method.
 	 */
-	private final class Refresher extends Task<Void> {
+	private class Refresher extends Task<Void> {
+		/**
+		 * The main task associated with the <code>refresh()</code> method. This
+		 * is an expensive call, so it is <b>not</b> recommended to run it on
+		 * the GUI thread.
+		 */
 		@Override
 		protected Void call() throws Exception {
-			// Populate the master playlist.
-			setMasterPlaylist(new Playlist("All Music"));
-			if (directories != null) {
-				LOGGER.info("Found directories: " + directories);
-				LOGGER.info("Populating the master playlist...");
-
-				Collection<Future<Song>> sFutures = getFutures(directories);
-				long workDone = 0;
-				long max = sFutures.size();
-				updateMessage("Updating songs... ");
-				for (Future<Song> song : sFutures) {
-					getMasterPlaylist().add(song.get());
-					updateProgress(++workDone, max);
-				}
-			}
-
-			// Retrieve playlists from the working directory.
-			Collection<Playlist> playlists = HashMultiset.create();
-			if (!isInitialized()) {
-				Collection<Future<Playlist>> pFutures = HashMultiset.create();
-				ExecutorService outerExec = Executors.newWorkStealingPool();
-
-				// Iterate through each file in the working directory.
-				FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
-				File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
-				if (fileList == null) {
-					LOGGER.error("Unable to access the working directory.");
-				} else {
-					for (File f : fileList) {
-						pFutures.add(outerExec.submit(() -> {
-							Playlist playlist;
-							playlist = new Playlist(f.getName().substring(0, f.getName().lastIndexOf(".m3u")));
-							Collection<Future<Song>> sFutures = HashMultiset.create();
-
-							// Get each song, line by line.
-							try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
-								ExecutorService innerExec = Executors.newWorkStealingPool();
-								for (String nextLine; (nextLine = reader.readLine()) != null;) {
-									String s = nextLine;
-									sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
-								}
-								innerExec.shutdown();
-							}
-
-							// Add each song to the playlist.
-							long workDone = 0;
-							long max = sFutures.size();
-							for (Future<Song> song : sFutures) {
-								updateMessage("Updating " + playlist.getName() + "...");
-								playlist.add(song.get());
-								updateProgress(++workDone, max);
-							}
-							return playlist;
-						}));
-					}
-				}
-				outerExec.shutdown();
-				for (Future<Playlist> playlist : pFutures) {
-					playlists.add(playlist.get());
-				}
-			}
+			refreshMasterPlaylist();
+			Collection<Playlist> playlists = getPlaylists();
 
 			// Refresh the view.
 			Platform.runLater(() -> {
@@ -287,6 +233,87 @@ public class Player extends Application {
 
 			return null;
 		}
+
+		/**
+		 * Clears the master playlist, then constructs a new one out of all
+		 * supported audio files found in the set of directories.
+		 */
+		private void refreshMasterPlaylist() throws InterruptedException, ExecutionException {
+			setMasterPlaylist(new Playlist("All Music"));
+			if (directories != null) {
+				LOGGER.info("Found directories: " + directories);
+				LOGGER.info("Populating the master playlist...");
+
+				Collection<Future<Song>> sFutures = getFutures(directories);
+				long workDone = 0;
+				long max = sFutures.size();
+				updateMessage("Updating songs... ");
+				for (Future<Song> song : sFutures) {
+					getMasterPlaylist().add(song.get());
+					updateProgress(++workDone, max);
+				}
+			}
+		}
+
+		/**
+		 * Constructs playlists out of all m3u files found in the playlists
+		 * folder. The constructed playlists are then wrapped into a collection.
+		 * 
+		 * @return The collection of constructed playlists.
+		 */
+		private Collection<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
+			Collection<Playlist> playlists = HashMultiset.create();
+			if (!isInitialized()) {
+				Collection<Future<Playlist>> pFutures = HashMultiset.create();
+				ExecutorService outerExec = Executors.newWorkStealingPool();
+
+				// Iterate through each file in the working directory.
+				FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
+				File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
+				if (fileList == null) {
+					LOGGER.error("Unable to access the working directory.");
+				} else {
+					for (File f : fileList) {
+						pFutures.add(outerExec.submit(() -> createPlaylist(f)));
+					}
+				}
+				outerExec.shutdown();
+				for (Future<Playlist> playlist : pFutures) {
+					playlists.add(playlist.get());
+				}
+			}
+			return playlists;
+		}
+
+		/**
+		 * Creates a playlist out of an m3u file.
+		 */
+		private Playlist createPlaylist(File m3uFile) throws IOException, InterruptedException, ExecutionException {
+			Playlist playlist;
+			playlist = new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
+			Collection<Future<Song>> sFutures = HashMultiset.create();
+
+			// Get each song, line by line.
+			try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
+				ExecutorService innerExec = Executors.newWorkStealingPool();
+				for (String nextLine; (nextLine = reader.readLine()) != null;) {
+					String s = nextLine;
+					sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
+				}
+				innerExec.shutdown();
+			}
+
+			// Add each song to the playlist.
+			long workDone = 0;
+			long max = sFutures.size();
+			for (Future<Song> song : sFutures) {
+				updateMessage("Updating " + playlist.getName() + "...");
+				playlist.add(song.get());
+				updateProgress(++workDone, max);
+			}
+			return playlist;
+		}
+
 	}
 
 	// ------------------- Media Player Controls ------------------- //
