@@ -81,7 +81,6 @@ public class Player extends Application {
 	private Options options;
 
 	static {
-		System.setOut(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.INFO)));
 		System.setErr(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.ERROR)));
 	}
 
