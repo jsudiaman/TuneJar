@@ -244,6 +244,7 @@ public class Player extends Application {
 				}
 				getController().refreshTables();
 				getController().focus(getController().getPlaylistTable(), 0);
+				getController().getStatus().setText("");
 				setInitialized(true);
 			});
 
