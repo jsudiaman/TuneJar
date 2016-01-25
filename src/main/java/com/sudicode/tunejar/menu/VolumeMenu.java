@@ -2,6 +2,8 @@ package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.player.PlayerController;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 
 public class VolumeMenu extends PlayerMenu {
@@ -11,15 +13,15 @@ public class VolumeMenu extends PlayerMenu {
 	}
 
 	public void init() {
-		controller.getVolumeSlider().valueProperty()
-				.addListener((obs, oldV, newV) -> controller.getPlayer().setVolume(newV.doubleValue()));
+		DoubleProperty dProp = controller.getVolumeSlider().valueProperty();
+		dProp.addListener((obs, oldV, newV) -> controller.getPlayer().setVolume(newV.doubleValue()));
 
 		// Preserve SSD life by only writing upon slider release.
-		controller.getVolumeSlider().valueChangingProperty()
-				.addListener((ChangeListener<Boolean>) (obs, oldV, newV) -> {
-					if (!newV)
-						controller.getPlayer().getOptions().setVolume(controller.getVolumeSlider().getValue());
-				});
+		BooleanProperty bProp = controller.getVolumeSlider().valueChangingProperty();
+		bProp.addListener((ChangeListener<Boolean>) (obs, oldV, newV) -> {
+			if (!newV)
+				controller.getPlayer().getOptions().setVolume(controller.getVolumeSlider().getValue());
+		});
 	}
 
 }

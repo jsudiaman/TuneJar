@@ -9,9 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
@@ -29,7 +28,7 @@ import javafx.scene.control.TextInputDialog;
  */
 public class PlaylistMenu extends PlayerMenu {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlaylistMenu.class);
 
 	public PlaylistMenu(PlayerController controller) {
 		super(controller);
@@ -148,7 +147,7 @@ public class PlaylistMenu extends PlayerMenu {
 
 		} catch (Exception e) {
 			controller.getStatus().setText("Rename failed.");
-			LOGGER.catching(Level.ERROR, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -188,7 +187,7 @@ public class PlaylistMenu extends PlayerMenu {
 			controller.refreshTables();
 		} catch (Exception e) {
 			controller.getStatus().setText("Deletion failed.");
-			LOGGER.catching(Level.ERROR, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 

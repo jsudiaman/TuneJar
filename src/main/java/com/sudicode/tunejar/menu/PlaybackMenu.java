@@ -1,7 +1,7 @@
 package com.sudicode.tunejar.menu;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sudicode.tunejar.player.PlayerController;
 
@@ -10,7 +10,7 @@ import com.sudicode.tunejar.player.PlayerController;
  */
 public class PlaybackMenu extends PlayerMenu {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlaybackMenu.class);
 
 	public PlaybackMenu(PlayerController controller) {
 		super(controller);
@@ -82,7 +82,7 @@ public class PlaybackMenu extends PlayerMenu {
 			controller.getShortcutPause().setText("Pause");
 			controller.getMenuPause().setText("Pause");
 		} else {
-			LOGGER.fatal("Invalid text for pause button detected, text was: " + controller.getMenuPause().getText());
+			LOGGER.error("Invalid text for pause button detected, text was: " + controller.getMenuPause().getText());
 			throw new AssertionError();
 		}
 	}

@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
@@ -31,7 +30,7 @@ import javafx.scene.layout.GridPane;
  */
 public class SongMenu extends PlayerMenu {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(SongMenu.class);
 
 	public SongMenu(PlayerController controller) {
 		super(controller);
@@ -141,7 +140,7 @@ public class SongMenu extends PlayerMenu {
 			try {
 				pl.save();
 			} catch (IOException e) {
-				LOGGER.catching(Level.ERROR, e);
+				LOGGER.error(e.getMessage(), e);
 			} finally {
 				controller.refreshTables();
 			}
@@ -167,7 +166,7 @@ public class SongMenu extends PlayerMenu {
 		try {
 			pl.save();
 		} catch (IOException e) {
-			LOGGER.catching(Level.ERROR, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 

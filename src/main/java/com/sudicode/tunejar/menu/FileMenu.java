@@ -3,8 +3,8 @@ package com.sudicode.tunejar.menu;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
@@ -20,7 +20,7 @@ import javafx.scene.control.TextInputDialog;
  */
 public class FileMenu extends PlayerMenu {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileMenu.class);
 
 	public FileMenu(PlayerController controller) {
 		super(controller);

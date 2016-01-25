@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -29,9 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultiset;
 import com.sudicode.tunejar.config.Defaults;
@@ -39,7 +37,6 @@ import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
 import com.sudicode.tunejar.song.Songs;
-import com.sudicode.tunejar.util.LoggingOutputStream;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -65,7 +62,7 @@ public class Player extends Application {
 
 	// Static
 	private static Player instance;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(Player.class);
 
 	// GUI
 	private MediaPlayer mediaPlayer;
@@ -79,10 +76,6 @@ public class Player extends Application {
 	private Playlist masterPlaylist;
 	private Set<File> directories;
 	private Options options;
-
-	static {
-		System.setErr(new PrintStream(new LoggingOutputStream(LogManager.getRootLogger(), Level.ERROR)));
-	}
 
 	/**
 	 * Deletes old log files, then starts the application.
@@ -122,7 +115,7 @@ public class Player extends Application {
 		try {
 			init(primaryStage);
 		} catch (Exception e) {
-			LOGGER.catching(Level.FATAL, e);
+			LOGGER.error(e.getMessage(), e);
 			exitWithAlert(e);
 		}
 	}
@@ -209,7 +202,7 @@ public class Player extends Application {
 			try {
 				future.get(Defaults.TIMEOUT, TimeUnit.SECONDS);
 			} catch (ExecutionException | InterruptedException | TimeoutException e) {
-				LOGGER.catching(Level.ERROR, e);
+				LOGGER.error(e.getMessage(), e);
 				Platform.runLater(() -> {
 					getController().getStatus().setText("An error has occured: " + e.getClass().getSimpleName());
 				});
@@ -357,7 +350,7 @@ public class Player extends Application {
 			mediaPlayer.play();
 		} catch (MediaException e) {
 			getController().getStatus().setText("Failed to play the song.");
-			LOGGER.catching(Level.ERROR, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -410,7 +403,7 @@ public class Player extends Application {
 			alert.setTitle("Failed");
 			alert.setHeaderText("Failed to add the directory.");
 			alert.showAndWait();
-			LOGGER.catching(Level.ERROR, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 		refresh();
 	}

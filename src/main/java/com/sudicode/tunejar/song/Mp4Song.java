@@ -2,16 +2,16 @@ package com.sudicode.tunejar.song;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.mp4.Mp4FieldKey;
 import org.jaudiotagger.tag.mp4.Mp4Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Mp4Song extends Song {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(Mp4Song.class);
 
 	public Mp4Song(File mp4File) {
 		audioFile = mp4File;

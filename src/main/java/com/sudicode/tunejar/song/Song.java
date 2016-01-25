@@ -2,23 +2,30 @@ package com.sudicode.tunejar.song;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javafx.beans.property.SimpleStringProperty;
 
 public abstract class Song {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(Song.class);
 
 	protected SimpleStringProperty title;
 	protected SimpleStringProperty artist;
 	protected SimpleStringProperty album;
 	protected File audioFile;
+
+	// Redirect JAudioTagger's JUL to TuneJar's SLF4J
+	static {
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+	}
 
 	/**
 	 * <p>

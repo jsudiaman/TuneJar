@@ -11,8 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sudicode.tunejar.config.Defaults;
 
@@ -23,7 +23,7 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class Playlist implements List<Song> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(Playlist.class);
 
 	private final List<Song> list = new ArrayList<>();
 	private final SimpleStringProperty name;

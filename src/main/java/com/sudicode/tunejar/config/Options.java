@@ -13,13 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cedarsoftware.util.io.JsonWriter;
 
@@ -35,7 +34,7 @@ public class Options {
 	private boolean writeEnabled;
 
 	public Options() {
-		logger = LogManager.getLogger();
+		logger = LoggerFactory.getLogger(Options.class);
 		optionsFile = Paths.get(Defaults.OPTIONS_FILE);
 		writeEnabled = true;
 
@@ -163,7 +162,7 @@ public class Options {
 
 	private void handleParseException(ParseException e) {
 		// Log the error and alert the user.
-		logger.catching(Level.ERROR, e);
+		logger.error(e.getMessage(), e);
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("File Corrupted");
 		alert.setHeaderText(null);
@@ -176,7 +175,7 @@ public class Options {
 
 	private void handleIOException(IOException e) {
 		// Log the error and alert the user.
-		logger.catching(Level.ERROR, e);
+		logger.error(e.getMessage(), e);
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Read Error");
 		alert.setHeaderText(null);
