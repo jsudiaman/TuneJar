@@ -127,7 +127,7 @@ public class Player extends Application {
         setOptions(new Options());
 
         // Load the FXML file and display the interface.
-        this.setPrimaryStage(stage);
+        primaryStage = stage;
         URL location = getClass().getResource(Defaults.PLAYER_FXML);
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(location.openStream());
@@ -138,15 +138,15 @@ public class Player extends Application {
         getScene().getStylesheets().add(theme);
         LOGGER.debug("Loaded theme: " + theme);
 
-        getPrimaryStage().setTitle("TuneJar");
-        getPrimaryStage().setScene(getScene());
-        getPrimaryStage().getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
-        getPrimaryStage().show();
+        primaryStage.setTitle("TuneJar");
+        primaryStage.setScene(getScene());
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
+        primaryStage.show();
 
         // Load the directories. If none are present, prompt the user for one.
         directories = readDirectories();
         if (directories.isEmpty()) {
-            File directory = initialDirectory(getPrimaryStage());
+            File directory = initialDirectory(primaryStage);
             if (directory != null) {
                 directories.add(directory);
             }
@@ -155,8 +155,7 @@ public class Player extends Application {
 
         // Set the sort order.
         String[] sortBy = getOptions().getSortOrder();
-        getController().getSongTable().getSortOrder().clear();
-        List<TableColumn<Song, ?>> sortOrder = getController().getSongTable().getSortOrder();
+        List<TableColumn<Song, ?>> sortOrder = new ArrayList<>();
         for (String s : sortBy) {
             switch (s) {
                 case "title":
@@ -172,6 +171,7 @@ public class Player extends Application {
                     break;
             }
         }
+        getController().setSortOrder(sortOrder);
 
         // Create and display a playlist containing all songs from each
         // directory.
@@ -291,8 +291,7 @@ public class Player extends Application {
          * Creates a playlist out of an m3u file.
          */
         private Playlist createPlaylist(File m3uFile) throws IOException, InterruptedException, ExecutionException {
-            Playlist playlist;
-            playlist = new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
+            Playlist playlist = new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
             Collection<Future<Song>> sFutures = HashMultiset.create();
 
             // Get each song, line by line.
@@ -383,7 +382,7 @@ public class Player extends Application {
      * Adds a user-selected directory to the directory collection.
      */
     public void addDirectory() {
-        File directory = chooseDirectory(getPrimaryStage());
+        File directory = chooseDirectory(primaryStage);
         if (directory == null) {
             return;
         }
@@ -607,14 +606,6 @@ public class Player extends Application {
         this.controller = controller;
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
-
-    private void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-
     public Scene getScene() {
         return scene;
     }
@@ -623,7 +614,7 @@ public class Player extends Application {
         this.scene = scene;
     }
 
-    public void setInitialized(boolean initialized) {
+    private void setInitialized(boolean initialized) {
         if (this.initialized == null)
             this.initialized = new AtomicBoolean(initialized);
         else

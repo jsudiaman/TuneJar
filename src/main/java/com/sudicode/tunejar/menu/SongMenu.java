@@ -125,7 +125,7 @@ public class SongMenu extends PlayerMenu {
      * Creates a new playlist and adds the selected songs to it.
      */
     public void toNewPlaylist() {
-        List<Song> songs = new ArrayList<Song>(controller.getSongTable().getSelectionModel().getSelectedItems());
+        List<Song> songs = new ArrayList<>(controller.getSongTable().getSelectionModel().getSelectedItems());
 
         if (songs.isEmpty()) {
             controller.getStatus().setText("No song was selected.");
@@ -190,7 +190,7 @@ public class SongMenu extends PlayerMenu {
     /**
      * Arranges the playlist such that songs matching the keyword have priority.
      *
-     * @param keyword
+     * @param keyword The keyword
      * @return The amount of songs that match
      */
     public int search(String keyword) {

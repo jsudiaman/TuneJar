@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextInputDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,9 @@ public class PlaylistMenu extends PlayerMenu {
      * @param p A playlist
      */
     public void loadPlaylist(Playlist p) {
+        // Cache sort order
+        List<TableColumn<Song, ?>> sortOrder = controller.getSortOrder();
+
         controller.getPlaylistList().add(p);
         controller.getPlaylistTable().setItems(controller.getPlaylistList());
         controller.focus(controller.getPlaylistTable(), controller.getPlaylistList().size() - 1);
@@ -46,6 +50,9 @@ public class PlaylistMenu extends PlayerMenu {
         controller.getSongTable().setItems(controller.getSongList());
         LOGGER.info("Loaded playlist: " + p.getName());
 
+        // Restore sort order
+        controller.setSortOrder(sortOrder);
+
         if (p.getName().equals("All Music")) {
             return;
         }
@@ -53,7 +60,7 @@ public class PlaylistMenu extends PlayerMenu {
         MenuItem m = new MenuItem(p.getName());
         controller.getAddToPlaylist().getItems().add(m);
         m.setOnAction(event -> {
-            List<Song> songsToAdd = new ArrayList<Song>();
+            List<Song> songsToAdd = new ArrayList<>();
             songsToAdd.addAll(controller.getSongTable().getSelectionModel().getSelectedItems());
 
             if (songsToAdd.isEmpty()) {

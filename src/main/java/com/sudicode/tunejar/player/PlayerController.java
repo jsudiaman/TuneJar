@@ -152,6 +152,9 @@ public class PlayerController implements Initializable {
                 return;
             }
 
+            // Cache sort order
+            List<TableColumn<Song, ?>> sortOrder = getSortOrder();
+
             // When a playlist is selected, display it.
             setSongList(FXCollections.observableArrayList(getPlaylistTable().getSelectionModel().getSelectedItem()));
             getSongTable().setItems(getSongList());
@@ -161,12 +164,15 @@ public class PlayerController implements Initializable {
             menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
             menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
             menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
+
+            // Restore sort order
+            setSortOrder(sortOrder);
         });
 
         // Initialize the volume slider.
         initVolume();
 
-        // Initailize the theme menu.
+        // Initialize the theme menu.
         initThemes();
     }
 
@@ -276,7 +282,7 @@ public class PlayerController implements Initializable {
         // Keep tabs on what was selected before.
         List<Playlist> selectedPlaylists = new ArrayList<>(getPlaylistTable().getSelectionModel().getSelectedItems());
         List<Song> selectedSongs = new ArrayList<>(getSongTable().getSelectionModel().getSelectedItems());
-        List<TableColumn<Song, ?>> sorted = new ArrayList<>(getSongTable().getSortOrder());
+        List<TableColumn<Song, ?>> sorted = getSortOrder();
 
         // Where the actual "refreshing" is done
         getSongTable().getColumns().get(0).setVisible(false);
@@ -300,8 +306,7 @@ public class PlayerController implements Initializable {
                 getSongTable().getSelectionModel().select(s);
             }
         }
-        getSongTable().getSortOrder().clear();
-        getSongTable().getSortOrder().addAll(sorted);
+        setSortOrder(sorted);
     }
 
     // --------------- Getters and Setters --------------- //
@@ -392,6 +397,15 @@ public class PlayerController implements Initializable {
 
     private void setFileMenu(FileMenu fileMenu) {
         this.fileMenu = fileMenu;
+    }
+
+    public List<TableColumn<Song, ?>> getSortOrder() {
+        return new ArrayList<>(getSongTable().getSortOrder());
+    }
+
+    public void setSortOrder(List<TableColumn<Song, ?>> sortOrder) {
+        getSongTable().getSortOrder().clear();
+        getSongTable().getSortOrder().addAll(sortOrder);
     }
 
 }
