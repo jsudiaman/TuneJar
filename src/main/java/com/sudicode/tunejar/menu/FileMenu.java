@@ -1,19 +1,17 @@
 package com.sudicode.tunejar.menu;
 
-import java.io.IOException;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
-
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Helper class for handling the File menu.
@@ -28,7 +26,7 @@ public class FileMenu extends PlayerMenu {
 
 	/**
 	 * Creates a new playlist.
-	 * 
+	 *
 	 * @return The created playlist.
 	 */
 	public Playlist createPlaylist() {

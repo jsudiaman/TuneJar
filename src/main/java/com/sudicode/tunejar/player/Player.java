@@ -1,5 +1,33 @@
 package com.sudicode.tunejar.player;
 
+import com.google.common.collect.HashMultiset;
+import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.config.Options;
+import com.sudicode.tunejar.song.Playlist;
+import com.sudicode.tunejar.song.Song;
+import com.sudicode.tunejar.song.Songs;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -27,37 +55,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.HashMultiset;
-import com.sudicode.tunejar.config.Defaults;
-import com.sudicode.tunejar.config.Options;
-import com.sudicode.tunejar.song.Playlist;
-import com.sudicode.tunejar.song.Song;
-import com.sudicode.tunejar.song.Songs;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaException;
-import javafx.scene.media.MediaPlayer;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
-
 public class Player extends Application {
 
 	// Static
@@ -80,8 +77,7 @@ public class Player extends Application {
 	/**
 	 * Deletes old log files, then starts the application.
 	 *
-	 * @param args
-	 *            The command line arguments
+	 * @param args The command line arguments
 	 */
 	public static void main(String[] args) {
 		try {
@@ -107,8 +103,7 @@ public class Player extends Application {
 	/**
 	 * Starts the program.
 	 *
-	 * @param primaryStage
-	 *            The stage that will hold the interface
+	 * @param primaryStage The stage that will hold the interface
 	 */
 	@Override
 	public void start(Stage primaryStage) {
@@ -123,10 +118,8 @@ public class Player extends Application {
 	/**
 	 * Handles program initialization.
 	 *
-	 * @param stage
-	 *            The stage that will hold the interface
-	 * @throws IOException
-	 *             Failed to load the FXML, or could not load/save a file.
+	 * @param stage The stage that will hold the interface
+	 * @throws IOException Failed to load the FXML, or could not load/save a file.
 	 */
 	private void init(Stage stage) throws IOException {
 		// Initialization.
@@ -166,17 +159,17 @@ public class Player extends Application {
 		List<TableColumn<Song, ?>> sortOrder = getController().getSongTable().getSortOrder();
 		for (String s : sortBy) {
 			switch (s) {
-			case "title":
-				sortOrder.add(getController().getTitleColumn());
-				break;
-			case "artist":
-				sortOrder.add(getController().getArtistColumn());
-				break;
-			case "album":
-				sortOrder.add(getController().getAlbumColumn());
-				break;
-			default:
-				break;
+				case "title":
+					sortOrder.add(getController().getTitleColumn());
+					break;
+				case "artist":
+					sortOrder.add(getController().getArtistColumn());
+					break;
+				case "album":
+					sortOrder.add(getController().getAlbumColumn());
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -192,9 +185,9 @@ public class Player extends Application {
 	 */
 	public void refresh() {
 		Task<?> refresher = new Refresher();
-		refresher.progressProperty().addListener((ChangeListener<Number>) (obs, oldVal, newVal) -> {
-			getController().getStatus().setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal));
-		});
+		refresher.progressProperty().addListener((obs, oldVal, newVal) ->
+				getController().getStatus().setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal))
+		);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		Future<?> future = executor.submit(refresher);
 		executor.shutdown();
@@ -203,9 +196,9 @@ public class Player extends Application {
 				future.get(Defaults.TIMEOUT, TimeUnit.SECONDS);
 			} catch (ExecutionException | InterruptedException | TimeoutException e) {
 				LOGGER.error(e.getMessage(), e);
-				Platform.runLater(() -> {
-					getController().getStatus().setText("An error has occured: " + e.getClass().getSimpleName());
-				});
+				Platform.runLater(() ->
+						getController().getStatus().setText("An error has occurred: " + e.getClass().getSimpleName())
+				);
 			}
 		}).start();
 	}
@@ -267,7 +260,7 @@ public class Player extends Application {
 		/**
 		 * Constructs playlists out of all m3u files found in the playlists
 		 * folder. The constructed playlists are then wrapped into a collection.
-		 * 
+		 *
 		 * @return The collection of constructed playlists.
 		 */
 		private Collection<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
@@ -277,7 +270,7 @@ public class Player extends Application {
 				ExecutorService outerExec = Executors.newWorkStealingPool();
 
 				// Iterate through each file in the working directory.
-				FilenameFilter filter = (FilenameFilter) (dir, name) -> name.endsWith(".m3u");
+				FilenameFilter filter = (dir, name) -> name.endsWith(".m3u");
 				File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
 				if (fileList == null) {
 					LOGGER.error("Unable to access the working directory.");
@@ -305,8 +298,8 @@ public class Player extends Application {
 			// Get each song, line by line.
 			try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
 				ExecutorService innerExec = Executors.newWorkStealingPool();
-				for (String nextLine; (nextLine = reader.readLine()) != null;) {
-					String s = nextLine;
+				for (String nextLine; (nextLine = reader.readLine()) != null; ) {
+					final String s = nextLine;
 					sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
 				}
 				innerExec.shutdown();
@@ -330,8 +323,7 @@ public class Player extends Application {
 	/**
 	 * Loads a song into the media player, then plays it.
 	 *
-	 * @param song
-	 *            The song to play
+	 * @param song The song to play
 	 */
 	public void playSong(Song song) {
 		if (getNowPlaying() == song) {
@@ -410,7 +402,7 @@ public class Player extends Application {
 
 	/**
 	 * Allows the user to choose and remove a directory from the directory set.
-	 * 
+	 *
 	 * @return True iff a directory was successfully removed.
 	 */
 	public boolean removeDirectory() {
@@ -442,8 +434,7 @@ public class Player extends Application {
 	/**
 	 * Prompts the user for a directory.
 	 *
-	 * @param stage
-	 *            The stage that will hold the dialog box
+	 * @param stage The stage that will hold the dialog box
 	 * @return The directory specified by the user, or null if the user cancels
 	 */
 	private File chooseDirectory(Stage stage) {
@@ -455,8 +446,7 @@ public class Player extends Application {
 	/**
 	 * Prompts the user for a directory.
 	 *
-	 * @param stage
-	 *            The stage that will hold the dialog box
+	 * @param stage The stage that will hold the dialog box
 	 * @return A directory chosen by the user, or null if the user cancels
 	 */
 	private File initialDirectory(Stage stage) {
@@ -481,7 +471,7 @@ public class Player extends Application {
 
 	/**
 	 * Reads directories from the options file.
-	 * 
+	 *
 	 * @return A set containing the directories
 	 */
 	private Set<File> readDirectories() {
@@ -499,7 +489,7 @@ public class Player extends Application {
 	 * Traverses each directory, obtaining all supported audio files. Each audio
 	 * file found is wrapped in a Future Song, which is then added to a
 	 * collection.
-	 * 
+	 *
 	 * @return The collection of Future Songs
 	 */
 	private Collection<Future<Song>> getFutures(Collection<File> directories) {
@@ -533,8 +523,7 @@ public class Player extends Application {
 	 * Displays a dialog box explaining what happened. Once the dialog box is
 	 * closed, the program exits with exit code -1.
 	 *
-	 * @param e
-	 *            An exception that should end the program
+	 * @param e An exception that should end the program
 	 */
 	private void exitWithAlert(Exception e) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -574,8 +563,7 @@ public class Player extends Application {
 	 * Sets up the media player to perform a specified action at the end of
 	 * every song.
 	 *
-	 * @param action
-	 *            An action wrapped in a Runnable
+	 * @param action An action wrapped in a Runnable
 	 */
 	public void setEndOfSongAction(Runnable action) {
 		mediaPlayer.setOnEndOfMedia(action);

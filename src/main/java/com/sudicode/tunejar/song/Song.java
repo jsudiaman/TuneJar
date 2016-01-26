@@ -1,7 +1,6 @@
 package com.sudicode.tunejar.song;
 
-import java.io.File;
-
+import javafx.beans.property.SimpleStringProperty;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -10,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import javafx.beans.property.SimpleStringProperty;
+import java.io.File;
 
 public abstract class Song {
 
@@ -31,7 +30,7 @@ public abstract class Song {
 	 * <p>
 	 * Constructs a new Song.
 	 * </p>
-	 * 
+	 * <p>
 	 * <p>
 	 * Note that this constructor does not initialize <code>audioFile</code>. To
 	 * avoid possible NPEs, care should be taken to ensure that at the very
@@ -68,7 +67,7 @@ public abstract class Song {
 	 * hard-code this method to return <code>false</code>. In that case, setters
 	 * should also throw an {@link AssertionError}, since setters should
 	 * <b>not</b> be accessible if this method returns false.
-	 * 
+	 *
 	 * @return True if the song can be edited.
 	 */
 	public boolean canEdit() {
@@ -85,9 +84,6 @@ public abstract class Song {
 
 	/**
 	 * Sets the title in both this object and the audio file.
-	 * 
-	 * @param title
-	 * @throws Exception
 	 */
 	public void setTitle(String title) throws Exception {
 		AudioFile f = AudioFileIO.read(audioFile);
@@ -107,9 +103,6 @@ public abstract class Song {
 
 	/**
 	 * Sets the artist in both this object and the audio file.
-	 * 
-	 * @param artist
-	 * @throws Exception
 	 */
 	public void setArtist(String artist) throws Exception {
 		AudioFile f = AudioFileIO.read(audioFile);
@@ -125,9 +118,6 @@ public abstract class Song {
 
 	/**
 	 * Sets the album in both this object and the audio file.
-	 * 
-	 * @param album
-	 * @throws Exception
 	 */
 	public void setAlbum(String album) throws Exception {
 		AudioFile f = AudioFileIO.read(audioFile);

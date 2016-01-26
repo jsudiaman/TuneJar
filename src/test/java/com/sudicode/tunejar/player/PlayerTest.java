@@ -1,24 +1,20 @@
 package com.sudicode.tunejar.player;
 
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.core.ConditionFactory;
+import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.config.Options;
+import javafx.application.Application;
+import javafx.scene.Parent;
+import org.junit.BeforeClass;
+import org.loadui.testfx.GuiTest;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.BeforeClass;
-import org.loadui.testfx.GuiTest;
-
-import com.jayway.awaitility.Awaitility;
-import com.jayway.awaitility.core.ConditionFactory;
-import com.sudicode.tunejar.config.Defaults;
-import com.sudicode.tunejar.config.Options;
-import com.sudicode.tunejar.player.Player;
-import com.sudicode.tunejar.player.PlayerController;
-
-import javafx.application.Application;
-import javafx.scene.Parent;
 
 public abstract class PlayerTest {
 
@@ -27,7 +23,7 @@ public abstract class PlayerTest {
 
 	/**
 	 * Starts the TuneJar player.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeClass
@@ -76,7 +72,7 @@ public abstract class PlayerTest {
 
 	/**
 	 * Used to manipulate the TuneJar player.
-	 * 
+	 *
 	 * @see GuiTest
 	 */
 	protected static GuiTest getDriver() {

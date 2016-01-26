@@ -1,5 +1,15 @@
 package com.sudicode.tunejar.config;
 
+import com.cedarsoftware.util.io.JsonWriter;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -9,21 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.cedarsoftware.util.io.JsonWriter;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 @SuppressWarnings("unchecked")
 public class Options {
@@ -145,15 +144,13 @@ public class Options {
 		arr.forEach((o) -> list.add(o.toString()));
 
 		// Return the resulting String array
-		return list.toArray(new String[0]);
+		return list.toArray(new String[list.size()]);
 	}
 
 	public void setSortOrder(String... sorts) {
 		// Convert String array to JSONArray
 		JSONArray arr = new JSONArray();
-		for (String s : sorts) {
-			arr.add(s);
-		}
+		arr.addAll(Arrays.asList(sorts));
 
 		// Store the resulting JSONArray
 		options.put("sortOrder", arr);

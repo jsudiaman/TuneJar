@@ -1,21 +1,19 @@
 package com.sudicode.tunejar.menu;
 
-import static org.junit.Assert.*;
+import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.player.PlayerTest;
+import com.sudicode.tunejar.song.Playlist;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import org.junit.Test;
+import org.loadui.testfx.GuiTest;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-import org.loadui.testfx.GuiTest;
-
-import com.sudicode.tunejar.config.Defaults;
-import com.sudicode.tunejar.player.PlayerTest;
-import com.sudicode.tunejar.song.Playlist;
-
-import javafx.collections.ObservableList;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
+import static org.junit.Assert.*;
 
 public class FileMenuTest extends PlayerTest {
 

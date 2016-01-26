@@ -1,5 +1,7 @@
 package com.sudicode.tunejar.config;
 
+import com.sudicode.tunejar.player.Player;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -7,8 +9,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.sudicode.tunejar.player.Player;
 
 public class Defaults {
 
@@ -40,7 +40,7 @@ public class Defaults {
 		THEME_MAP = Collections.unmodifiableMap(themeMap);
 
 		// TuneJar home
-		TUNEJAR_HOME = Paths.get(System.getProperty("user.home"), "Documents", "TuneJar").toString();
+		TUNEJAR_HOME = Paths.get(System.getProperty("user.home"), "TuneJar").toString();
 		OPTIONS_FILE = Paths.get(TUNEJAR_HOME, "options.json").toString();
 		PLAYLISTS_FOLDER = Paths.get(TUNEJAR_HOME, "Playlists").toString();
 		LOG_FOLDER = Paths.get(TUNEJAR_HOME, "Logs").toString();

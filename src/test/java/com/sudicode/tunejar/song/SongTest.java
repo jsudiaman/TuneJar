@@ -1,16 +1,13 @@
 package com.sudicode.tunejar.song;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-
-import java.io.File;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sudicode.tunejar.song.Song;
-import com.sudicode.tunejar.song.Songs;
+import java.io.File;
+
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 /**
  * Tests an implementation of the {@link Song} interface. Subclasses are

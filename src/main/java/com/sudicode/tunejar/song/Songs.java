@@ -1,9 +1,9 @@
 package com.sudicode.tunejar.song;
 
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 public class Songs {
 
@@ -14,11 +14,10 @@ public class Songs {
 
 	/**
 	 * Constructs a {@link Song} out of a file.
-	 * 
-	 * @param file
-	 *            The file to be used.
+	 *
+	 * @param file The file to be used.
 	 * @return The constructed {@link Song}, or <code>null</code> if the file
-	 *         type is not supported.
+	 * type is not supported.
 	 */
 	public static Song create(File file) {
 		if (file.getName().endsWith(".mp3")) {
@@ -38,9 +37,8 @@ public class Songs {
 
 	/**
 	 * Duplicates a {@link Song} by using its copy constructor.
-	 * 
-	 * @param song
-	 *            The song to be used.
+	 *
+	 * @param song The song to be used.
 	 * @return The duplicate {@link Song}.
 	 */
 	public static Song duplicate(Song song) {

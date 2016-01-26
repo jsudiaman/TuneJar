@@ -1,20 +1,8 @@
 package com.sudicode.tunejar.menu;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
-
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar;
@@ -24,6 +12,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Helper class for handling the Song menu.
@@ -191,7 +189,7 @@ public class SongMenu extends PlayerMenu {
 
 	/**
 	 * Arranges the playlist such that songs matching the keyword have priority.
-	 * 
+	 *
 	 * @param keyword
 	 * @return The amount of songs that match
 	 */

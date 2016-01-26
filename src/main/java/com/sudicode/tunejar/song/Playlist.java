@@ -1,5 +1,10 @@
 package com.sudicode.tunejar.song;
 
+import com.sudicode.tunejar.config.Defaults;
+import javafx.beans.property.SimpleStringProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,13 +15,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sudicode.tunejar.config.Defaults;
-
-import javafx.beans.property.SimpleStringProperty;
 
 /**
  * An ordered collection of Song objects.
@@ -40,8 +38,7 @@ public class Playlist implements List<Song> {
 	/**
 	 * Creates a new instance of Playlist.
 	 *
-	 * @param name
-	 *            The name of the playlist
+	 * @param name The name of the playlist
 	 */
 	public Playlist(String name) {
 		this.name = new SimpleStringProperty(name);
@@ -62,8 +59,7 @@ public class Playlist implements List<Song> {
 	/**
 	 * Save the playlist as a .m3u file.
 	 *
-	 * @throws IOException
-	 *             Failed to save the playlist
+	 * @throws IOException Failed to save the playlist
 	 */
 	public void save() throws IOException {
 		File outFile = Paths.get(Defaults.PLAYLISTS_FOLDER, name.get() + ".m3u").toFile();
@@ -89,12 +85,10 @@ public class Playlist implements List<Song> {
 	/**
 	 * Adds the contents of the song collection to this playlist. Uses the copy
 	 * constructor instead of directly adding items from the collection.
-	 * 
-	 * @param songs
-	 *            A song collection
-	 * 
+	 *
+	 * @param songs A song collection
 	 * @return True iff at least one song in the collection was added to this
-	 *         playlist.
+	 * playlist.
 	 */
 	@Override
 	public boolean addAll(Collection<? extends Song> songs) {

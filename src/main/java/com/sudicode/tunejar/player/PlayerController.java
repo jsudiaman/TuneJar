@@ -1,10 +1,5 @@
 package com.sudicode.tunejar.player;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
 import com.sudicode.tunejar.menu.FileMenu;
 import com.sudicode.tunejar.menu.PlaybackMenu;
 import com.sudicode.tunejar.menu.PlaylistMenu;
@@ -13,7 +8,6 @@ import com.sudicode.tunejar.menu.ThemeMenu;
 import com.sudicode.tunejar.menu.VolumeMenu;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -31,6 +25,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class PlayerController implements Initializable {
 
@@ -89,12 +88,10 @@ public class PlayerController implements Initializable {
 	/**
 	 * Sets up the playlist viewer.
 	 *
-	 * @param location
-	 *            The location used to resolve relative paths for the root
-	 *            object, or <code>null</code> if the location is not known.
-	 * @param resources
-	 *            The resources used to localize the root object, or
-	 *            <code>null</code> if the root object was not localized.
+	 * @param location  The location used to resolve relative paths for the root
+	 *                  object, or <code>null</code> if the location is not known.
+	 * @param resources The resources used to localize the root object, or
+	 *                  <code>null</code> if the root object was not localized.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -114,9 +111,9 @@ public class PlayerController implements Initializable {
 		getSongTable().setItems(getSongList());
 		getSongTable().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		getSongTable().getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			getSongTable().getSortOrder().forEach(t -> list.add(t.getId()));
-			Player.getPlayer().getOptions().setSortOrder(list.toArray(new String[0]));
+			Player.getPlayer().getOptions().setSortOrder(list.toArray(new String[list.size()]));
 		});
 
 		// Initialize the playlist table.
@@ -265,10 +262,8 @@ public class PlayerController implements Initializable {
 	/**
 	 * Scrolls to and focuses the specified row in the specified table.
 	 *
-	 * @param t
-	 *            The table in which the selection occurs
-	 * @param index
-	 *            The row that should be selected
+	 * @param t     The table in which the selection occurs
+	 * @param index The row that should be selected
 	 */
 	public void focus(TableView<?> t, int index) {
 		t.requestFocus();

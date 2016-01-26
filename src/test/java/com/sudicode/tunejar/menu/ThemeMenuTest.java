@@ -1,10 +1,9 @@
 package com.sudicode.tunejar.menu;
 
-import static org.junit.Assert.*;
-
+import com.sudicode.tunejar.player.PlayerTest;
 import org.junit.Test;
 
-import com.sudicode.tunejar.player.PlayerTest;
+import static org.junit.Assert.*;
 
 public class ThemeMenuTest extends PlayerTest {
 
@@ -15,7 +14,7 @@ public class ThemeMenuTest extends PlayerTest {
 		assertTrue(getPlayer().getScene().getStylesheets().get(0).endsWith("Dark%20Theme.css"));
 		assertTrue(getPlayer().getOptions().getTheme().equals("Dark Theme"));
 	}
-	
+
 	@Test
 	public void testModena() throws Exception {
 		getDriver().clickOn("#themeSelector");

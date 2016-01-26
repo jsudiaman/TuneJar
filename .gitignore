@@ -1,7 +1,4 @@
-/bin/
-/build/
-/target/
+/target
+/.idea
 
-.project
-.classpath
-.settings
+*.iml

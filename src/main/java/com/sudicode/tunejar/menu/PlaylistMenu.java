@@ -1,5 +1,17 @@
 package com.sudicode.tunejar.menu;
 
+import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.player.PlayerController;
+import com.sudicode.tunejar.song.Playlist;
+import com.sudicode.tunejar.song.Song;
+import javafx.collections.FXCollections;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,20 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sudicode.tunejar.config.Defaults;
-import com.sudicode.tunejar.player.PlayerController;
-import com.sudicode.tunejar.song.Playlist;
-import com.sudicode.tunejar.song.Song;
-
-import javafx.collections.FXCollections;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextInputDialog;
 
 /**
  * Helper class for handling the Playlist menu.
@@ -37,8 +35,7 @@ public class PlaylistMenu extends PlayerMenu {
 	/**
 	 * Adds a playlist to the playlist table, then loads it into the song table.
 	 *
-	 * @param p
-	 *            A playlist
+	 * @param p A playlist
 	 */
 	public void loadPlaylist(Playlist p) {
 		controller.getPlaylistList().add(p);

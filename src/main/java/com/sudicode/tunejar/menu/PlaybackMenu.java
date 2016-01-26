@@ -1,9 +1,8 @@
 package com.sudicode.tunejar.menu;
 
+import com.sudicode.tunejar.player.PlayerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sudicode.tunejar.player.PlayerController;
 
 /**
  * Helper class for handling the Playback menu.
@@ -33,8 +32,7 @@ public class PlaybackMenu extends PlayerMenu {
 	/**
 	 * Plays the song at the specified row of the song table.
 	 *
-	 * @param row
-	 *            The row that the song is located in
+	 * @param row The row that the song is located in
 	 */
 	public void play(int row) {
 		try {

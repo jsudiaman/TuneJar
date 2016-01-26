@@ -2,7 +2,6 @@ package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
-
 import javafx.scene.control.MenuItem;
 
 public class ThemeMenu extends PlayerMenu {
