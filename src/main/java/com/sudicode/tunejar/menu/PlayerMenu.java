@@ -4,10 +4,10 @@ import com.sudicode.tunejar.player.PlayerController;
 
 public abstract class PlayerMenu {
 
-	protected PlayerController controller;
+    protected PlayerController controller;
 
-	protected PlayerMenu(PlayerController controller) {
-		this.controller = controller;
-	}
+    protected PlayerMenu(PlayerController controller) {
+        this.controller = controller;
+    }
 
 }

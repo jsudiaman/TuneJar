@@ -17,18 +17,18 @@ import static org.junit.Assert.*;
 
 public class FileMenuTest extends PlayerTest {
 
-	@Test
-	public void testNewPlaylist() throws Exception {
-		Callable<ObservableList<Playlist>> items = () -> getController().getPlaylistTable().getItems();
-		int index = items.call().size();
+    @Test
+    public void testNewPlaylist() throws Exception {
+        Callable<ObservableList<Playlist>> items = () -> getController().getPlaylistTable().getItems();
+        int index = items.call().size();
 
-		getDriver().clickOn("File").clickOn("New...").clickOn("Playlist");
-		TextField name = GuiTest.find(Defaults.PLAYLIST_NAME);
-		getDriver().type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T, KeyCode.DIGIT0);
-		assertTrue(name.getText().equals("test0"));
-		getDriver().clickOn("OK");
-		assertTrue(items.call().get(index).getName().equals("test0"));
-		assertTrue(Files.exists(Paths.get(Defaults.PLAYLISTS_FOLDER, "test0.m3u")));
-	}
+        getDriver().clickOn("File").clickOn("New...").clickOn("Playlist");
+        TextField name = GuiTest.find(Defaults.PLAYLIST_NAME);
+        getDriver().type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T, KeyCode.DIGIT0);
+        assertTrue(name.getText().equals("test0"));
+        getDriver().clickOn("OK");
+        assertTrue(items.call().get(index).getName().equals("test0"));
+        assertTrue(Files.exists(Paths.get(Defaults.PLAYLISTS_FOLDER, "test0.m3u")));
+    }
 
 }
