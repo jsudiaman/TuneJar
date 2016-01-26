@@ -13,7 +13,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public abstract class PlayerTest {
@@ -49,9 +48,7 @@ public abstract class PlayerTest {
 
 		// Launch application
 		new Thread(() -> Application.launch(Player.class)).start();
-		getWait().ignoreException(NullPointerException.class).until((Callable<Boolean>) () -> {
-			return getPlayer().isInitialized();
-		});
+		getWait().ignoreException(NullPointerException.class).until(() -> getPlayer().isInitialized());
 		TimeUnit.SECONDS.sleep(1);
 
 		// Set driver
