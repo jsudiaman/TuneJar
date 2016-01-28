@@ -4,13 +4,13 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
-        <File name="LogFile" fileName="${sys:user.home}/TuneJar/Logs/${date:yyyy-MM-dd HHmmss}.xml"
+        <File name="LogFile" fileName="${sys:user.home}/Documents/TuneJar/Logs/${date:yyyy-MM-dd HHmmss}.xml"
               immediateFlush="false" append="false">
             <XMLLayout complete="true" charset="UTF-8" compact="false"/>
         </File>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
+        <Root level="DEBUG">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="LogFile"/>
         </Root>

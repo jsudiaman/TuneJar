@@ -24,6 +24,7 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,8 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,14 +76,19 @@ public class Player extends Application {
     private Options options;
 
     /**
-     * Deletes old log files, then starts the application.
+     * Starts the application.
      *
      * @param args The command line arguments
      */
     public static void main(String[] args) {
         try {
-            for (int i = 0; i < Defaults.MAX_LOOPS; i++) {
-                Path logsFolder = Paths.get(Defaults.LOG_FOLDER);
+            // Make directories
+            FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
+            FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
+
+            // Log file cleanup
+            for (; ; ) {
+                Path logsFolder = Defaults.LOG_FOLDER;
                 String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".xml"));
                 if (files == null) {
                     LOGGER.error("Log file cleanup failed.");
@@ -95,7 +101,7 @@ public class Player extends Application {
                 Files.delete(logsFolder.resolve(files[0]));
             }
         } catch (IOException e) {
-            LOGGER.error("Log file cleanup failed.", e);
+            LOGGER.error(e.getMessage(), e);
         }
         launch(args);
     }
@@ -124,7 +130,7 @@ public class Player extends Application {
     private void init(Stage stage) throws IOException {
         // Initialization.
         setInstance(this);
-        setOptions(new Options());
+        setOptions(new Options(Defaults.OPTIONS_FILE.toFile()));
 
         // Load the FXML file and display the interface.
         primaryStage = stage;
@@ -271,7 +277,7 @@ public class Player extends Application {
 
                 // Iterate through each file in the working directory.
                 FilenameFilter filter = (dir, name) -> name.endsWith(".m3u");
-                File[] fileList = new File(Defaults.PLAYLISTS_FOLDER).listFiles(filter);
+                File[] fileList = Defaults.PLAYLISTS_FOLDER.toFile().listFiles(filter);
                 if (fileList == null) {
                     LOGGER.error("Unable to access the working directory.");
                 } else {
@@ -292,11 +298,11 @@ public class Player extends Application {
          */
         private Playlist createPlaylist(File m3uFile) throws IOException, InterruptedException, ExecutionException {
             Playlist playlist = new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
-            Collection<Future<Song>> sFutures = HashMultiset.create();
+            Collection<Future<Song>> sFutures = new ArrayDeque<>();
 
             // Get each song, line by line.
             try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
-                ExecutorService innerExec = Executors.newWorkStealingPool();
+                ExecutorService innerExec = Executors.newSingleThreadExecutor();
                 for (String nextLine; (nextLine = reader.readLine()) != null; ) {
                     final String s = nextLine;
                     sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
@@ -312,6 +318,7 @@ public class Player extends Application {
                 playlist.add(song.get());
                 updateProgress(++workDone, max);
             }
+            LOGGER.debug("Constructed playlist: {}. Contents: {}", playlist.getName(), playlist);
             return playlist;
         }
 

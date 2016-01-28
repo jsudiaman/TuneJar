@@ -6,11 +6,14 @@ import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.config.Options;
 import javafx.application.Application;
 import javafx.scene.Parent;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.loadui.testfx.GuiTest;
 
 import java.io.File;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -32,16 +35,19 @@ public abstract class PlayerTest {
     }
 
     private static void init() throws Exception {
+        // Make directories
+        FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
+        FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
+
         // Delete all playlists
-        File[] files = new File(Defaults.PLAYLISTS_FOLDER).listFiles();
-        if (files != null) {
-            for (File f : files) {
-                Files.delete(f.toPath());
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Defaults.PLAYLISTS_FOLDER)) {
+            for (Path p : stream) {
+                Files.delete(p);
             }
         }
 
         // Set directories
-        Options options = new Options();
+        Options options = new Options(Defaults.OPTIONS_FILE.toFile());
         Set<File> dirs = new HashSet<>();
         dirs.add(new File("src/test/resources/"));
         options.setDirectories(dirs);

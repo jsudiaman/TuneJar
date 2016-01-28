@@ -107,7 +107,7 @@ public class PlaylistMenu extends PlayerMenu {
     public void renamePlaylist() {
         Playlist pl = controller.getPlaylistTable().getSelectionModel().getSelectedItem();
         String oldName = pl.getName();
-        File oldFile = Paths.get(Defaults.PLAYLISTS_FOLDER, oldName + ".m3u").toFile();
+        File oldFile = Defaults.PLAYLISTS_FOLDER.resolve(oldName + ".m3u").toFile();
 
         // Prompt the user for a playlist name.
         TextInputDialog dialog = new TextInputDialog(oldName);
@@ -173,7 +173,7 @@ public class PlaylistMenu extends PlayerMenu {
             return;
         }
         try {
-            Files.delete(Paths.get(Defaults.PLAYLISTS_FOLDER, pl.getName() + ".m3u"));
+            Files.delete(Defaults.PLAYLISTS_FOLDER.resolve(pl.getName() + ".m3u"));
             controller.getPlaylistList().remove(pl);
 
             // Remove the playlist from the "Song -> Add To..." menu.

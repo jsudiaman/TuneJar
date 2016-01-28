@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import static org.junit.Assert.*;
@@ -28,7 +27,7 @@ public class FileMenuTest extends PlayerTest {
         assertTrue(name.getText().equals("test0"));
         getDriver().clickOn("OK");
         assertTrue(items.call().get(index).getName().equals("test0"));
-        assertTrue(Files.exists(Paths.get(Defaults.PLAYLISTS_FOLDER, "test0.m3u")));
+        assertTrue(Files.exists(Defaults.PLAYLISTS_FOLDER.resolve("test0.m3u")));
     }
 
 }

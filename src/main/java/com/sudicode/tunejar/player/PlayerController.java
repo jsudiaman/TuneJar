@@ -282,7 +282,6 @@ public class PlayerController implements Initializable {
         // Keep tabs on what was selected before.
         List<Playlist> selectedPlaylists = new ArrayList<>(getPlaylistTable().getSelectionModel().getSelectedItems());
         List<Song> selectedSongs = new ArrayList<>(getSongTable().getSelectionModel().getSelectedItems());
-        List<TableColumn<Song, ?>> sorted = getSortOrder();
 
         // Where the actual "refreshing" is done
         getSongTable().getColumns().get(0).setVisible(false);
@@ -306,7 +305,6 @@ public class PlayerController implements Initializable {
                 getSongTable().getSelectionModel().select(s);
             }
         }
-        setSortOrder(sorted);
     }
 
     // --------------- Getters and Setters --------------- //

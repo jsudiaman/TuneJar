@@ -3,6 +3,7 @@ package com.sudicode.tunejar.config;
 import com.sudicode.tunejar.player.Player;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,17 +17,16 @@ public class Defaults {
     public static final long TIMEOUT;
     public static final String ICON;
     public static final int LOG_FILE_LIMIT;
-    public static final String LOG_FOLDER;
-    public static final int MAX_LOOPS;
-    public static final String OPTIONS_FILE;
+    public static final Path LOG_FOLDER;
+    public static final Path OPTIONS_FILE;
     public static final String PLAYER_FXML;
-    public static final String PLAYLISTS_FOLDER;
+    public static final Path PLAYLISTS_FOLDER;
     public static final String[] SORT_ORDER;
     public static final String TEST_MP3;
     public static final String TEST_MP4;
     public static final String THEME;
     public static final Map<String, String> THEME_MAP;
-    public static final String TUNEJAR_HOME;
+    public static final Path TUNEJAR_HOME;
     public static final double VOLUME;
     public static final String PLAYLIST_NAME;
 
@@ -40,21 +40,16 @@ public class Defaults {
         THEME_MAP = Collections.unmodifiableMap(themeMap);
 
         // TuneJar home
-        TUNEJAR_HOME = Paths.get(System.getProperty("user.home"), "TuneJar").toString();
-        OPTIONS_FILE = Paths.get(TUNEJAR_HOME, "options.json").toString();
-        PLAYLISTS_FOLDER = Paths.get(TUNEJAR_HOME, "Playlists").toString();
-        LOG_FOLDER = Paths.get(TUNEJAR_HOME, "Logs").toString();
-
-        // Make directories
-        new File(Defaults.TUNEJAR_HOME).mkdirs();
-        new File(Defaults.PLAYLISTS_FOLDER).mkdirs();
+        TUNEJAR_HOME = Paths.get(System.getProperty("user.home"), "Documents", "TuneJar");
+        OPTIONS_FILE = TUNEJAR_HOME.resolve("options.json");
+        PLAYLISTS_FOLDER = TUNEJAR_HOME.resolve("Playlists");
+        LOG_FOLDER = TUNEJAR_HOME.resolve("Logs");
 
         // Misc. constants
         DIRECTORIES = new HashSet<>();
         TIMEOUT = 5 * 60;
         ICON = "/img/icon.png";
         LOG_FILE_LIMIT = 5;
-        MAX_LOOPS = 1000;
         PLAYER_FXML = "/fxml/Player.fxml";
         SORT_ORDER = new String[0];
         TEST_MP3 = "/BitQuest.mp3";
