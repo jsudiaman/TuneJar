@@ -64,12 +64,12 @@ public class Options {
             if (writeEnabled) {
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(optionsFile, false))) {
                     writer.write(JsonWriter.formatJson(optionsMap.toJSONString()));
-                    LOGGER.info("Settings saved successfully to: " + optionsFile);
+                    LOGGER.debug("Settings saved successfully to: " + optionsFile);
                 } catch (IOException e) {
                     handleIOException(e);
                 }
             } else {
-                LOGGER.info("Write is disabled.");
+                LOGGER.debug("Write is disabled.");
             }
         }
     }

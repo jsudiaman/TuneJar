@@ -302,7 +302,7 @@ public class Player extends Application {
 
             // Get each song, line by line.
             try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
-                ExecutorService innerExec = Executors.newSingleThreadExecutor();
+                ExecutorService innerExec = Executors.newWorkStealingPool();
                 for (String nextLine; (nextLine = reader.readLine()) != null; ) {
                     final String s = nextLine;
                     sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
@@ -315,10 +315,11 @@ public class Player extends Application {
             long max = sFutures.size();
             for (Future<Song> song : sFutures) {
                 updateMessage("Updating " + playlist.getName() + "...");
-                playlist.add(song.get());
+                Song s = song.get();
+                playlist.add(s);
+                LOGGER.debug("Added song: {} to playlist: {}", s, playlist.getName());
                 updateProgress(++workDone, max);
             }
-            LOGGER.debug("Constructed playlist: {}. Contents: {}", playlist.getName(), playlist);
             return playlist;
         }
 
