@@ -1,8 +1,10 @@
 package com.sudicode.tunejar.config;
 
 import com.cedarsoftware.util.io.JsonWriter;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,161 +27,161 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class Options {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Options.class);
+  private static final Logger logger = LoggerFactory.getLogger(Options.class);
 
-    private final File optionsFile;
-    private JSONObject optionsMap;
-    private boolean writeEnabled;
+  private final File optionsFile;
+  private JSONObject optionsMap;
+  private boolean writeEnabled;
 
-    public Options(File optionsFile) {
-        this.optionsFile = optionsFile;
-        this.writeEnabled = true;
+  public Options(File optionsFile) {
+    this.optionsFile = optionsFile;
+    this.writeEnabled = true;
 
-        try {
-            init();
-        } catch (ParseException e) {
-            handleParseException(e);
+    try {
+      init();
+    } catch (ParseException e) {
+      handleParseException(e);
+    } catch (IOException e) {
+      handleIOException(e);
+    }
+  }
+
+  private void init() throws IOException, ParseException {
+    if (Files.exists(optionsFile.toPath())) {
+      optionsMap = read();
+    } else {
+      reset();
+    }
+  }
+
+  private JSONObject read() throws IOException, ParseException {
+    synchronized (Options.class) {
+      JSONParser parser = new JSONParser();
+      return (JSONObject) parser.parse(new FileReader(optionsFile));
+    }
+  }
+
+  private void write() {
+    synchronized (Options.class) {
+      if (writeEnabled) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(optionsFile, false))) {
+          writer.write(JsonWriter.formatJson(optionsMap.toJSONString()));
+          logger.debug("Settings saved successfully to: " + optionsFile);
         } catch (IOException e) {
-            handleIOException(e);
+          handleIOException(e);
         }
+      } else {
+        logger.debug("Write is disabled.");
+      }
     }
+  }
 
-    private void init() throws IOException, ParseException {
-        if (Files.exists(optionsFile.toPath())) {
-            optionsMap = read();
-        } else {
-            reset();
-        }
-    }
+  /**
+   * Resets options back to their default settings.
+   */
+  private void reset() {
+    optionsMap = new JSONObject();
+    setTheme(Defaults.THEME);
+    setDirectories(Defaults.DIRECTORIES);
+    setVolume(Defaults.VOLUME);
+    setSortOrder(Defaults.SORT_ORDER);
+  }
 
-    private JSONObject read() throws IOException, ParseException {
-        synchronized (Options.class) {
-            JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(new FileReader(optionsFile));
-        }
-    }
+  public String getTheme() {
+    if (optionsMap.get("theme") == null)
+      setTheme(Defaults.THEME);
 
-    private void write() {
-        synchronized (Options.class) {
-            if (writeEnabled) {
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(optionsFile, false))) {
-                    writer.write(JsonWriter.formatJson(optionsMap.toJSONString()));
-                    LOGGER.debug("Settings saved successfully to: " + optionsFile);
-                } catch (IOException e) {
-                    handleIOException(e);
-                }
-            } else {
-                LOGGER.debug("Write is disabled.");
-            }
-        }
-    }
+    return (String) optionsMap.get("theme");
+  }
 
-    /**
-     * Resets options back to their default settings.
-     */
-    private void reset() {
-        optionsMap = new JSONObject();
-        setTheme(Defaults.THEME);
-        setDirectories(Defaults.DIRECTORIES);
-        setVolume(Defaults.VOLUME);
-        setSortOrder(Defaults.SORT_ORDER);
-    }
+  public void setTheme(String theme) {
+    optionsMap.put("theme", theme);
+    write();
+  }
 
-    public String getTheme() {
-        if (optionsMap.get("theme") == null)
-            setTheme(Defaults.THEME);
+  public Set<File> getDirectories() {
+    if (optionsMap.get("directories") == null)
+      setDirectories(Defaults.DIRECTORIES);
 
-        return (String) optionsMap.get("theme");
-    }
+    // Convert JSONArray to Set
+    Set<File> dirSet = new HashSet<>();
+    JSONArray arr = (JSONArray) optionsMap.get("directories");
+    arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
 
-    public void setTheme(String theme) {
-        optionsMap.put("theme", theme);
-        write();
-    }
+    // Return the resulting set
+    return dirSet;
+  }
 
-    public Set<File> getDirectories() {
-        if (optionsMap.get("directories") == null)
-            setDirectories(Defaults.DIRECTORIES);
+  public void setDirectories(Set<File> directories) {
+    // Convert Set to JSONArray
+    JSONArray arr = new JSONArray();
+    directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
 
-        // Convert JSONArray to Set
-        Set<File> dirSet = new HashSet<>();
-        JSONArray arr = (JSONArray) optionsMap.get("directories");
-        arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
+    // Store the resulting JSONArray
+    optionsMap.put("directories", arr);
+    write();
+  }
 
-        // Return the resulting set
-        return dirSet;
-    }
+  public Double getVolume() {
+    if (optionsMap.get("volume") == null)
+      setVolume(Defaults.VOLUME);
 
-    public void setDirectories(Set<File> directories) {
-        // Convert Set to JSONArray
-        JSONArray arr = new JSONArray();
-        directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
+    return (Double) optionsMap.get("volume");
+  }
 
-        // Store the resulting JSONArray
-        optionsMap.put("directories", arr);
-        write();
-    }
+  public void setVolume(Double volume) {
+    optionsMap.put("volume", volume);
+    write();
+  }
 
-    public Double getVolume() {
-        if (optionsMap.get("volume") == null)
-            setVolume(Defaults.VOLUME);
+  public String[] getSortOrder() {
+    if (optionsMap.get("sortOrder") == null)
+      setSortOrder(Defaults.SORT_ORDER);
 
-        return (Double) optionsMap.get("volume");
-    }
+    // Convert JSONArray to String array
+    JSONArray arr = (JSONArray) optionsMap.get("sortOrder");
+    List<String> list = new ArrayList<>();
+    arr.forEach((o) -> list.add(o.toString()));
 
-    public void setVolume(Double volume) {
-        optionsMap.put("volume", volume);
-        write();
-    }
+    // Return the resulting String array
+    return list.toArray(new String[list.size()]);
+  }
 
-    public String[] getSortOrder() {
-        if (optionsMap.get("sortOrder") == null)
-            setSortOrder(Defaults.SORT_ORDER);
+  public void setSortOrder(String... sorts) {
+    // Convert String array to JSONArray
+    JSONArray arr = new JSONArray();
+    arr.addAll(Arrays.asList(sorts));
 
-        // Convert JSONArray to String array
-        JSONArray arr = (JSONArray) optionsMap.get("sortOrder");
-        List<String> list = new ArrayList<>();
-        arr.forEach((o) -> list.add(o.toString()));
+    // Store the resulting JSONArray
+    optionsMap.put("sortOrder", arr);
+    write();
+  }
 
-        // Return the resulting String array
-        return list.toArray(new String[list.size()]);
-    }
+  private void handleParseException(ParseException e) {
+    // Log the error and alert the user.
+    logger.error(e.getMessage(), e);
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle("File Corrupted");
+    alert.setHeaderText(null);
+    alert.setContentText(optionsFile + " is corrupted. Your settings have been reset.");
+    alert.showAndWait();
 
-    public void setSortOrder(String... sorts) {
-        // Convert String array to JSONArray
-        JSONArray arr = new JSONArray();
-        arr.addAll(Arrays.asList(sorts));
+    // Reset settings.
+    reset();
+  }
 
-        // Store the resulting JSONArray
-        optionsMap.put("sortOrder", arr);
-        write();
-    }
+  private void handleIOException(IOException e) {
+    // Log the error and alert the user.
+    logger.error(e.getMessage(), e);
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle("Read Error");
+    alert.setHeaderText(null);
+    alert.setContentText("Could not access " + optionsFile + ". Your settings will not be saved.");
+    alert.showAndWait();
 
-    private void handleParseException(ParseException e) {
-        // Log the error and alert the user.
-        LOGGER.error(e.getMessage(), e);
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("File Corrupted");
-        alert.setHeaderText(null);
-        alert.setContentText(optionsFile + " is corrupted. Your settings have been reset.");
-        alert.showAndWait();
-
-        // Reset settings.
-        reset();
-    }
-
-    private void handleIOException(IOException e) {
-        // Log the error and alert the user.
-        LOGGER.error(e.getMessage(), e);
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Read Error");
-        alert.setHeaderText(null);
-        alert.setContentText("Could not access " + optionsFile + ". Your settings will not be saved.");
-        alert.showAndWait();
-
-        // Disable write access, then reset.
-        writeEnabled = false;
-        reset();
-    }
+    // Disable write access, then reset.
+    writeEnabled = false;
+    reset();
+  }
 
 }

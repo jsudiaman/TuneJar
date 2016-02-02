@@ -13,33 +13,33 @@ import java.io.File;
 
 public class Mp3Song extends Song {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Mp3Song.class);
+  private static final Logger logger = LoggerFactory.getLogger(Mp3Song.class);
 
-    public Mp3Song(File mp3File) {
-        audioFile = mp3File;
+  public Mp3Song(File mp3File) {
+    audioFile = mp3File;
 
-        try {
-            MP3File f = (MP3File) AudioFileIO.read(audioFile);
+    try {
+      MP3File f = (MP3File) AudioFileIO.read(audioFile);
 
-            // Parse metadata
-            if (f.hasID3v2Tag()) {
-                ID3v24Tag tag = f.getID3v2TagAsv24();
-                title.set(tag.getFirst(ID3v24Frames.FRAME_ID_TITLE));
-                artist.set(tag.getFirst(ID3v24Frames.FRAME_ID_ARTIST));
-                album.set(tag.getFirst(ID3v24Frames.FRAME_ID_ALBUM));
-            } else if (f.hasID3v1Tag()) {
-                ID3v1Tag tag = f.getID3v1Tag();
-                title.set(tag.getFirst(FieldKey.TITLE));
-                artist.set(tag.getFirst(FieldKey.ARTIST));
-                album.set(tag.getFirst(FieldKey.ALBUM));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Unable to parse: " + mp3File, e);
-        }
+      // Parse metadata
+      if (f.hasID3v2Tag()) {
+        ID3v24Tag tag = f.getID3v2TagAsv24();
+        title.set(tag.getFirst(ID3v24Frames.FRAME_ID_TITLE));
+        artist.set(tag.getFirst(ID3v24Frames.FRAME_ID_ARTIST));
+        album.set(tag.getFirst(ID3v24Frames.FRAME_ID_ALBUM));
+      } else if (f.hasID3v1Tag()) {
+        ID3v1Tag tag = f.getID3v1Tag();
+        title.set(tag.getFirst(FieldKey.TITLE));
+        artist.set(tag.getFirst(FieldKey.ARTIST));
+        album.set(tag.getFirst(FieldKey.ALBUM));
+      }
+    } catch (Exception e) {
+      logger.error("Unable to parse: " + mp3File, e);
     }
+  }
 
-    public Mp3Song(Mp3Song mp3Song) {
-        this(mp3Song.audioFile);
-    }
+  public Mp3Song(Mp3Song mp3Song) {
+    this(mp3Song.audioFile);
+  }
 
 }
