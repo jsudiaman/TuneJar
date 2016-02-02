@@ -60,586 +60,582 @@ import java.util.stream.Stream;
 
 public class Player extends Application {
 
-  // Static
-  private static Player instance;
-  private static final Logger logger = LoggerFactory.getLogger(Player.class);
+    // Static
+    private static Player instance;
+    private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
-  // GUI
-  private MediaPlayer mediaPlayer;
-  private Song nowPlaying;
-  private Stage primaryStage;
-  private Scene scene;
-  private PlayerController controller;
+    // GUI
+    private MediaPlayer mediaPlayer;
+    private Song nowPlaying;
+    private Stage primaryStage;
+    private Scene scene;
+    private PlayerController controller;
 
-  // Data
-  private AtomicBoolean initialized;
-  private Playlist masterPlaylist;
-  private Set<File> directories;
-  private Options options;
+    // Data
+    private AtomicBoolean initialized;
+    private Playlist masterPlaylist;
+    private Set<File> directories;
+    private Options options;
 
-  /**
-   * Starts the application.
-   *
-   * @param args The command line arguments
-   */
-  public static void main(String[] args) {
-    try {
-      // Make directories
-      FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
-      FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
-
-      // Log file cleanup
-      for (;;) {
-        Path logsFolder = Defaults.LOG_FOLDER;
-        String[] files =
-            logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".xml"));
-        if (files == null) {
-          logger.error("Log file cleanup failed.");
-          break;
-        }
-        if (files.length <= Defaults.LOG_FILE_LIMIT) {
-          break;
-        }
-        Arrays.sort(files);
-        Files.delete(logsFolder.resolve(files[0]));
-      }
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-    }
-    launch(args);
-  }
-
-  /**
-   * Starts the program.
-   *
-   * @param primaryStage The stage that will hold the interface
-   */
-  @Override
-  public void start(Stage primaryStage) {
-    try {
-      init(primaryStage);
-    } catch (Exception e) {
-      logger.error(e.getMessage(), e);
-      exitWithAlert(e);
-    }
-  }
-
-  /**
-   * Handles program initialization.
-   *
-   * @param stage The stage that will hold the interface
-   * @throws IOException Failed to load the FXML, or could not load/save a file.
-   */
-  private void init(Stage stage) throws IOException {
-    // Initialization.
-    setInstance(this);
-    setOptions(new Options(Defaults.OPTIONS_FILE.toFile()));
-
-    // Load the FXML file and display the interface.
-    primaryStage = stage;
-    URL location = getClass().getResource(Defaults.PLAYER_FXML);
-    FXMLLoader fxmlLoader = new FXMLLoader();
-    Parent root = fxmlLoader.load(location.openStream());
-
-    setScene(new Scene(root, 1000, 600));
-    setController(fxmlLoader.getController());
-    String theme = Defaults.THEME_MAP.get(getOptions().getTheme());
-    getScene().getStylesheets().add(theme);
-    logger.debug("Loaded theme: " + theme);
-
-    primaryStage.setTitle("TuneJar");
-    primaryStage.setScene(getScene());
-    primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
-    primaryStage.show();
-
-    // Load the directories. If none are present, prompt the user for one.
-    directories = readDirectories();
-    if (directories.isEmpty()) {
-      File directory = initialDirectory(primaryStage);
-      if (directory != null) {
-        directories.add(directory);
-      }
-    }
-    writeDirectories();
-
-    // Set the sort order.
-    String[] sortBy = getOptions().getSortOrder();
-    List<TableColumn<Song, ?>> sortOrder = new ArrayList<>();
-    for (String s : sortBy) {
-      switch (s) {
-        case "title":
-          sortOrder.add(getController().getTitleColumn());
-          break;
-        case "artist":
-          sortOrder.add(getController().getArtistColumn());
-          break;
-        case "album":
-          sortOrder.add(getController().getAlbumColumn());
-          break;
-        default:
-          break;
-      }
-    }
-    getController().setSortOrder(sortOrder);
-
-    // Create and display a playlist containing all songs from each
-    // directory.
-    refresh();
-  }
-
-  /**
-   * First, adds all music files that can be found in available directories to the master playlist.
-   * Then loads all available playlists from the working directory.
-   */
-  public void refresh() {
-    Task<?> refresher = new Refresher();
-    refresher.progressProperty().addListener((obs, oldVal, newVal) -> getController().getStatus()
-        .setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal)));
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    Future<?> future = executor.submit(refresher);
-    executor.shutdown();
-    new Thread(() -> {
-      try {
-        future.get(Defaults.TIMEOUT, TimeUnit.SECONDS);
-      } catch (ExecutionException | InterruptedException | TimeoutException e) {
-        logger.error(e.getMessage(), e);
-        Platform.runLater(() -> getController().getStatus()
-            .setText("An error has occurred: " + e.getClass().getSimpleName()));
-      }
-    }).start();
-  }
-
-  /**
-   * Inner class designed to handle expensive operations invoked by the <code>refresh()</code>
-   * method.
-   */
-  private class Refresher extends Task<Void> {
     /**
-     * The main task associated with the <code>refresh()</code> method. This is an expensive call,
-     * so it is <b>not</b> recommended to run it on the GUI thread.
+     * Starts the application.
+     *
+     * @param args The command line arguments
+     */
+    public static void main(String[] args) {
+        try {
+            // Make directories
+            FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
+            FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
+
+            // Log file cleanup
+            for (;;) {
+                Path logsFolder = Defaults.LOG_FOLDER;
+                String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".xml"));
+                if (files == null) {
+                    logger.error("Log file cleanup failed.");
+                    break;
+                }
+                if (files.length <= Defaults.LOG_FILE_LIMIT) {
+                    break;
+                }
+                Arrays.sort(files);
+                Files.delete(logsFolder.resolve(files[0]));
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        launch(args);
+    }
+
+    /**
+     * Starts the program.
+     *
+     * @param primaryStage The stage that will hold the interface
      */
     @Override
-    protected Void call() throws Exception {
-      refreshMasterPlaylist();
-      Collection<Playlist> playlists = getPlaylists();
-
-      // Refresh the view.
-      Platform.runLater(() -> {
-        if (!isInitialized()) {
-          getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
-          playlists.forEach(getController().getPlaylistMenu()::loadPlaylist);
-          getController().getVolumeSlider().setValue(getOptions().getVolume());
-        } else {
-          getController().getPlaylistList().set(0, getMasterPlaylist());
+    public void start(Stage primaryStage) {
+        try {
+            init(primaryStage);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            exitWithAlert(e);
         }
-        getController().refreshTables();
-        getController().focus(getController().getPlaylistTable(), 0);
-        getController().getStatus().setText("");
-        setInitialized(true);
-      });
-
-      return null;
     }
 
     /**
-     * Clears the master playlist, then constructs a new one out of all supported audio files found
-     * in the set of directories.
-     */
-    private void refreshMasterPlaylist() throws InterruptedException, ExecutionException {
-      setMasterPlaylist(new Playlist("All Music"));
-      if (directories != null) {
-        logger.info("Found directories: " + directories);
-        logger.info("Populating the master playlist...");
-
-        Collection<Future<Song>> sFutures = getFutures(directories);
-        long workDone = 0;
-        long max = sFutures.size();
-        updateMessage("Updating songs... ");
-        for (Future<Song> song : sFutures) {
-          getMasterPlaylist().add(song.get());
-          updateProgress(++workDone, max);
-        }
-      }
-    }
-
-    /**
-     * Constructs playlists out of all m3u files found in the playlists folder. The constructed
-     * playlists are then wrapped into a collection.
+     * Handles program initialization.
      *
-     * @return The collection of constructed playlists.
+     * @param stage The stage that will hold the interface
+     * @throws IOException Failed to load the FXML, or could not load/save a file.
      */
-    private Collection<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
-      Collection<Playlist> playlists = HashMultiset.create();
-      if (!isInitialized()) {
-        Collection<Future<Playlist>> pFutures = HashMultiset.create();
-        ExecutorService outerExec = Executors.newWorkStealingPool();
+    private void init(Stage stage) throws IOException {
+        // Initialization.
+        setInstance(this);
+        setOptions(new Options(Defaults.OPTIONS_FILE.toFile()));
 
-        // Iterate through each file in the working directory.
-        FilenameFilter filter = (dir, name) -> name.endsWith(".m3u");
-        File[] fileList = Defaults.PLAYLISTS_FOLDER.toFile().listFiles(filter);
-        if (fileList == null) {
-          logger.error("Unable to access the working directory.");
-        } else {
-          for (File f : fileList) {
-            pFutures.add(outerExec.submit(() -> createPlaylist(f)));
-          }
+        // Load the FXML file and display the interface.
+        primaryStage = stage;
+        URL location = getClass().getResource(Defaults.PLAYER_FXML);
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent root = fxmlLoader.load(location.openStream());
+
+        setScene(new Scene(root, 1000, 600));
+        setController(fxmlLoader.getController());
+        String theme = Defaults.THEME_MAP.get(getOptions().getTheme());
+        getScene().getStylesheets().add(theme);
+        logger.debug("Loaded theme: " + theme);
+
+        primaryStage.setTitle("TuneJar");
+        primaryStage.setScene(getScene());
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
+        primaryStage.show();
+
+        // Load the directories. If none are present, prompt the user for one.
+        directories = readDirectories();
+        if (directories.isEmpty()) {
+            File directory = initialDirectory(primaryStage);
+            if (directory != null) {
+                directories.add(directory);
+            }
         }
-        outerExec.shutdown();
-        for (Future<Playlist> playlist : pFutures) {
-          playlists.add(playlist.get());
+        writeDirectories();
+
+        // Set the sort order.
+        String[] sortBy = getOptions().getSortOrder();
+        List<TableColumn<Song, ?>> sortOrder = new ArrayList<>();
+        for (String s : sortBy) {
+            switch (s) {
+                case "title":
+                    sortOrder.add(getController().getTitleColumn());
+                    break;
+                case "artist":
+                    sortOrder.add(getController().getArtistColumn());
+                    break;
+                case "album":
+                    sortOrder.add(getController().getAlbumColumn());
+                    break;
+                default:
+                    break;
+            }
         }
-      }
-      return playlists;
+        getController().setSortOrder(sortOrder);
+
+        // Create and display a playlist containing all songs from each
+        // directory.
+        refresh();
     }
 
     /**
-     * Creates a playlist out of an m3u file.
+     * First, adds all music files that can be found in available directories to the master playlist. Then loads all
+     * available playlists from the working directory.
      */
-    private Playlist createPlaylist(File m3uFile)
-        throws IOException, InterruptedException, ExecutionException {
-      Playlist playlist =
-          new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
-      Collection<Future<Song>> sFutures = new ArrayDeque<>();
+    public void refresh() {
+        Task<?> refresher = new Refresher();
+        refresher.progressProperty().addListener((obs, oldVal, newVal) -> getController().getStatus()
+                .setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal)));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> future = executor.submit(refresher);
+        executor.shutdown();
+        new Thread(() -> {
+            try {
+                future.get(Defaults.TIMEOUT, TimeUnit.SECONDS);
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                logger.error(e.getMessage(), e);
+                Platform.runLater(() -> getController().getStatus()
+                        .setText("An error has occurred: " + e.getClass().getSimpleName()));
+            }
+        }).start();
+    }
 
-      // Get each song, line by line.
-      try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
-        ExecutorService innerExec = Executors.newWorkStealingPool();
-        for (String nextLine; (nextLine = reader.readLine()) != null;) {
-          final String s = nextLine;
-          sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
+    /**
+     * Inner class designed to handle expensive operations invoked by the <code>refresh()</code> method.
+     */
+    private class Refresher extends Task<Void> {
+        /**
+         * The main task associated with the <code>refresh()</code> method. This is an expensive call, so it is
+         * <b>not</b> recommended to run it on the GUI thread.
+         */
+        @Override
+        protected Void call() throws Exception {
+            refreshMasterPlaylist();
+            Collection<Playlist> playlists = getPlaylists();
+
+            // Refresh the view.
+            Platform.runLater(() -> {
+                if (!isInitialized()) {
+                    getController().getPlaylistMenu().loadPlaylist(getMasterPlaylist());
+                    playlists.forEach(getController().getPlaylistMenu()::loadPlaylist);
+                    getController().getVolumeSlider().setValue(getOptions().getVolume());
+                } else {
+                    getController().getPlaylistList().set(0, getMasterPlaylist());
+                }
+                getController().refreshTables();
+                getController().focus(getController().getPlaylistTable(), 0);
+                getController().getStatus().setText("");
+                setInitialized(true);
+            });
+
+            return null;
         }
-        innerExec.shutdown();
-      }
 
-      // Add each song to the playlist.
-      long workDone = 0;
-      long max = sFutures.size();
-      for (Future<Song> song : sFutures) {
-        updateMessage("Updating " + playlist.getName() + "...");
-        Song s = song.get();
-        playlist.add(s);
-        logger.debug("Added song: {} to playlist: {}", s, playlist.getName());
-        updateProgress(++workDone, max);
-      }
-      return playlist;
+        /**
+         * Clears the master playlist, then constructs a new one out of all supported audio files found in the set of
+         * directories.
+         */
+        private void refreshMasterPlaylist() throws InterruptedException, ExecutionException {
+            setMasterPlaylist(new Playlist("All Music"));
+            if (directories != null) {
+                logger.info("Found directories: " + directories);
+                logger.info("Populating the master playlist...");
+
+                Collection<Future<Song>> sFutures = getFutures(directories);
+                long workDone = 0;
+                long max = sFutures.size();
+                updateMessage("Updating songs... ");
+                for (Future<Song> song : sFutures) {
+                    getMasterPlaylist().add(song.get());
+                    updateProgress(++workDone, max);
+                }
+            }
+        }
+
+        /**
+         * Constructs playlists out of all m3u files found in the playlists folder. The constructed playlists are then
+         * wrapped into a collection.
+         *
+         * @return The collection of constructed playlists.
+         */
+        private Collection<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
+            Collection<Playlist> playlists = HashMultiset.create();
+            if (!isInitialized()) {
+                Collection<Future<Playlist>> pFutures = HashMultiset.create();
+                ExecutorService outerExec = Executors.newWorkStealingPool();
+
+                // Iterate through each file in the working directory.
+                FilenameFilter filter = (dir, name) -> name.endsWith(".m3u");
+                File[] fileList = Defaults.PLAYLISTS_FOLDER.toFile().listFiles(filter);
+                if (fileList == null) {
+                    logger.error("Unable to access the working directory.");
+                } else {
+                    for (File f : fileList) {
+                        pFutures.add(outerExec.submit(() -> createPlaylist(f)));
+                    }
+                }
+                outerExec.shutdown();
+                for (Future<Playlist> playlist : pFutures) {
+                    playlists.add(playlist.get());
+                }
+            }
+            return playlists;
+        }
+
+        /**
+         * Creates a playlist out of an m3u file.
+         */
+        private Playlist createPlaylist(File m3uFile) throws IOException, InterruptedException, ExecutionException {
+            Playlist playlist = new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
+            Collection<Future<Song>> sFutures = new ArrayDeque<>();
+
+            // Get each song, line by line.
+            try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
+                ExecutorService innerExec = Executors.newWorkStealingPool();
+                for (String nextLine; (nextLine = reader.readLine()) != null;) {
+                    final String s = nextLine;
+                    sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
+                }
+                innerExec.shutdown();
+            }
+
+            // Add each song to the playlist.
+            long workDone = 0;
+            long max = sFutures.size();
+            for (Future<Song> song : sFutures) {
+                updateMessage("Updating " + playlist.getName() + "...");
+                Song s = song.get();
+                playlist.add(s);
+                logger.debug("Added song: {} to playlist: {}", s, playlist.getName());
+                updateProgress(++workDone, max);
+            }
+            return playlist;
+        }
+
     }
 
-  }
+    // ------------------- Media Player Controls ------------------- //
 
-  // ------------------- Media Player Controls ------------------- //
-
-  /**
-   * Loads a song into the media player, then plays it.
-   *
-   * @param song The song to play
-   */
-  public void playSong(Song song) {
-    if (getNowPlaying() == song) {
-      resumeSong();
-      return;
-    } else if (getNowPlaying() != null) {
-      stopSong();
-    }
-    setNowPlaying(song);
-    String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
-    try {
-      mediaPlayer = new MediaPlayer(new Media(uriString));
-      logger.debug("Loaded song: " + uriString);
-      setVolume(getController().getVolumeSlider().getValue());
-      logger.info("Playing: " + getNowPlaying());
-      mediaPlayer.play();
-    } catch (MediaException e) {
-      getController().getStatus().setText("Failed to play the song.");
-      logger.error(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Resumes the media player.
-   */
-  public void resumeSong() {
-    if (mediaPlayer != null && getNowPlaying() != null) {
-      logger.info("Resuming: " + getNowPlaying());
-      mediaPlayer.play();
-    }
-  }
-
-  /**
-   * Pauses the media player.
-   */
-  public void pauseSong() {
-    if (mediaPlayer != null && getNowPlaying() != null) {
-      logger.info("Pausing: " + getNowPlaying());
-      mediaPlayer.pause();
-    }
-  }
-
-  /**
-   * Stops the media player.
-   */
-  public void stopSong() {
-    if (mediaPlayer != null && getNowPlaying() != null) {
-      logger.info("Stopping: " + getNowPlaying());
-      mediaPlayer.stop();
-    }
-    setNowPlaying(null);
-  }
-
-  // ------------------- File Manipulation ------------------- //
-
-  /**
-   * Adds a user-selected directory to the directory collection.
-   */
-  public void addDirectory() {
-    File directory = chooseDirectory(primaryStage);
-    if (directory == null) {
-      return;
-    }
-    directories.add(directory);
-    try {
-      writeDirectories();
-    } catch (Exception e) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Failed");
-      alert.setHeaderText("Failed to add the directory.");
-      alert.showAndWait();
-      logger.error(e.getMessage(), e);
-    }
-    refresh();
-  }
-
-  /**
-   * Allows the user to choose and remove a directory from the directory set.
-   *
-   * @return True iff a directory was successfully removed.
-   */
-  public boolean removeDirectory() {
-    if (directories.isEmpty()) {
-      getController().getStatus().setText("No folders found.");
-      return false;
+    /**
+     * Loads a song into the media player, then plays it.
+     *
+     * @param song The song to play
+     */
+    public void playSong(Song song) {
+        if (getNowPlaying() == song) {
+            resumeSong();
+            return;
+        } else if (getNowPlaying() != null) {
+            stopSong();
+        }
+        setNowPlaying(song);
+        String uriString = new File(song.getAbsoluteFilename()).toURI().toString();
+        try {
+            mediaPlayer = new MediaPlayer(new Media(uriString));
+            logger.debug("Loaded song: " + uriString);
+            setVolume(getController().getVolumeSlider().getValue());
+            logger.info("Playing: " + getNowPlaying());
+            mediaPlayer.play();
+        } catch (MediaException e) {
+            getController().getStatus().setText("Failed to play the song.");
+            logger.error(e.getMessage(), e);
+        }
     }
 
-    // Create and display dialog box.
-    List<File> choices = new ArrayList<>();
-    choices.addAll(directories);
-    ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
-    dialog.setTitle("Remove Folder");
-    dialog.setHeaderText("Which folder would you like to remove?");
-    dialog.setContentText("Choose a folder:");
-    Optional<File> result = dialog.showAndWait();
-
-    // Remove the chosen folder unless the user pressed "cancel".
-    if (result.isPresent()) {
-      directories.remove(result.get());
-      writeDirectories();
-      getController().getStatus().setText("Directory removed.");
-      logger.info("Directory removed. Remaining directories:" + directories);
-      return true;
+    /**
+     * Resumes the media player.
+     */
+    public void resumeSong() {
+        if (mediaPlayer != null && getNowPlaying() != null) {
+            logger.info("Resuming: " + getNowPlaying());
+            mediaPlayer.play();
+        }
     }
-    return false;
-  }
 
-  /**
-   * Prompts the user for a directory.
-   *
-   * @param stage The stage that will hold the dialog box
-   * @return The directory specified by the user, or null if the user cancels
-   */
-  private File chooseDirectory(Stage stage) {
-    DirectoryChooser chooser = new DirectoryChooser();
-    chooser.setTitle("Where are your songs?");
-    return chooser.showDialog(stage);
-  }
-
-  /**
-   * Prompts the user for a directory.
-   *
-   * @param stage The stage that will hold the dialog box
-   * @return A directory chosen by the user, or null if the user cancels
-   */
-  private File initialDirectory(Stage stage) {
-    // Alert the user that no directories were found
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle("Welcome!");
-    alert.setHeaderText(null);
-    alert.setContentText("Hi there! It seems like you don't have any directories set up. "
-        + "That usually happens when you run this for the first time. "
-        + "If that's the case, let's find your songs!");
-    alert.showAndWait();
-
-    // Begin building up a data structure to store directories
-    File chosenDirectory = chooseDirectory(stage);
-    if (chosenDirectory == null) {
-      logger.info("User pressed 'cancel' when asked to choose a directory.");
-      return null;
-    } else {
-      return chosenDirectory;
+    /**
+     * Pauses the media player.
+     */
+    public void pauseSong() {
+        if (mediaPlayer != null && getNowPlaying() != null) {
+            logger.info("Pausing: " + getNowPlaying());
+            mediaPlayer.pause();
+        }
     }
-  }
 
-  /**
-   * Reads directories from the options file.
-   *
-   * @return A set containing the directories
-   */
-  private Set<File> readDirectories() {
-    return getOptions().getDirectories();
-  }
-
-  /**
-   * Writes directories to the options file.
-   */
-  private void writeDirectories() {
-    getOptions().setDirectories(directories);
-  }
-
-  /**
-   * Traverses each directory, obtaining all supported audio files. Each audio file found is wrapped
-   * in a Future Song, which is then added to a collection.
-   *
-   * @return The collection of Future Songs
-   */
-  private Collection<Future<Song>> getFutures(Collection<File> directories) {
-    // Initialization
-    Collection<Future<Song>> futures = HashMultiset.create();
-    ExecutorService executor = Executors.newWorkStealingPool();
-
-    // Loop through directories
-    for (File directory : directories) {
-      if (directory == null || !directory.isDirectory()) {
-        logger.error("Failed to access directory: " + directory + ", skipping...");
-        continue;
-      }
-
-      // Depth first search through each directory for supported files
-      try (Stream<Path> str = Files.walk(directory.toPath())) {
-        str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
-            .forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
-      } catch (IOException e) {
-        logger.error("Failed to access directory: " + directory, e);
-      }
+    /**
+     * Stops the media player.
+     */
+    public void stopSong() {
+        if (mediaPlayer != null && getNowPlaying() != null) {
+            logger.info("Stopping: " + getNowPlaying());
+            mediaPlayer.stop();
+        }
+        setNowPlaying(null);
     }
-    executor.shutdown();
 
-    return futures;
-  }
+    // ------------------- File Manipulation ------------------- //
 
-  // ------------------- Exception Handling ------------------- //
-
-  /**
-   * Displays a dialog box explaining what happened. Once the dialog box is closed, the program
-   * exits with exit code -1.
-   *
-   * @param e An exception that should end the program
-   */
-  private void exitWithAlert(Exception e) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-
-    // Store the stack trace in a string.
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    e.printStackTrace(pw);
-
-    // Create an alert to let the user know what happened.
-    alert.setTitle("Fatal Error!");
-    alert.setHeaderText(e.getClass().toString().substring(6) + ": " + e.getMessage());
-
-    // Store the stack trace string in a textarea hidden by a "Show/Hide
-    // Details" button.
-    TextArea textArea = new TextArea(sw.toString());
-    textArea.setEditable(false);
-    textArea.setWrapText(false);
-    textArea.setMaxWidth(Double.MAX_VALUE);
-    textArea.setMaxHeight(Double.MAX_VALUE);
-
-    GridPane.setVgrow(textArea, Priority.ALWAYS);
-    GridPane.setHgrow(textArea, Priority.ALWAYS);
-    GridPane gridPane = new GridPane();
-    gridPane.setMaxWidth(Double.MAX_VALUE);
-    gridPane.add(textArea, 0, 0);
-
-    // Display the alert, then exit the program.
-    alert.getDialogPane().setExpandableContent(gridPane);
-    alert.showAndWait();
-    System.exit(-1);
-  }
-
-  // ------------------- Getters and Setters ------------------- //
-
-  /**
-   * Sets up the media player to perform a specified action at the end of every song.
-   *
-   * @param action An action wrapped in a Runnable
-   */
-  public void setEndOfSongAction(Runnable action) {
-    mediaPlayer.setOnEndOfMedia(action);
-  }
-
-  public Song getNowPlaying() {
-    return nowPlaying;
-  }
-
-  private void setNowPlaying(Song nowPlaying) {
-    this.nowPlaying = nowPlaying;
-  }
-
-  public void setVolume(double value) {
-    if (mediaPlayer != null) {
-      mediaPlayer.setVolume(value);
+    /**
+     * Adds a user-selected directory to the directory collection.
+     */
+    public void addDirectory() {
+        File directory = chooseDirectory(primaryStage);
+        if (directory == null) {
+            return;
+        }
+        directories.add(directory);
+        try {
+            writeDirectories();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Failed");
+            alert.setHeaderText("Failed to add the directory.");
+            alert.showAndWait();
+            logger.error(e.getMessage(), e);
+        }
+        refresh();
     }
-  }
 
-  public Playlist getMasterPlaylist() {
-    return masterPlaylist;
-  }
+    /**
+     * Allows the user to choose and remove a directory from the directory set.
+     *
+     * @return True iff a directory was successfully removed.
+     */
+    public boolean removeDirectory() {
+        if (directories.isEmpty()) {
+            getController().getStatus().setText("No folders found.");
+            return false;
+        }
 
-  private void setMasterPlaylist(Playlist masterPlaylist) {
-    this.masterPlaylist = masterPlaylist;
-  }
+        // Create and display dialog box.
+        List<File> choices = new ArrayList<>();
+        choices.addAll(directories);
+        ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
+        dialog.setTitle("Remove Folder");
+        dialog.setHeaderText("Which folder would you like to remove?");
+        dialog.setContentText("Choose a folder:");
+        Optional<File> result = dialog.showAndWait();
 
-  private static void setInstance(Player instance) {
-    Player.instance = instance;
-  }
+        // Remove the chosen folder unless the user pressed "cancel".
+        if (result.isPresent()) {
+            directories.remove(result.get());
+            writeDirectories();
+            getController().getStatus().setText("Directory removed.");
+            logger.info("Directory removed. Remaining directories:" + directories);
+            return true;
+        }
+        return false;
+    }
 
-  protected static Player getPlayer() {
-    return instance;
-  }
+    /**
+     * Prompts the user for a directory.
+     *
+     * @param stage The stage that will hold the dialog box
+     * @return The directory specified by the user, or null if the user cancels
+     */
+    private File chooseDirectory(Stage stage) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Where are your songs?");
+        return chooser.showDialog(stage);
+    }
 
-  protected PlayerController getController() {
-    return controller;
-  }
+    /**
+     * Prompts the user for a directory.
+     *
+     * @param stage The stage that will hold the dialog box
+     * @return A directory chosen by the user, or null if the user cancels
+     */
+    private File initialDirectory(Stage stage) {
+        // Alert the user that no directories were found
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Welcome!");
+        alert.setHeaderText(null);
+        alert.setContentText("Hi there! It seems like you don't have any directories set up. "
+                + "That usually happens when you run this for the first time. "
+                + "If that's the case, let's find your songs!");
+        alert.showAndWait();
 
-  private void setController(PlayerController controller) {
-    this.controller = controller;
-  }
+        // Begin building up a data structure to store directories
+        File chosenDirectory = chooseDirectory(stage);
+        if (chosenDirectory == null) {
+            logger.info("User pressed 'cancel' when asked to choose a directory.");
+            return null;
+        } else {
+            return chosenDirectory;
+        }
+    }
 
-  public Scene getScene() {
-    return scene;
-  }
+    /**
+     * Reads directories from the options file.
+     *
+     * @return A set containing the directories
+     */
+    private Set<File> readDirectories() {
+        return getOptions().getDirectories();
+    }
 
-  private void setScene(Scene scene) {
-    this.scene = scene;
-  }
+    /**
+     * Writes directories to the options file.
+     */
+    private void writeDirectories() {
+        getOptions().setDirectories(directories);
+    }
 
-  private void setInitialized(boolean initialized) {
-    if (this.initialized == null)
-      this.initialized = new AtomicBoolean(initialized);
-    else
-      this.initialized.set(initialized);
-  }
+    /**
+     * Traverses each directory, obtaining all supported audio files. Each audio file found is wrapped in a Future Song,
+     * which is then added to a collection.
+     *
+     * @return The collection of Future Songs
+     */
+    private Collection<Future<Song>> getFutures(Collection<File> directories) {
+        // Initialization
+        Collection<Future<Song>> futures = HashMultiset.create();
+        ExecutorService executor = Executors.newWorkStealingPool();
 
-  public boolean isInitialized() {
-    if (this.initialized == null)
-      this.initialized = new AtomicBoolean();
-    return initialized.get();
-  }
+        // Loop through directories
+        for (File directory : directories) {
+            if (directory == null || !directory.isDirectory()) {
+                logger.error("Failed to access directory: " + directory + ", skipping...");
+                continue;
+            }
 
-  public Options getOptions() {
-    return options;
-  }
+            // Depth first search through each directory for supported files
+            try (Stream<Path> str = Files.walk(directory.toPath())) {
+                str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
+                        .forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
+            } catch (IOException e) {
+                logger.error("Failed to access directory: " + directory, e);
+            }
+        }
+        executor.shutdown();
 
-  private void setOptions(Options options) {
-    this.options = options;
-  }
+        return futures;
+    }
+
+    // ------------------- Exception Handling ------------------- //
+
+    /**
+     * Displays a dialog box explaining what happened. Once the dialog box is closed, the program exits with exit code
+     * -1.
+     *
+     * @param e An exception that should end the program
+     */
+    private void exitWithAlert(Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        // Store the stack trace in a string.
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+
+        // Create an alert to let the user know what happened.
+        alert.setTitle("Fatal Error!");
+        alert.setHeaderText(e.getClass().toString().substring(6) + ": " + e.getMessage());
+
+        // Store the stack trace string in a textarea hidden by a "Show/Hide
+        // Details" button.
+        TextArea textArea = new TextArea(sw.toString());
+        textArea.setEditable(false);
+        textArea.setWrapText(false);
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+        GridPane gridPane = new GridPane();
+        gridPane.setMaxWidth(Double.MAX_VALUE);
+        gridPane.add(textArea, 0, 0);
+
+        // Display the alert, then exit the program.
+        alert.getDialogPane().setExpandableContent(gridPane);
+        alert.showAndWait();
+        System.exit(-1);
+    }
+
+    // ------------------- Getters and Setters ------------------- //
+
+    /**
+     * Sets up the media player to perform a specified action at the end of every song.
+     *
+     * @param action An action wrapped in a Runnable
+     */
+    public void setEndOfSongAction(Runnable action) {
+        mediaPlayer.setOnEndOfMedia(action);
+    }
+
+    public Song getNowPlaying() {
+        return nowPlaying;
+    }
+
+    private void setNowPlaying(Song nowPlaying) {
+        this.nowPlaying = nowPlaying;
+    }
+
+    public void setVolume(double value) {
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(value);
+        }
+    }
+
+    public Playlist getMasterPlaylist() {
+        return masterPlaylist;
+    }
+
+    private void setMasterPlaylist(Playlist masterPlaylist) {
+        this.masterPlaylist = masterPlaylist;
+    }
+
+    private static void setInstance(Player instance) {
+        Player.instance = instance;
+    }
+
+    protected static Player getPlayer() {
+        return instance;
+    }
+
+    protected PlayerController getController() {
+        return controller;
+    }
+
+    private void setController(PlayerController controller) {
+        this.controller = controller;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    private void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    private void setInitialized(boolean initialized) {
+        if (this.initialized == null)
+            this.initialized = new AtomicBoolean(initialized);
+        else
+            this.initialized.set(initialized);
+    }
+
+    public boolean isInitialized() {
+        if (this.initialized == null)
+            this.initialized = new AtomicBoolean();
+        return initialized.get();
+    }
+
+    public Options getOptions() {
+        return options;
+    }
+
+    private void setOptions(Options options) {
+        this.options = options;
+    }
 
 }
