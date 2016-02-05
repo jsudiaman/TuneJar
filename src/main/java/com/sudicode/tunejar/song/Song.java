@@ -1,7 +1,5 @@
 package com.sudicode.tunejar.song;
 
-import javafx.beans.property.SimpleStringProperty;
-
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -11,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
+
+import javafx.beans.property.SimpleStringProperty;
 
 public abstract class Song {
 

@@ -2,9 +2,6 @@ package com.sudicode.tunejar.config;
 
 import com.cedarsoftware.util.io.JsonWriter;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,6 +20,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 @SuppressWarnings("unchecked")
 public class Options {

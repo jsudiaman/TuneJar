@@ -5,20 +5,17 @@ import com.jayway.awaitility.core.ConditionFactory;
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.config.Options;
 
-import javafx.application.Application;
-import javafx.scene.Parent;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.loadui.testfx.GuiTest;
 
 import java.io.File;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import javafx.application.Application;
+import javafx.scene.Parent;
 
 public abstract class PlayerTest {
 
@@ -37,18 +34,17 @@ public abstract class PlayerTest {
     }
 
     private static void init() throws Exception {
+        // Delete existing TuneJar files
+        File tuneJarHome = Defaults.TUNEJAR_HOME.toFile();
+        if (tuneJarHome.exists()) {
+            FileUtils.deleteDirectory(tuneJarHome);
+        }
+
         // Make directories
         FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
         FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
 
-        // Delete all playlists
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Defaults.PLAYLISTS_FOLDER)) {
-            for (Path p : stream) {
-                Files.delete(p);
-            }
-        }
-
-        // Set directories
+        // Set media directories
         Options options = new Options(Defaults.OPTIONS_FILE.toFile());
         Set<File> dirs = new HashSet<>();
         dirs.add(new File("src/test/resources/"));
