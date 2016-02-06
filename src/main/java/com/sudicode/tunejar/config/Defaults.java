@@ -22,8 +22,6 @@ public class Defaults {
     public static final String PLAYER_FXML;
     public static final Path PLAYLISTS_FOLDER;
     public static final String[] SORT_ORDER;
-    public static final String TEST_MP3;
-    public static final String TEST_MP4;
     public static final String THEME;
     public static final Map<String, String> THEME_MAP;
     public static final Path TUNEJAR_HOME;
@@ -52,8 +50,6 @@ public class Defaults {
         LOG_FILE_LIMIT = 5;
         PLAYER_FXML = "/fxml/Player.fxml";
         SORT_ORDER = new String[0];
-        TEST_MP3 = "/BitQuest.mp3";
-        TEST_MP4 = "/BitQuest.m4a";
         THEME = "Modena";
         VOLUME = 1.0;
         PLAYLIST_NAME = "Untitled Playlist";
