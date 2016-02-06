@@ -1,4 +1,4 @@
-# Music Used
+# Licenses for Sample Music Files
 
 ### Licensed under [Creative Commons Attribution 4.0 International](http://creativecommons.org/licenses/by/4.0/)
 * [After Dark by Jens Kiilstofte](https://machinimasound.com/music/after-dark)
