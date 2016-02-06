@@ -28,23 +28,23 @@ public class TestDefaults {
 
 		// Sample Music
 		Map<File, URL> sampleMusicMap = new HashMap<>();
-		Consumer<String> sampleMusicConsumer = (str) -> {
+		Consumer<String> sampleMusicRegistrar = (file) -> {
 			try {
-				String fileType = FilenameUtils.getExtension(str);
+				String fileType = FilenameUtils.getExtension(file);
 				if (fileType.equals("m4a")) {
 					fileType = "mp4";
 				}
-				URL url = new URL("http://sudicode.com/tunejar/Sample-Music/" + fileType + "/" + str);
-				sampleMusicMap.put(RESOURCES.resolve(fileType).resolve(str).toFile(), url);
+				URL url = new URL("http://sudicode.com/tunejar/Sample-Music/" + fileType + "/" + file);
+				sampleMusicMap.put(RESOURCES.resolve(fileType).resolve(file).toFile(), url);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
 		};
-		String[] sampleMusicArr = new String[] { "AfterDark.mp3", "Dubstep.mp3", "Highrider.mp3", "MorningCruise.mp3",
+		String[] sampleMusicFiles = new String[] { "AfterDark.mp3", "Dubstep.mp3", "Highrider.mp3", "MorningCruise.mp3",
 				"QueenOfTheNight.mp3", "CrunkKnight.m4a", "MeatballParade.m4a", "Cute.wav", "FunnySong.wav",
 				"LittleIdea.wav" };
-		for (String s : sampleMusicArr) {
-			sampleMusicConsumer.accept(s);
+		for (String file : sampleMusicFiles) {
+			sampleMusicRegistrar.accept(file);
 		}
 		SAMPLE_MUSIC_MAP = Collections.unmodifiableMap(sampleMusicMap);
 	}
