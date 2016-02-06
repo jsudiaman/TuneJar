@@ -1,3 +1,6 @@
+/src/test/resources/mp3
+/src/test/resources/mp4
+/src/test/resources/wav
 /target
 /.idea
 *.iml
