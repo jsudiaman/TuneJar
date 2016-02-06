@@ -2,7 +2,7 @@ package com.sudicode.tunejar.song;
 
 import static org.junit.Assert.assertEquals;
 
-import com.sudicode.tunejar.player.PlayerTest;
+import com.sudicode.tunejar.player.TuneJarTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,7 +14,7 @@ import java.io.File;
  * Tests an implementation of the {@link Song} interface. Subclasses are required to supply a song file by overriding
  * {@link SongTest#getSongFile()}.
  */
-public abstract class SongTest extends PlayerTest {
+public abstract class SongTest extends TuneJarTest {
 
     // NOTE: Variables that begin with '_' should not be modified outside of
     // setUp() and tearDown().
