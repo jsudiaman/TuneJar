@@ -2,11 +2,11 @@ package com.sudicode.tunejar.menu;
 
 import static org.junit.Assert.assertTrue;
 
-import com.sudicode.tunejar.player.TuneJarTest;
+import com.sudicode.tunejar.player.IntegrationTest;
 
 import org.junit.Test;
 
-public class ThemeMenuTest extends TuneJarTest {
+public class ThemeMenuTest extends IntegrationTest {
 
     @Test
     public void testDarkTheme() throws Exception {

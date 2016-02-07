@@ -3,7 +3,7 @@ package com.sudicode.tunejar.menu;
 import static org.junit.Assert.assertTrue;
 
 import com.sudicode.tunejar.config.Defaults;
-import com.sudicode.tunejar.player.TuneJarTest;
+import com.sudicode.tunejar.player.IntegrationTest;
 import com.sudicode.tunejar.song.Playlist;
 
 import org.junit.Test;
@@ -16,7 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
-public class FileMenuTest extends TuneJarTest {
+public class FileMenuTest extends IntegrationTest {
 
     @Test
     public void testNewPlaylist() throws Exception {

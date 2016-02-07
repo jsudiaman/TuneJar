@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
 import javafx.scene.Parent;
 
-public abstract class TuneJarTest {
+public abstract class IntegrationTest {
 
 	private static boolean initialized = false;
 	private static GuiTest driver;
@@ -94,7 +94,7 @@ public abstract class TuneJarTest {
 	}
 
 	private static void setDriver(GuiTest driver) {
-		TuneJarTest.driver = driver;
+		IntegrationTest.driver = driver;
 	}
 
 	protected static Player getPlayer() {

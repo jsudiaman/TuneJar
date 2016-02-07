@@ -23,10 +23,13 @@ public class TestDefaults {
 	public static final Map<File, URL> SAMPLE_MUSIC_MAP;
 
 	static {
-		// Directories
 		RESOURCES = Paths.get("src", "test", "resources");
+		SAMPLE_MUSIC_MAP = getSampleMusicMap();
+	}
 
-		// Sample Music
+	private TestDefaults() {}
+
+	private static Map<File, URL> getSampleMusicMap() {
 		Map<File, URL> sampleMusicMap = new HashMap<>();
 		Consumer<String> sampleMusicRegistrar = (file) -> {
 			try {
@@ -46,9 +49,7 @@ public class TestDefaults {
 		for (String file : sampleMusicFiles) {
 			sampleMusicRegistrar.accept(file);
 		}
-		SAMPLE_MUSIC_MAP = Collections.unmodifiableMap(sampleMusicMap);
+		return Collections.unmodifiableMap(sampleMusicMap);
 	}
-
-	private TestDefaults() {}
 
 }
