@@ -112,9 +112,17 @@ public class PlayerController implements Initializable {
         getSongTable().setItems(getSongList());
         getSongTable().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         getSongTable().getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
+            // When sort order is modified, save changes in the option file
             List<String> list = new ArrayList<>();
             getSongTable().getSortOrder().forEach(t -> list.add(t.getId()));
             Player.getPlayer().getOptions().setSortOrder(list.toArray(new String[list.size()]));
+
+            // For custom playlists, restore the original order when unsorted
+            if (list.isEmpty()) {
+                int i = getPlaylistTable().getSelectionModel().getFocusedIndex();
+                getPlaylistTable().getSelectionModel().select(0);
+                getPlaylistTable().getSelectionModel().select(i);
+            }
         });
 
         // Initialize the playlist table.

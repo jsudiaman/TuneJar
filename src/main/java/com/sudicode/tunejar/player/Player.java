@@ -218,6 +218,9 @@ public class Player extends Application {
          */
         @Override
         protected Void call() throws Exception {
+            logger.info("Refresh call started.");
+            long begin = System.nanoTime();
+
             refreshMasterPlaylist();
             Collection<Playlist> playlists = getPlaylists();
 
@@ -236,6 +239,8 @@ public class Player extends Application {
                 setInitialized(true);
             });
 
+            String elapsedSeconds = new DecimalFormat("#.00").format((System.nanoTime() - begin) / 1000000000);
+            logger.info("Refresh call complete. Time elapsed: {}s", elapsedSeconds);
             return null;
         }
 
