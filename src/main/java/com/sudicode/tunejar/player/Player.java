@@ -239,7 +239,7 @@ public class Player extends Application {
                 setInitialized(true);
             });
 
-            String elapsedSeconds = new DecimalFormat("#.00").format((System.nanoTime() - begin) / 1000000000);
+            String elapsedSeconds = new DecimalFormat("0.00").format((System.nanoTime() - begin) / 1000000000);
             logger.info("Refresh call complete. Time elapsed: {}s", elapsedSeconds);
             return null;
         }
