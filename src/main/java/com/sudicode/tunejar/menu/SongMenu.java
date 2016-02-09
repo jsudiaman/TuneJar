@@ -3,6 +3,7 @@ package com.sudicode.tunejar.menu;
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
+import com.sudicode.tunejar.song.WavSong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,10 @@ public class SongMenu extends PlayerMenu {
 
         Song songToEdit = songsToEdit.get(0);
 
-        if (!songToEdit.canEdit()) {
+        if (songToEdit instanceof WavSong) {
+            controller.getStatus().setText("The file does not support editing.");
+            return;
+        } else if (!songToEdit.canEdit()) {
             controller.getStatus().setText("The file is locked.");
             return;
         }

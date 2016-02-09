@@ -1,7 +1,5 @@
 package com.sudicode.tunejar.config;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,6 +21,7 @@ import java.util.Set;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TableColumn.SortType;
 
 @SuppressWarnings("unchecked")
 public class Options {
@@ -30,7 +29,7 @@ public class Options {
     private static final Logger logger = LoggerFactory.getLogger(Options.class);
 
     private final File optionsFile;
-    private JSONObject optionsMap;
+    private JSONObject backingMap;
     private boolean writeEnabled;
 
     public Options(File optionsFile) {
@@ -48,12 +47,13 @@ public class Options {
 
     private void init() throws IOException, ParseException {
         if (Files.exists(optionsFile.toPath())) {
-            optionsMap = read();
+            backingMap = read();
         } else {
             reset();
         }
     }
 
+    /** Builds the backing map by parsing the options file. */
     private JSONObject read() throws IOException, ParseException {
         synchronized (Options.class) {
             JSONParser parser = new JSONParser();
@@ -61,11 +61,12 @@ public class Options {
         }
     }
 
+    /** Writes the backing map to the options file. */
     private void write() {
         synchronized (Options.class) {
             if (writeEnabled) {
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(optionsFile, false))) {
-                    writer.write(JsonWriter.formatJson(optionsMap.toJSONString()));
+                    writer.write(backingMap.toJSONString());
                     logger.debug("Settings saved successfully to: " + optionsFile);
                 } catch (IOException e) {
                     handleIOException(e);
@@ -76,36 +77,37 @@ public class Options {
         }
     }
 
-    /**
-     * Resets options back to their default settings.
-     */
+    /** Resets options back to their default settings. */
     private void reset() {
-        optionsMap = new JSONObject();
+        backingMap = new JSONObject();
         setTheme(Defaults.THEME);
         setDirectories(Defaults.DIRECTORIES);
         setVolume(Defaults.VOLUME);
         setSortOrder(Defaults.SORT_ORDER);
+        setTitleSortDirection(Defaults.SORT_DIRECTION);
+        setArtistSortDirection(Defaults.SORT_DIRECTION);
+        setAlbumSortDirection(Defaults.SORT_DIRECTION);
     }
 
     public String getTheme() {
-        if (optionsMap.get("theme") == null)
+        if (backingMap.get("theme") == null)
             setTheme(Defaults.THEME);
 
-        return (String) optionsMap.get("theme");
+        return (String) backingMap.get("theme");
     }
 
     public void setTheme(String theme) {
-        optionsMap.put("theme", theme);
+        backingMap.put("theme", theme);
         write();
     }
 
     public Set<File> getDirectories() {
-        if (optionsMap.get("directories") == null)
+        if (backingMap.get("directories") == null)
             setDirectories(Defaults.DIRECTORIES);
 
         // Convert JSONArray to Set
         Set<File> dirSet = new HashSet<>();
-        JSONArray arr = (JSONArray) optionsMap.get("directories");
+        JSONArray arr = (JSONArray) backingMap.get("directories");
         arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
 
         // Return the resulting set
@@ -118,28 +120,28 @@ public class Options {
         directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
 
         // Store the resulting JSONArray
-        optionsMap.put("directories", arr);
+        backingMap.put("directories", arr);
         write();
     }
 
     public Double getVolume() {
-        if (optionsMap.get("volume") == null)
+        if (backingMap.get("volume") == null)
             setVolume(Defaults.VOLUME);
 
-        return (Double) optionsMap.get("volume");
+        return (Double) backingMap.get("volume");
     }
 
     public void setVolume(Double volume) {
-        optionsMap.put("volume", volume);
+        backingMap.put("volume", volume);
         write();
     }
 
     public String[] getSortOrder() {
-        if (optionsMap.get("sortOrder") == null)
+        if (backingMap.get("sortOrder") == null)
             setSortOrder(Defaults.SORT_ORDER);
 
         // Convert JSONArray to String array
-        JSONArray arr = (JSONArray) optionsMap.get("sortOrder");
+        JSONArray arr = (JSONArray) backingMap.get("sortOrder");
         List<String> list = new ArrayList<>();
         arr.forEach((o) -> list.add(o.toString()));
 
@@ -153,7 +155,67 @@ public class Options {
         arr.addAll(Arrays.asList(sorts));
 
         // Store the resulting JSONArray
-        optionsMap.put("sortOrder", arr);
+        backingMap.put("sortOrder", arr);
+        write();
+    }
+
+    public SortType getTitleSortDirection() {
+        if (backingMap.get("titleSortDirection") == null) {
+            setTitleSortDirection(Defaults.SORT_DIRECTION);
+        }
+
+        switch ((String) backingMap.get("titleSortDirection")) {
+            case "ASCENDING":
+                return SortType.ASCENDING;
+            case "DESCENDING":
+                return SortType.DESCENDING;
+            default:
+                return null;
+        }
+    }
+
+    public void setTitleSortDirection(String direction) {
+        backingMap.put("titleSortDirection", direction);
+        write();
+    }
+
+    public SortType getArtistSortDirection() {
+        if (backingMap.get("artistSortDirection") == null) {
+            setArtistSortDirection(Defaults.SORT_DIRECTION);
+        }
+
+        switch ((String) backingMap.get("artistSortDirection")) {
+            case "ASCENDING":
+                return SortType.ASCENDING;
+            case "DESCENDING":
+                return SortType.DESCENDING;
+            default:
+                return null;
+        }
+    }
+
+    public void setArtistSortDirection(String direction) {
+        backingMap.put("artistSortDirection", direction);
+        write();
+    }
+
+    public SortType getAlbumSortDirection() {
+        if (backingMap.get("albumSortDirection") == null) {
+            setAlbumSortDirection(Defaults.SORT_DIRECTION);
+        }
+
+        switch ((String) backingMap.get("albumSortDirection")) {
+            case "ASCENDING":
+                return SortType.ASCENDING;
+            case "DESCENDING":
+                return SortType.DESCENDING;
+            default:
+                return null;
+        }
+    }
+
+    public void setAlbumSortDirection(String direction) {
+        backingMap.put("albumSortDirection", direction);
         write();
     }
 

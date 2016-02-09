@@ -9,6 +9,9 @@ import com.sudicode.tunejar.menu.VolumeMenu;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 
 public class PlayerController implements Initializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerController.class);
 
     // Lists
     private ObservableList<Song> songList;
@@ -106,22 +111,54 @@ public class PlayerController implements Initializable {
 
         // Initialize the song table.
         setSongList(FXCollections.observableArrayList());
+
+        // Set up the title column.
         getTitleColumn().setCellValueFactory(new PropertyValueFactory<>("Title"));
+        getTitleColumn().setSortType(getPlayer().getOptions().getTitleSortDirection());
+        getTitleColumn().sortTypeProperty().addListener((val, oldDir, newDir) -> {
+            getPlayer().getOptions().setTitleSortDirection(newDir.toString());
+        });
+
+        // Set up the artist column.
         getArtistColumn().setCellValueFactory(new PropertyValueFactory<>("Artist"));
+        getArtistColumn().setSortType(getPlayer().getOptions().getArtistSortDirection());
+        getArtistColumn().sortTypeProperty().addListener((val, oldDir, newDir) -> {
+            getPlayer().getOptions().setArtistSortDirection(newDir.toString());
+        });
+
+        // Set up the album column.
         getAlbumColumn().setCellValueFactory(new PropertyValueFactory<>("Album"));
+        getAlbumColumn().setSortType(getPlayer().getOptions().getAlbumSortDirection());
+        getAlbumColumn().sortTypeProperty().addListener((val, oldDir, newDir) -> {
+            getPlayer().getOptions().setAlbumSortDirection(newDir.toString());
+        });
+
+        // Add in songs.
         getSongTable().setItems(getSongList());
         getSongTable().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        // When sort order is modified, save changes to the options file.
         getSongTable().getSortOrder().addListener((ListChangeListener<TableColumn<Song, ?>>) c -> {
-            // When sort order is modified, save changes in the option file
             List<String> list = new ArrayList<>();
             getSongTable().getSortOrder().forEach(t -> list.add(t.getId()));
-            Player.getPlayer().getOptions().setSortOrder(list.toArray(new String[list.size()]));
+            getPlayer().getOptions().setSortOrder(list.toArray(new String[list.size()]));
 
             // For custom playlists, restore the original order when unsorted
             if (list.isEmpty()) {
-                int i = getPlaylistTable().getSelectionModel().getFocusedIndex();
-                getPlaylistTable().getSelectionModel().select(0);
-                getPlaylistTable().getSelectionModel().select(i);
+                Playlist pl = getPlaylistTable().getSelectionModel().getSelectedItem();
+                if (!pl.getName().equals("All Music")) {
+                    FXCollections.copy(getSongList(), pl);
+                }
+            }
+        });
+
+        getSongTable().getColumns().addListener(new ListChangeListener<TableColumn<Song, ?>>() {
+            @Override
+            public void onChanged(Change<? extends TableColumn<Song, ?>> change) {
+                // TODO Feature request: Saving and loading of column order
+                List<String> l = new ArrayList<>();
+                change.getList().forEach((column) -> l.add(column.getText()));
+                logger.debug("Column ordering was changed to: [{}, {}, {}]", l.get(0), l.get(1), l.get(2));
             }
         });
 

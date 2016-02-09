@@ -22,6 +22,7 @@ public class Defaults {
     public static final String PLAYER_FXML;
     public static final Path PLAYLISTS_FOLDER;
     public static final String[] SORT_ORDER;
+    public static final String SORT_DIRECTION;
     public static final String THEME;
     public static final Map<String, String> THEME_MAP;
     public static final Path TUNEJAR_HOME;
@@ -50,6 +51,7 @@ public class Defaults {
         LOG_FILE_LIMIT = 5;
         PLAYER_FXML = "/fxml/Player.fxml";
         SORT_ORDER = new String[0];
+        SORT_DIRECTION = "ASCENDING";
         THEME = "Modena";
         VOLUME = 1.0;
         PLAYLIST_NAME = "Untitled Playlist";
