@@ -14,8 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -152,12 +154,37 @@ public class PlayerController implements Initializable {
             }
         });
 
+        // Load the order of the columns.
+        Set<TableColumn<Song, ?>> columnOrder = new LinkedHashSet<>();
+        loadCols: for (int i = 0; i < 3; i++) {
+            String[] arr = getPlayer().getOptions().getColumnOrder();
+            switch (arr[i]) {
+                case "Title":
+                    columnOrder.add(getTitleColumn());
+                    break;
+                case "Artist":
+                    columnOrder.add(getArtistColumn());
+                    break;
+                case "Album":
+                    columnOrder.add(getAlbumColumn());
+                    break;
+                default:
+                    break loadCols;
+            }
+        }
+        if (columnOrder.size() == 3) {
+            getSongTable().getColumns().setAll(columnOrder);
+        } else {
+            getPlayer().getOptions().fixCorruptedFile();
+        }
+
+        // When the column order changes, save changes to the options file.
         getSongTable().getColumns().addListener(new ListChangeListener<TableColumn<Song, ?>>() {
             @Override
             public void onChanged(Change<? extends TableColumn<Song, ?>> change) {
-                // TODO Feature request: Saving and loading of column order
                 List<String> l = new ArrayList<>();
                 change.getList().forEach((column) -> l.add(column.getText()));
+                getPlayer().getOptions().setColumnOrder(l.toArray(new String[3]));
                 logger.debug("Column ordering was changed to: [{}, {}, {}]", l.get(0), l.get(1), l.get(2));
             }
         });
@@ -242,9 +269,7 @@ public class PlayerController implements Initializable {
 
     // --------------- Playback --------------- //
 
-    /**
-     * Plays or resumes the selected song.
-     */
+    /** Plays or resumes the selected song. */
     public void play() {
         getPlaybackMenu().play();
     }
@@ -284,10 +309,6 @@ public class PlayerController implements Initializable {
     }
 
     // --------------- Playlist --------------- //
-
-    public void shuffle() {
-        getPlaylistMenu().shuffle();
-    }
 
     public void renamePlaylist() {
         getPlaylistMenu().renamePlaylist();

@@ -23,7 +23,7 @@ public class FileMenuTest extends IntegrationTest {
         Supplier<ObservableList<Playlist>> items = () -> getController().getPlaylistTable().getItems();
         int index = items.get().size();
 
-        getDriver().clickOn("File").clickOn("New...").clickOn("Playlist");
+        getDriver().clickOn("File").clickOn("New").clickOn("Playlist...");
         TextField name = GuiTest.find(Defaults.PLAYLIST_NAME);
         getDriver().type(KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3);
         assertTrue(name.getText().equals("abc123"));

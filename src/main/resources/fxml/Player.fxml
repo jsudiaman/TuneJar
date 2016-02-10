@@ -24,21 +24,23 @@
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
-								<Menu mnemonicParsing="false" text="New...">
+								<Menu mnemonicParsing="false" text="New">
 									<items>
-										<MenuItem mnemonicParsing="false" onAction="#createPlaylistButton" text="Playlist" />
+										<MenuItem mnemonicParsing="false" onAction="#createPlaylistButton" text="Playlist..." />
 									</items>
 								</Menu>
-								<Menu mnemonicParsing="false" text="Add...">
+                        <SeparatorMenuItem mnemonicParsing="false" />
+								<Menu mnemonicParsing="false" text="Import">
 									<items>
-										<MenuItem mnemonicParsing="false" onAction="#addDirectory" text="Folder" />
+										<MenuItem mnemonicParsing="false" onAction="#addDirectory" text="Music Folder..." />
 									</items>
 								</Menu>
-								<Menu mnemonicParsing="false" text="Remove...">
+								<Menu mnemonicParsing="false" text="Remove">
 									<items>
-										<MenuItem mnemonicParsing="false" onAction="#removeDirectory" text="Folder" />
+										<MenuItem mnemonicParsing="false" onAction="#removeDirectory" text="Music Folder..." />
 									</items>
 								</Menu>
+                        <SeparatorMenuItem mnemonicParsing="false" />
 								<MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
 							</items>
 						</Menu>
@@ -49,14 +51,15 @@
 								<MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
 								<MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
 								<MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
-								<MenuItem mnemonicParsing="false" onAction="#shuffle" text="Shuffle" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <CheckMenuItem disable="true" mnemonicParsing="false" text="Shuffle" />
 							</items>
 						</Menu>
 						<Menu mnemonicParsing="false" text="Song">
 							<items>
-								<Menu fx:id="addToPlaylist" mnemonicParsing="false" text="Add To...">
+								<Menu fx:id="addToPlaylist" mnemonicParsing="false" text="Add to">
 									<items>
-										<MenuItem mnemonicParsing="false" onAction="#toNewPlaylist" text="New Playlist" />
+										<MenuItem mnemonicParsing="false" onAction="#toNewPlaylist" text="New Playlist..." />
 										<SeparatorMenuItem mnemonicParsing="false" />
 									</items>
 								</Menu>

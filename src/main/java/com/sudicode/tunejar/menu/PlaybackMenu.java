@@ -5,9 +5,7 @@ import com.sudicode.tunejar.player.PlayerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Helper class for handling the Playback menu.
- */
+/** Helper class for handling the Playback menu. */
 public class PlaybackMenu extends PlayerMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(PlaybackMenu.class);
@@ -16,9 +14,7 @@ public class PlaybackMenu extends PlayerMenu {
         super(controller);
     }
 
-    /**
-     * Plays or resumes the selected song.
-     */
+    /** Plays or resumes the selected song. */
     public void play() {
         int index = controller.getSongTable().getFocusModel().getFocusedIndex();
         if (controller.getSongList().isEmpty() || index < 0 || index >= controller.getSongList().size()) {
@@ -80,14 +76,12 @@ public class PlaybackMenu extends PlayerMenu {
             controller.getShortcutPause().setText("Pause");
             controller.getMenuPause().setText("Pause");
         } else {
-            logger.error("Invalid text for pause button detected, text was: " + controller.getMenuPause().getText());
+            logger.error("Invalid text for pause button detected, text was: {}", controller.getMenuPause().getText());
             throw new AssertionError();
         }
     }
 
-    /**
-     * Stops the currently playing song.
-     */
+    /** Stops the currently playing song. */
     public void stop() {
         if (controller.getPlayer().getNowPlaying() == null) {
             controller.getStatus().setText("No song is currently playing.");
@@ -100,9 +94,7 @@ public class PlaybackMenu extends PlayerMenu {
         controller.getPlayer().stopSong();
     }
 
-    /**
-     * Plays the previous song.
-     */
+    /** Plays the previous song. */
     public void playPrev() {
         if (controller.getPlayer().getNowPlaying() == null) {
             controller.getStatus().setText("No song is currently playing.");
@@ -115,9 +107,7 @@ public class PlaybackMenu extends PlayerMenu {
         controller.getSongTable().getSelectionModel().select(row);
     }
 
-    /**
-     * Plays the next song.
-     */
+    /** Plays the next song. */
     public void playNext() {
         if (controller.getPlayer().getNowPlaying() == null) {
             controller.getStatus().setText("No song is currently playing.");

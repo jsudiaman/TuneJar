@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,27 +79,6 @@ public class PlaylistMenu extends PlayerMenu {
                 event.consume();
             }
         });
-    }
-
-    /**
-     * Shuffles the song table. If a song is currently playing, it will be moved to the top of the table and playback
-     * will continue.
-     */
-    public void shuffle() {
-        if (controller.getSongList().isEmpty()) {
-            controller.getStatus().setText("No songs to shuffle.");
-            return;
-        }
-
-        Collections.shuffle(controller.getSongList());
-        if (controller.getPlayer().getNowPlaying() != null
-                && controller.getSongList().indexOf(controller.getPlayer().getNowPlaying()) >= 0) {
-            Collections.swap(controller.getSongList(), 0,
-                    controller.getSongList().indexOf(controller.getPlayer().getNowPlaying()));
-        } else {
-            controller.getPlaybackMenu().play(0);
-        }
-        controller.focus(controller.getSongTable(), 0);
     }
 
     /**

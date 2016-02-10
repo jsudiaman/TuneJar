@@ -84,6 +84,7 @@ public class Options {
         setDirectories(Defaults.DIRECTORIES);
         setVolume(Defaults.VOLUME);
         setSortOrder(Defaults.SORT_ORDER);
+        setColumnOrder(Defaults.COLUMN_ORDER);
         setTitleSortDirection(Defaults.SORT_DIRECTION);
         setArtistSortDirection(Defaults.SORT_DIRECTION);
         setAlbumSortDirection(Defaults.SORT_DIRECTION);
@@ -159,6 +160,30 @@ public class Options {
         write();
     }
 
+    public String[] getColumnOrder() {
+        if (backingMap.get("columnOrder") == null) {
+            setColumnOrder(Defaults.COLUMN_ORDER);
+        }
+
+        // Convert JSONArray to String array
+        JSONArray arr = (JSONArray) backingMap.get("columnOrder");
+        List<String> list = new ArrayList<>();
+        arr.forEach((o) -> list.add(o.toString()));
+
+        // Return the resulting String array
+        return list.toArray(new String[list.size()]);
+    }
+
+    public void setColumnOrder(String... columns) {
+        // Convert String array to JSONArray
+        JSONArray arr = new JSONArray();
+        arr.addAll(Arrays.asList(columns));
+
+        // Store the resulting JSONArray
+        backingMap.put("columnOrder", arr);
+        write();
+    }
+
     public SortType getTitleSortDirection() {
         if (backingMap.get("titleSortDirection") == null) {
             setTitleSortDirection(Defaults.SORT_DIRECTION);
@@ -219,17 +244,18 @@ public class Options {
         write();
     }
 
-    private void handleParseException(ParseException e) {
-        // Log the error and alert the user.
-        logger.error(e.getMessage(), e);
+    public void fixCorruptedFile() {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("File Corrupted");
         alert.setHeaderText(null);
         alert.setContentText(optionsFile + " is corrupted. Your settings have been reset.");
         alert.showAndWait();
-
-        // Reset settings.
         reset();
+    }
+
+    private void handleParseException(ParseException e) {
+        logger.error(e.getMessage(), e);
+        fixCorruptedFile();
     }
 
     private void handleIOException(IOException e) {
