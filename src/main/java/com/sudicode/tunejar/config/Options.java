@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -127,7 +127,7 @@ public class Options {
             setDirectories(Defaults.DIRECTORIES);
 
         // Convert JSONArray to Set
-        Set<File> dirSet = new HashSet<>();
+        Set<File> dirSet = new LinkedHashSet<>();
         JSONArray arr = (JSONArray) backingMap.get("directories");
         arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
 

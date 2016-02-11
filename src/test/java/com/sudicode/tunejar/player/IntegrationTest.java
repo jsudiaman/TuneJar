@@ -32,7 +32,7 @@ import org.loadui.testfx.GuiTest;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +79,7 @@ public abstract class IntegrationTest {
 
         // Set media directories
         Options options = new Options(Defaults.OPTIONS_FILE.toFile());
-        Set<File> dirs = new HashSet<>();
+        Set<File> dirs = new LinkedHashSet<>();
         dirs.add(new File("src/test/resources/"));
         options.setDirectories(dirs);
 

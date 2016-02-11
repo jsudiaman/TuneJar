@@ -26,8 +26,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,7 +66,7 @@ public class Defaults {
         LOG_FOLDER = TUNEJAR_HOME.resolve("Logs");
 
         // Misc. constants
-        DIRECTORIES = new HashSet<>();
+        DIRECTORIES = new LinkedHashSet<>();
         TIMEOUT = 5 * 60;
         ICON = "/img/icon.png";
         LOG_FILE_LIMIT = 5;
