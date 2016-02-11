@@ -1,6 +1,6 @@
 machine:
   environment:
-    jar_file: target/TuneJar-v0.1-beta-jar-with-dependencies.jar
+    jar_file: ~/TuneJar/target/TuneJar-v0.1-beta-jar-with-dependencies.jar
   java:
     version: oraclejdk8
 
