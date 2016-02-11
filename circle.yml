@@ -8,11 +8,11 @@ deployment:
   master:
     branch: master
     commands:
-      - mv ~/$jar_file TuneJar.jar
+      - mv ~/$jar_file ~/TuneJar.jar
 
 general:
   artifacts:
-    - "TuneJar.jar"
+    - "~/TuneJar.jar"
 
 test:
   post:
