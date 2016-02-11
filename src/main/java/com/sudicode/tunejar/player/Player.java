@@ -62,6 +62,7 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -70,6 +71,7 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
@@ -77,6 +79,7 @@ import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Player extends Application {
 
@@ -368,6 +371,34 @@ public class Player extends Application {
             logger.debug("Loaded song: " + uriString);
             setVolume(getController().getVolumeSlider().getValue());
             logger.info("Playing: " + getNowPlaying());
+
+            mediaPlayer.currentTimeProperty().addListener((val, oldTime, newTime) -> {
+                // Current Time
+                int ctMin = (int) newTime.toMinutes();
+                int ctSec = (int) newTime.toSeconds();
+                String ctMinSec = String.format("%01d:%02d", ctMin, ctSec - ctMin * 60);
+                getController().getCurrentTime().setText(ctMinSec);
+
+                // Total Duration
+                int tdMin = (int) mediaPlayer.getMedia().getDuration().toMinutes();
+                int tdSec = (int) mediaPlayer.getMedia().getDuration().toSeconds();
+                String tdMinSec = String.format("%01d:%02d", tdMin, tdSec - tdMin * 60);
+                getController().getTotalDuration().setText(tdMinSec);
+
+                // Seek Bar
+                getController().getSeekBar().setProgress(((double) ctSec / (double) tdSec));
+            });
+
+            // Allow user to seek using the seek bar
+            EventHandler<MouseEvent> handler = event -> {
+                int tdSec = (int) mediaPlayer.getMedia().getDuration().toSeconds();
+                double frac = event.getX() / getController().getSeekBar().getWidth();
+                mediaPlayer.seek(Duration.seconds(tdSec * frac));
+            };
+            getController().getSeekBar().setOnMouseClicked(handler);
+            getController().getSeekBar().setOnMouseDragged(handler);
+
+            // Play the song
             mediaPlayer.play();
         } catch (MediaException e) {
             getController().getStatus().setText("Failed to play the song.");

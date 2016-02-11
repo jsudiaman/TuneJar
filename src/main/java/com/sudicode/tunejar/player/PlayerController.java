@@ -48,11 +48,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -82,12 +84,10 @@ public class PlayerController implements Initializable {
     private TableColumn<Song, String> artist;
     @FXML
     private TableColumn<Song, String> album;
-
     @FXML
     private TableView<Playlist> playlistTable;
     @FXML
     private TableColumn<Playlist, String> name;
-
     @FXML
     private Menu addToPlaylist = new Menu();
     @FXML
@@ -98,18 +98,22 @@ public class PlayerController implements Initializable {
     private MenuItem menuRenamePlaylist = new MenuItem();
     @FXML
     private MenuItem menuDeletePlaylist = new MenuItem();
-
     @FXML
     private Button shortcutPause = new Button();
-
     @FXML
     private Label status = new Label();
-
+    @FXML
+    private Label currentTime = new Label();
+    @FXML
+    private Label totalDuration = new Label();
     @FXML
     private Menu themeSelector = new Menu();
-
     @FXML
     private Slider volumeSlider = new Slider();
+    @FXML
+    private ProgressBar seekBar = new ProgressBar();
+    @FXML
+    private ToolBar seekBarToolBar = new ToolBar();
 
     // --------------- Initialization --------------- //
 
@@ -491,6 +495,18 @@ public class PlayerController implements Initializable {
     public void setSortOrder(List<TableColumn<Song, ?>> sortOrder) {
         getSongTable().getSortOrder().clear();
         getSongTable().getSortOrder().addAll(sortOrder);
+    }
+
+    protected Label getCurrentTime() {
+        return currentTime;
+    }
+
+    protected Label getTotalDuration() {
+        return totalDuration;
+    }
+
+    protected ProgressBar getSeekBar() {
+        return seekBar;
     }
 
 }

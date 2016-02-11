@@ -104,23 +104,42 @@
 		</TableView>
 	</left>
 	<bottom>
-		<HBox>
-			<children>
-				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-					<items>
-						<Label fx:id="status" focusTraversable="false" />
-					</items>
-				</ToolBar>
-				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
-					<items>
-						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
-						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
-						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
-						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
-						<Button mnemonicParsing="false" onAction="#play" text="Play" />
-					</items>
-				</ToolBar>
-			</children>
-		</HBox>
+      <VBox>
+         <children>
+      		<HBox>
+      			<children>
+      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+      					<items>
+      						<Label fx:id="status" focusTraversable="false" />
+      					</items>
+      				</ToolBar>
+      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
+      					<items>
+      						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
+      						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
+      						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
+      						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
+      						<Button mnemonicParsing="false" onAction="#play" text="Play" />
+      					</items>
+      				</ToolBar>
+      			</children>
+      		</HBox>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+               <children>
+                  <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                     <items>
+                        <Label fx:id="currentTime" text="0:00" />
+                     </items>
+                  </ToolBar>
+                  <ProgressBar fx:id="seekBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" progress="0.0" HBox.hgrow="ALWAYS" />
+                  <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                     <items>
+                        <Label fx:id="totalDuration" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="0:00" />
+                     </items>
+                  </ToolBar>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
 	</bottom>
 </BorderPane>
