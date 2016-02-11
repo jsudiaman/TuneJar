@@ -1,6 +1,6 @@
 machine:
   environment:
-    jar_file: ~/TuneJar/target/TuneJar-v0.1-beta-jar-with-dependencies.jar
+    jar_file: TuneJar/target/TuneJar-v0.1-beta-jar-with-dependencies.jar
   java:
     version: oraclejdk8
 
@@ -8,7 +8,7 @@ deployment:
   master:
     branch: master
     commands:
-      - mv $jar_file TuneJar.jar
+      - mv ~/$jar_file TuneJar.jar
 
 general:
   artifacts:
