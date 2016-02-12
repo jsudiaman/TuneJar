@@ -24,7 +24,6 @@ import com.sudicode.tunejar.player.PlayerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 
@@ -144,16 +143,15 @@ public class PlaybackMenu extends PlayerMenu {
     }
 
     public void initSpeedMenu() {
-        Menu menu = controller.getSpeedMenu();
-        ToggleGroup tg = new ToggleGroup();
+        ToggleGroup group = new ToggleGroup();
         for (double speed : Defaults.PRESET_SPEEDS) {
-            RadioMenuItem rmi = new RadioMenuItem(speed + "");
-            rmi.setOnAction((click) -> controller.getPlayer().setSpeed(speed));
-            rmi.setToggleGroup(tg);
+            RadioMenuItem nextItem = new RadioMenuItem(speed + "");
+            nextItem.setOnAction((click) -> controller.getPlayer().setSpeed(speed));
+            nextItem.setToggleGroup(group);
             if (speed == 1) {
-                tg.selectToggle(rmi);
+                group.selectToggle(nextItem);
             }
-            menu.getItems().add(rmi);
+            controller.getSpeedMenu().getItems().add(nextItem);
         }
     }
 

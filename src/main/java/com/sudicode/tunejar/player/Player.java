@@ -60,6 +60,7 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -68,6 +69,7 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
@@ -388,11 +390,13 @@ public class Player extends Application {
             });
 
             // Allow user to seek using the seek bar
-            getController().getSeekBar().setOnMouseReleased(event -> {
+            EventHandler<MouseEvent> seeker = event -> {
                 int tdSec = (int) mediaPlayer.getMedia().getDuration().toSeconds();
                 double frac = event.getX() / getController().getSeekBar().getWidth();
                 mediaPlayer.seek(Duration.seconds(tdSec * frac));
-            });
+            };
+            getController().getSeekBar().setOnMouseDragged(seeker);
+            getController().getSeekBar().setOnMouseReleased(seeker);
 
             // Play the song
             mediaPlayer.setRate(getSpeed());
