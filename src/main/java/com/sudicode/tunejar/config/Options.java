@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -51,7 +50,6 @@ public class Options {
     // I/O
     private final File optionsFile;
     private RandomAccessFile raf;
-    private FileLock lock;
 
     public Options(File optionsFile) {
         this.optionsFile = optionsFile;
@@ -68,19 +66,13 @@ public class Options {
 
     private void init() throws IOException, ParseException {
         if (optionsFile.exists()) {
-            initRandomAccess();
+            raf = new RandomAccessFile(optionsFile, "rwd");
             backingMap = read();
         } else {
             optionsFile.createNewFile();
-            initRandomAccess();
+            raf = new RandomAccessFile(optionsFile, "rw");
             reset();
         }
-    }
-
-    private void initRandomAccess() throws IOException {
-        raf = new RandomAccessFile(optionsFile, "rw");
-        lock = raf.getChannel().tryLock();
-        logger.debug("Locked {}", optionsFile);
     }
 
     /** Builds the backing map by parsing the options file. */
@@ -296,11 +288,6 @@ public class Options {
         alert.showAndWait();
 
         // Disable write access, then reset.
-        try {
-            lock.release();
-        } catch (IOException ex) {
-            logger.warn(ex.getMessage(), ex);
-        }
         writeEnabled = false;
         reset();
     }
