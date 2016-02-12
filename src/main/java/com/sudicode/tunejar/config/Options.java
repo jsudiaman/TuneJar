@@ -66,7 +66,7 @@ public class Options {
 
     private void init() throws IOException, ParseException {
         if (optionsFile.exists()) {
-            raf = new RandomAccessFile(optionsFile, "rwd");
+            raf = new RandomAccessFile(optionsFile, "rw");
             backingMap = read();
         } else {
             optionsFile.createNewFile();
