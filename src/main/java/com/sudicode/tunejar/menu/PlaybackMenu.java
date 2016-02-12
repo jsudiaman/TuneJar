@@ -18,10 +18,15 @@
 
 package com.sudicode.tunejar.menu;
 
+import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.scene.control.Menu;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
 
 /** Helper class for handling the Playback menu. */
 public class PlaybackMenu extends PlayerMenu {
@@ -136,6 +141,20 @@ public class PlaybackMenu extends PlayerMenu {
         row = (row + 1 >= controller.getSongList().size()) ? 0 : row + 1;
         play(row);
         controller.getSongTable().getSelectionModel().select(row);
+    }
+
+    public void initSpeedMenu() {
+        Menu menu = controller.getSpeedMenu();
+        ToggleGroup tg = new ToggleGroup();
+        for (double speed : Defaults.PRESET_SPEEDS) {
+            RadioMenuItem rmi = new RadioMenuItem(speed + "");
+            rmi.setOnAction((click) -> controller.getPlayer().setSpeed(speed));
+            rmi.setToggleGroup(tg);
+            if (speed == 1) {
+                tg.selectToggle(rmi);
+            }
+            menu.getItems().add(rmi);
+        }
     }
 
 }

@@ -112,6 +112,8 @@ public class PlayerController implements Initializable {
     private ProgressBar seekBar = new ProgressBar();
     @FXML
     private ToolBar seekBarToolBar = new ToolBar();
+    @FXML
+    private Menu speedMenu = new Menu();
 
     // --------------- Initialization --------------- //
 
@@ -264,11 +266,9 @@ public class PlayerController implements Initializable {
             setSortOrder(sortOrder);
         });
 
-        // Initialize the volume slider.
         initVolume();
-
-        // Initialize the theme menu.
         initThemes();
+        initSpeedMenu();
     }
 
     // --------------- File --------------- //
@@ -310,6 +310,10 @@ public class PlayerController implements Initializable {
 
     public void playNext() {
         getPlaybackMenu().playNext();
+    }
+
+    public void initSpeedMenu() {
+        getPlaybackMenu().initSpeedMenu();
     }
 
     // --------------- Song --------------- //
@@ -505,6 +509,10 @@ public class PlayerController implements Initializable {
 
     protected ProgressBar getSeekBar() {
         return seekBar;
+    }
+
+    public Menu getSpeedMenu() {
+        return speedMenu;
     }
 
 }

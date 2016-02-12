@@ -25,12 +25,10 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -46,9 +44,14 @@ public class Options {
 
     private static final Logger logger = LoggerFactory.getLogger(Options.class);
 
-    private final File optionsFile;
+    // Data
     private JSONObject backingMap;
     private boolean writeEnabled;
+
+    // I/O
+    private final File optionsFile;
+    private RandomAccessFile raf;
+    private FileLock lock;
 
     public Options(File optionsFile) {
         this.optionsFile = optionsFile;
@@ -64,34 +67,41 @@ public class Options {
     }
 
     private void init() throws IOException, ParseException {
-        if (Files.exists(optionsFile.toPath())) {
+        if (optionsFile.exists()) {
+            initRandomAccess();
             backingMap = read();
         } else {
+            optionsFile.createNewFile();
+            initRandomAccess();
             reset();
         }
     }
 
+    private void initRandomAccess() throws IOException {
+        raf = new RandomAccessFile(optionsFile, "rw");
+        lock = raf.getChannel().tryLock();
+        logger.debug("Locked {}", optionsFile);
+    }
+
     /** Builds the backing map by parsing the options file. */
     private JSONObject read() throws IOException, ParseException {
-        synchronized (Options.class) {
-            JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(new FileReader(optionsFile));
-        }
+        String jsonString = raf.readLine();
+        JSONParser parser = new JSONParser();
+        return (JSONObject) parser.parse(jsonString);
     }
 
     /** Writes the backing map to the options file. */
     private void write() {
-        synchronized (Options.class) {
-            if (writeEnabled) {
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(optionsFile, false))) {
-                    writer.write(backingMap.toJSONString());
-                    logger.debug("Settings saved successfully to: " + optionsFile);
-                } catch (IOException e) {
-                    handleIOException(e);
-                }
-            } else {
-                logger.debug("Write is disabled.");
+        if (writeEnabled) {
+            try {
+                raf.setLength(0);
+                raf.write(backingMap.toJSONString().getBytes());
+                logger.debug("Settings saved successfully to: " + optionsFile);
+            } catch (IOException e) {
+                handleIOException(e);
             }
+        } else {
+            logger.debug("Write is disabled.");
         }
     }
 
@@ -286,6 +296,11 @@ public class Options {
         alert.showAndWait();
 
         // Disable write access, then reset.
+        try {
+            lock.release();
+        } catch (IOException ex) {
+            logger.warn(ex.getMessage(), ex);
+        }
         writeEnabled = false;
         reset();
     }

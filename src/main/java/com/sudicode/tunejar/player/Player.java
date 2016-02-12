@@ -60,7 +60,6 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -69,7 +68,6 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
@@ -97,6 +95,7 @@ public class Player extends Application {
     private Playlist masterPlaylist;
     private Set<File> directories;
     private Options options;
+    private double mediaPlayerSpeed;
 
     /**
      * Starts the application.
@@ -153,6 +152,7 @@ public class Player extends Application {
     private void init(Stage stage) throws IOException {
         // Initialization.
         setInstance(this);
+        setSpeed(1);
         setOptions(new Options(Defaults.OPTIONS_FILE.toFile()));
 
         // Load the FXML file and display the interface.
@@ -388,15 +388,14 @@ public class Player extends Application {
             });
 
             // Allow user to seek using the seek bar
-            EventHandler<MouseEvent> handler = event -> {
+            getController().getSeekBar().setOnMouseReleased(event -> {
                 int tdSec = (int) mediaPlayer.getMedia().getDuration().toSeconds();
                 double frac = event.getX() / getController().getSeekBar().getWidth();
                 mediaPlayer.seek(Duration.seconds(tdSec * frac));
-            };
-            getController().getSeekBar().setOnMouseClicked(handler);
-            getController().getSeekBar().setOnMouseDragged(handler);
+            });
 
             // Play the song
+            mediaPlayer.setRate(getSpeed());
             mediaPlayer.play();
         } catch (MediaException e) {
             getController().getStatus().setText("Failed to play the song.");
@@ -690,6 +689,17 @@ public class Player extends Application {
 
     private void setOptions(Options options) {
         this.options = options;
+    }
+
+    public void setSpeed(double speed) {
+        if (mediaPlayer != null) {
+            mediaPlayer.setRate(speed);
+        }
+        this.mediaPlayerSpeed = speed;
+    }
+
+    private double getSpeed() {
+        return mediaPlayerSpeed;
     }
 
 }
