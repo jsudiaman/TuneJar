@@ -43,6 +43,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -114,16 +115,18 @@ public class PlayerController implements Initializable {
     private ToolBar seekBarToolBar = new ToolBar();
     @FXML
     private Menu speedMenu = new Menu();
+    @FXML
+    private CheckMenuItem menuShuffle = new CheckMenuItem();
 
     // --------------- Initialization --------------- //
 
     /**
      * Sets up the playlist viewer.
      *
-     * @param location The location used to resolve relative paths for the root object, or <code>null</code> if the
-     *        location is not known.
-     * @param resources The resources used to localize the root object, or <code>null</code> if the root object was not
-     *        localized.
+     * @param location The location used to resolve relative paths for the root
+     *        object, or <code>null</code> if the location is not known.
+     * @param resources The resources used to localize the root object, or
+     *        <code>null</code> if the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -255,6 +258,7 @@ public class PlayerController implements Initializable {
             // When a playlist is selected, display it.
             setSongList(FXCollections.observableArrayList(getPlaylistTable().getSelectionModel().getSelectedItem()));
             getSongTable().setItems(getSongList());
+            getPlaybackMenu().buildShuffledRowList();
 
             // The master playlist cannot be renamed, deleted, or altered,
             // so disable that functionality if the master playlist is selected.
@@ -265,6 +269,10 @@ public class PlayerController implements Initializable {
             // Restore sort order
             setSortOrder(sortOrder);
         });
+
+        // Initialize the "Shuffle" check menu item.
+        menuShuffle.setSelected(getPlayer().getOptions().isShuffle());
+        menuShuffle.selectedProperty().addListener((x, y, z) -> getPlayer().getOptions().setShuffle(z));
 
         initVolume();
         initThemes();
@@ -314,6 +322,10 @@ public class PlayerController implements Initializable {
 
     public void initSpeedMenu() {
         getPlaybackMenu().initSpeedMenu();
+    }
+
+    public void toggleShuffle() {
+        getPlaybackMenu().buildShuffledRowList();
     }
 
     // --------------- Song --------------- //
@@ -513,6 +525,10 @@ public class PlayerController implements Initializable {
 
     public Menu getSpeedMenu() {
         return speedMenu;
+    }
+
+    public CheckMenuItem getMenuShuffle() {
+        return menuShuffle;
     }
 
 }

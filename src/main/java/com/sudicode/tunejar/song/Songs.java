@@ -33,7 +33,8 @@ public class Songs {
      * Constructs a {@link Song} out of a file.
      *
      * @param file The file to be used.
-     * @return The constructed {@link Song}, or <code>null</code> if the file type is not supported.
+     * @return The constructed {@link Song}, or <code>null</code> if the file
+     *         type is not supported.
      */
     public static Song create(File file) {
         if (file.getName().endsWith(".mp3")) {

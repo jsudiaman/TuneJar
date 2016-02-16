@@ -51,9 +51,10 @@ public abstract class Song {
      * </p>
      * <p>
      * <p>
-     * Note that this constructor does not initialize <code>audioFile</code>. To avoid possible NPEs, care should be
-     * taken to ensure that at the very least, <code>audioFile</code> is set to a meaningful value <b>immediately</b>
-     * after this constructor is called.
+     * Note that this constructor does not initialize <code>audioFile</code>. To
+     * avoid possible NPEs, care should be taken to ensure that at the very
+     * least, <code>audioFile</code> is set to a meaningful value
+     * <b>immediately</b> after this constructor is called.
      * </p>
      */
     protected Song() {
@@ -63,8 +64,9 @@ public abstract class Song {
     }
 
     /**
-     * Finds the absolute path of the audio file. For example, if the audio file is located in
-     * 'C:\Users\JohnDoe\Music\B.mp3', then that entire string will be returned.
+     * Finds the absolute path of the audio file. For example, if the audio file
+     * is located in 'C:\Users\JohnDoe\Music\B.mp3', then that entire string
+     * will be returned.
      *
      * @return The absolute path
      */
@@ -77,11 +79,13 @@ public abstract class Song {
     }
 
     /**
-     * Checks if the song can be edited. Please note this implies that <b>all</b> fields are editable - Title, Artist,
-     * and Album. It also implies that changes can be made to the audio file itself (not just this object). If such an
-     * operation is unsupported, it is acceptable to hard-code this method to return <code>false</code>. In that case,
-     * setters should also throw an {@link AssertionError}, since setters should <b>not</b> be accessible if this method
-     * returns false.
+     * Checks if the song can be edited. Please note this implies that
+     * <b>all</b> fields are editable - Title, Artist, and Album. It also
+     * implies that changes can be made to the audio file itself (not just this
+     * object). If such an operation is unsupported, it is acceptable to
+     * hard-code this method to return <code>false</code>. In that case, setters
+     * should also throw an {@link AssertionError}, since setters should
+     * <b>not</b> be accessible if this method returns false.
      *
      * @return True if the song can be edited.
      */

@@ -35,7 +35,8 @@ public class TestDefaults {
     public static final Path RESOURCES;
 
     /**
-     * Maps sample music files to the URLs where they can be downloaded if missing.
+     * Maps sample music files to the URLs where they can be downloaded if
+     * missing.
      */
     public static final Map<File, URL> SAMPLE_MUSIC_MAP;
 

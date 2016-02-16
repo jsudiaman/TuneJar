@@ -154,7 +154,8 @@ public class PlaylistMenu extends PlayerMenu {
     }
 
     /**
-     * Asks the user if it is okay to delete the current playlist. If it is okay, deletes the current playlist.
+     * Asks the user if it is okay to delete the current playlist. If it is
+     * okay, deletes the current playlist.
      */
     public void deletePlaylist() {
         Playlist pl = controller.getPlaylistTable().getSelectionModel().getSelectedItem();

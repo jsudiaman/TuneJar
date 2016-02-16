@@ -102,11 +102,12 @@ public class Playlist implements List<Song> {
     }
 
     /**
-     * Adds the contents of the song collection to this playlist. Uses the copy constructor instead of directly adding
-     * items from the collection.
+     * Adds the contents of the song collection to this playlist. Uses the copy
+     * constructor instead of directly adding items from the collection.
      *
      * @param songs A song collection
-     * @return True iff at least one song in the collection was added to this playlist.
+     * @return True if at least one song in the collection was added to this
+     *         playlist.
      */
     @Override
     public boolean addAll(Collection<? extends Song> songs) {

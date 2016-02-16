@@ -52,7 +52,7 @@
 								<MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
 								<MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
 		                        <SeparatorMenuItem mnemonicParsing="false" />
-		                        <CheckMenuItem disable="true" mnemonicParsing="false" text="Shuffle" />
+		                        <CheckMenuItem fx:id="menuShuffle" mnemonicParsing="false" onAction="#toggleShuffle" text="Shuffle" />
 		                        <SeparatorMenuItem mnemonicParsing="false" />
 		                        <Menu fx:id="speedMenu" mnemonicParsing="false" text="Speed" />
 							</items>

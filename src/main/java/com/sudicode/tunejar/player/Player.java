@@ -149,7 +149,8 @@ public class Player extends Application {
      * Handles program initialization.
      *
      * @param stage The stage that will hold the interface
-     * @throws IOException Failed to load the FXML, or could not load/save a file.
+     * @throws IOException Failed to load the FXML, or could not load/save a
+     *         file.
      */
     private void init(Stage stage) throws IOException {
         // Initialization.
@@ -210,8 +211,9 @@ public class Player extends Application {
     }
 
     /**
-     * First, adds all music files that can be found in available directories to the master playlist. Then loads all
-     * available playlists from the working directory.
+     * First, adds all music files that can be found in available directories to
+     * the master playlist. Then loads all available playlists from the working
+     * directory.
      */
     public void refresh() {
         Task<?> refresher = new Refresher();
@@ -232,12 +234,14 @@ public class Player extends Application {
     }
 
     /**
-     * Inner class designed to handle expensive operations invoked by the <code>refresh()</code> method.
+     * Inner class designed to handle expensive operations invoked by the
+     * <code>refresh()</code> method.
      */
     private class Refresher extends Task<Void> {
         /**
-         * The main task associated with the <code>refresh()</code> method. This is an expensive call, so it is
-         * <b>not</b> recommended to run it on the GUI thread.
+         * The main task associated with the <code>refresh()</code> method. This
+         * is an expensive call, so it is <b>not</b> recommended to run it on
+         * the GUI thread.
          */
         @Override
         protected Void call() throws Exception {
@@ -268,8 +272,8 @@ public class Player extends Application {
         }
 
         /**
-         * Clears the master playlist, then constructs a new one out of all supported audio files found in the set of
-         * directories.
+         * Clears the master playlist, then constructs a new one out of all
+         * supported audio files found in the set of directories.
          */
         private void refreshMasterPlaylist() throws InterruptedException, ExecutionException {
             setMasterPlaylist(new Playlist("All Music"));
@@ -289,8 +293,8 @@ public class Player extends Application {
         }
 
         /**
-         * Constructs playlists out of all m3u files found in the playlists folder. The constructed playlists are then
-         * wrapped into a collection.
+         * Constructs playlists out of all m3u files found in the playlists
+         * folder. The constructed playlists are then wrapped into a collection.
          *
          * @return The collection of constructed playlists.
          */
@@ -547,8 +551,9 @@ public class Player extends Application {
     }
 
     /**
-     * Traverses each directory, obtaining all supported audio files. Each audio file found is wrapped in a Future Song,
-     * which is then added to a collection.
+     * Traverses each directory, obtaining all supported audio files. Each audio
+     * file found is wrapped in a Future Song, which is then added to a
+     * collection.
      *
      * @return The collection of Future Songs
      */
@@ -580,8 +585,8 @@ public class Player extends Application {
     // ------------------- Exception Handling ------------------- //
 
     /**
-     * Displays a dialog box explaining what happened. Once the dialog box is closed, the program exits with exit code
-     * -1.
+     * Displays a dialog box explaining what happened. Once the dialog box is
+     * closed, the program exits with exit code -1.
      *
      * @param e An exception that should end the program
      */
@@ -620,7 +625,8 @@ public class Player extends Application {
     // ------------------- Getters and Setters ------------------- //
 
     /**
-     * Sets up the media player to perform a specified action at the end of every song.
+     * Sets up the media player to perform a specified action at the end of
+     * every song.
      *
      * @param action An action wrapped in a Runnable
      */

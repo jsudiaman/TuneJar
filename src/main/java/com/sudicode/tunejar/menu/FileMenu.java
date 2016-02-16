@@ -97,7 +97,7 @@ public class FileMenu extends PlayerMenu {
      */
     public void quit() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit JVMP3");
+        alert.setTitle("Exit TuneJar");
         alert.setHeaderText("Confirm Exit");
         alert.setContentText("Are you sure you would like to exit?");
 
@@ -117,6 +117,7 @@ public class FileMenu extends PlayerMenu {
     public void removeDirectory() {
         if (controller.getPlayer().removeDirectory()) {
             controller.getPlayer().refresh();
+            controller.getPlayer().stopSong();
         }
     }
 

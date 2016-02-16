@@ -32,12 +32,13 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * Tests an implementation of the {@link Song} interface. Subclasses are required to supply a song file by overriding
- * {@link SongTest#getSongFile()}.
+ * Tests an implementation of the {@link Song} interface. Subclasses are
+ * required to supply a song file by overriding {@link SongTest#getSongFile()}.
  */
 public abstract class SongTest {
 
-    // NOTE: Variables that begin with '_' should not be modified outside of setUp() and tearDown().
+    // NOTE: Variables that begin with '_' should not be modified outside of
+    // setUp() and tearDown().
     private String _songFile;
     private Song _song;
     private String _originalTitle;

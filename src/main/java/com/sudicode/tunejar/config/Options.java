@@ -264,6 +264,19 @@ public class Options {
         write();
     }
 
+    public boolean isShuffle() {
+        if (backingMap.get("shuffle") == null) {
+            setShuffle(Defaults.SHUFFLE);
+        }
+
+        return (boolean) backingMap.get("shuffle");
+    }
+
+    public void setShuffle(boolean shuffle) {
+        backingMap.put("shuffle", shuffle);
+        write();
+    }
+
     public void fixCorruptedFile() {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("File Corrupted");

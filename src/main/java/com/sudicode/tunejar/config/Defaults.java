@@ -48,6 +48,7 @@ public class Defaults {
     public static final double VOLUME;
     public static final String PLAYLIST_NAME;
     public static final double[] PRESET_SPEEDS;
+    public static final boolean SHUFFLE;
 
     static {
         // Theme map
@@ -77,6 +78,7 @@ public class Defaults {
         VOLUME = 1.0;
         PLAYLIST_NAME = "Untitled Playlist";
         PRESET_SPEEDS = new double[] {.25, .5, 1, 1.25, 1.5, 2};
+        SHUFFLE = false;
     }
 
     private Defaults() {}

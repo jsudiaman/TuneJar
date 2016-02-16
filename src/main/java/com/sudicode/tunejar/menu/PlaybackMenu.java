@@ -24,6 +24,10 @@ import com.sudicode.tunejar.player.PlayerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 
@@ -31,6 +35,15 @@ import javafx.scene.control.ToggleGroup;
 public class PlaybackMenu extends PlayerMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(PlaybackMenu.class);
+
+    /**
+     * If shuffle is enabled, this list is non-null and contains row indices in
+     * shuffled order.
+     */
+    private List<Integer> shuffledRowList;
+
+    /** Used to traverse the shuffled row list. */
+    private int shuffledRowIter;
 
     public PlaybackMenu(PlayerController controller) {
         super(controller);
@@ -54,6 +67,8 @@ public class PlaybackMenu extends PlayerMenu {
      * @param row The row that the song is located in
      */
     public void play(int row) {
+        logger.trace("Playing song at row {}", row);
+
         try {
             // Have the playlist point to the appropriate song, then play it
             controller.getSongTable().getSelectionModel().clearAndSelect(row);
@@ -62,22 +77,18 @@ public class PlaybackMenu extends PlayerMenu {
 
             // Update the status bar accordingly
             controller.getStatus().setText("Now Playing: " + controller.getPlayer().getNowPlaying().toString());
-        } catch (NullPointerException e) {
-            if (controller.getSongList().isEmpty())
-                logger.info("The playlist is empty.");
-            else
-                logger.info("The playlist is not empty.");
-            logger.error("Failed to play song.", e);
         } catch (Exception e) {
+            controller.getStatus().setText("Failed to play song.");
             logger.error("Failed to play song.", e);
         }
     }
 
     /**
-     * Handling for the pause button. If the pause button says "Pause", it will pause the currently playing song, then
-     * change to "Resume". <br>
+     * Handling for the pause button. If the pause button says "Pause", it will
+     * pause the currently playing song, then change to "Resume". <br>
      * <br>
-     * If it says "Resume", it will resume the currently playing song, then change to "Pause". <br>
+     * If it says "Resume", it will resume the currently playing song, then
+     * change to "Pause". <br>
      * <br>
      * If it says anything else, the error will be logged.
      */
@@ -114,30 +125,68 @@ public class PlaybackMenu extends PlayerMenu {
         controller.getShortcutPause().setText("Pause");
         controller.getMenuPause().setText("Pause");
         controller.getPlayer().stopSong();
+        buildShuffledRowList();
     }
 
     /** Plays the previous song. */
     public void playPrev() {
+        // If no song is playing, return.
         if (controller.getPlayer().getNowPlaying() == null) {
             controller.getStatus().setText("No song is currently playing.");
             return;
         }
 
-        int row = controller.getSongList().indexOf(controller.getPlayer().getNowPlaying());
-        row = (row <= 0) ? 0 : row - 1;
+        // If the playlist is empty, return.
+        if (controller.getSongList().isEmpty()) {
+            controller.getStatus().setText("The playlist is empty.");
+            return;
+        }
+
+        // Play the previous song.
+        int row;
+        if (isShuffleEnabled()) {
+            // Decrement shuffledRowIter. If it falls out of bounds, set it to
+            // zero.
+            if (--shuffledRowIter < 0) {
+                shuffledRowIter = 0;
+            }
+            row = shuffledRowList.get(shuffledRowIter);
+        } else {
+            row = controller.getSongList().indexOf(controller.getPlayer().getNowPlaying());
+            row = (row <= 0) ? 0 : row - 1;
+        }
         play(row);
         controller.getSongTable().getSelectionModel().select(row);
     }
 
     /** Plays the next song. */
     public void playNext() {
+        // If no song is playing, return.
         if (controller.getPlayer().getNowPlaying() == null) {
             controller.getStatus().setText("No song is currently playing.");
             return;
         }
 
-        int row = controller.getSongList().indexOf(controller.getPlayer().getNowPlaying());
-        row = (row + 1 >= controller.getSongList().size()) ? 0 : row + 1;
+        // If the playlist is empty, return.
+        if (controller.getSongList().isEmpty()) {
+            controller.getStatus().setText("The playlist is empty.");
+            return;
+        }
+
+        // Play the next song.
+        int row;
+        if (isShuffleEnabled()) {
+            // Increment shuffledRowIter. If it falls out of bounds, re-shuffle.
+            if (++shuffledRowIter >= shuffledRowList.size()) {
+                buildShuffledRowList();
+            }
+
+            // Play the next song in the shuffled list.
+            row = shuffledRowList.get(shuffledRowIter);
+        } else {
+            row = controller.getSongList().indexOf(controller.getPlayer().getNowPlaying());
+            row = (row + 1 >= controller.getSongList().size()) ? 0 : row + 1;
+        }
         play(row);
         controller.getSongTable().getSelectionModel().select(row);
     }
@@ -153,6 +202,32 @@ public class PlaybackMenu extends PlayerMenu {
             }
             controller.getSpeedMenu().getItems().add(nextItem);
         }
+    }
+
+    /**
+     * Builds the shuffled row list. If shuffle is enabled, the list will be
+     * initialized to a non-null value and the iterator will be set to zero. If
+     * not, the list will be set to null.
+     */
+    public void buildShuffledRowList() {
+        if (isShuffleEnabled()) {
+            logger.info("Shuffle: ON");
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < controller.getSongList().size(); i++) {
+                list.add(i);
+            }
+            Collections.shuffle(list);
+            logger.debug("Built shuffled row list: {}", list);
+            shuffledRowList = list;
+            shuffledRowIter = 0;
+        } else {
+            logger.info("Shuffle: OFF");
+            shuffledRowList = null;
+        }
+    }
+
+    private boolean isShuffleEnabled() {
+        return controller.getMenuShuffle().isSelected();
     }
 
 }
