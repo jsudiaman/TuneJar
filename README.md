@@ -1,1 +1,1 @@
-# [TuneJar wiki](https://github.com/sudiamanj/TuneJar/wiki)
+# [TuneJar Wiki](https://github.com/sudiamanj/TuneJar/wiki)
