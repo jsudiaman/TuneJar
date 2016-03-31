@@ -34,7 +34,6 @@ public class Defaults {
     public static final Set<File> DIRECTORIES;
     public static final long TIMEOUT;
     public static final String ICON;
-    public static final int LOG_FILE_LIMIT;
     public static final Path LOG_FOLDER;
     public static final Path OPTIONS_FILE;
     public static final String PLAYER_FXML;
@@ -69,7 +68,6 @@ public class Defaults {
         DIRECTORIES = new LinkedHashSet<>();
         TIMEOUT = 5 * 60;
         ICON = "/img/icon.png";
-        LOG_FILE_LIMIT = 5;
         PLAYER_FXML = "/fxml/Player.fxml";
         SORT_ORDER = new String[0];
         COLUMN_ORDER = new String[] {"Title", "Artist", "Album"};

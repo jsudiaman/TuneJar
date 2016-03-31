@@ -43,7 +43,6 @@ import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -109,21 +108,6 @@ public class Player extends Application {
             // Make directories
             FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
             FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
-
-            // Log file cleanup
-            for (;;) {
-                Path logsFolder = Defaults.LOG_FOLDER;
-                String[] files = logsFolder.toAbsolutePath().toFile().list((dir, name) -> name.endsWith(".xml"));
-                if (files == null) {
-                    logger.error("Log file cleanup failed.");
-                    break;
-                }
-                if (files.length <= Defaults.LOG_FILE_LIMIT) {
-                    break;
-                }
-                Arrays.sort(files);
-                Files.delete(logsFolder.resolve(files[0]));
-            }
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -362,10 +346,7 @@ public class Player extends Application {
      * @param song The song to play
      */
     public void playSong(Song song) {
-        if (getNowPlaying() == song) {
-            resumeSong();
-            return;
-        } else if (getNowPlaying() != null) {
+        if (getNowPlaying() != null) {
             stopSong();
         }
         setNowPlaying(song);

@@ -59,6 +59,7 @@ public class PlaybackMenu extends PlayerMenu {
         controller.getShortcutPause().setText("Pause");
         controller.getMenuPause().setText("Pause");
         play(index);
+        buildShuffledRowList();
     }
 
     /**
@@ -211,17 +212,20 @@ public class PlaybackMenu extends PlayerMenu {
      */
     public void buildShuffledRowList() {
         if (isShuffleEnabled()) {
-            logger.info("Shuffle: ON");
+            logger.debug("Shuffle: ON");
             List<Integer> list = new ArrayList<>();
             for (int i = 0; i < controller.getSongList().size(); i++) {
                 list.add(i);
             }
             Collections.shuffle(list);
+            if (controller.getPlayer().getNowPlaying() != null) {
+                list.add(0, controller.getSongList().indexOf(controller.getPlayer().getNowPlaying()));
+            }
             logger.debug("Built shuffled row list: {}", list);
             shuffledRowList = list;
             shuffledRowIter = 0;
         } else {
-            logger.info("Shuffle: OFF");
+            logger.debug("Shuffle: OFF");
             shuffledRowList = null;
         }
     }
