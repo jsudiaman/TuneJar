@@ -11,24 +11,28 @@ import org.junit.Test;
 
 import java.util.function.Supplier;
 
+import javafx.scene.media.MediaException;
+
 public class PlaybackMenuTest extends IntegrationTest {
 
     @Test
     public void testMediaControls() {
-        // Currently having trouble with this on CircleCI
-        assumeFalse(SystemUtils.IS_OS_LINUX);
-
-        // Test play, pause, and stop controls
-        Supplier<String> status = () -> getController().getStatus().getText();
-        getDriver().clickOn("All Music").clickOn("Cute.wav");
-        getDriver().clickOn("Playback").clickOn("#menuPlay");
-        assertTrue(status.get().startsWith("Now Playing"));
-        getDriver().clickOn("Playback").clickOn("#menuPause");
-        assertTrue(status.get().startsWith("Paused"));
-        getDriver().clickOn("Playback").clickOn("#menuPause");
-        assertTrue(status.get().startsWith("Now Playing"));
-        getDriver().clickOn("Playback").clickOn("#menuStop");
-        assertEquals("", status.get());
+        try {
+            // Test play, pause, and stop controls
+            Supplier<String> status = () -> getController().getStatus().getText();
+            getDriver().clickOn("All Music").clickOn("Cute.wav");
+            getDriver().clickOn("Playback").clickOn("#menuPlay");
+            assertTrue(status.get().startsWith("Now Playing"));
+            getDriver().clickOn("Playback").clickOn("#menuPause");
+            assertTrue(status.get().startsWith("Paused"));
+            getDriver().clickOn("Playback").clickOn("#menuPause");
+            assertTrue(status.get().startsWith("Now Playing"));
+            getDriver().clickOn("Playback").clickOn("#menuStop");
+            assertEquals("", status.get());
+        } catch (MediaException e) {
+            assumeFalse("Linux error", SystemUtils.IS_OS_LINUX);
+            throw e;
+        }
     }
 
 }

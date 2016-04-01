@@ -1,29 +1,12 @@
-/*
- * TuneJar <http://sudicode.com/tunejar/>
- * Copyright (C) 2016 Jonathan Sudiaman
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.sudicode.tunejar.player;
 
-import com.google.common.collect.HashMultiset;
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
 import com.sudicode.tunejar.song.Songs;
+
+import com.google.common.collect.HashMultiset;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -202,7 +185,7 @@ public class Player extends Application {
     public void refresh() {
         Task<?> refresher = new Refresher();
         refresher.progressProperty().addListener((obs, oldVal, newVal) -> getController().getStatus()
-                .setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal)));
+                        .setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal)));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<?> future = executor.submit(refresher);
         executor.shutdown();
@@ -212,7 +195,7 @@ public class Player extends Application {
             } catch (ExecutionException | InterruptedException | TimeoutException e) {
                 logger.error(e.getMessage(), e);
                 Platform.runLater(() -> getController().getStatus()
-                        .setText("An error has occurred: " + e.getClass().getSimpleName()));
+                                .setText("An error has occurred: " + e.getClass().getSimpleName()));
             }
         }).start();
     }
@@ -501,8 +484,8 @@ public class Player extends Application {
         alert.setTitle("Welcome!");
         alert.setHeaderText(null);
         alert.setContentText("Hi there! It seems like you don't have any directories set up. "
-                + "That usually happens when you run this for the first time. "
-                + "If that's the case, let's find your songs!");
+                        + "That usually happens when you run this for the first time. "
+                        + "If that's the case, let's find your songs!");
         alert.showAndWait();
 
         // Begin building up a data structure to store directories
@@ -553,7 +536,7 @@ public class Player extends Application {
             // Depth first search through each directory for supported files
             try (Stream<Path> str = Files.walk(directory.toPath())) {
                 str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
-                        .forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
+                                .forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
             } catch (IOException e) {
                 logger.error("Failed to access directory: " + directory, e);
             }
