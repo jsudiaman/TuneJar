@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class TestDefaults {
 
@@ -49,7 +48,8 @@ public class TestDefaults {
 
     private static Map<File, URL> getSampleMusicMap() {
         Map<File, URL> sampleMusicMap = new HashMap<>();
-        Consumer<String> sampleMusicRegistrar = (file) -> {
+        String[] sampleMusicFiles = new String[] { "AfterDark.mp3", "CrunkKnight.m4a", "Cute.wav" };
+        for (String file : sampleMusicFiles) {
             try {
                 String fileType = FilenameUtils.getExtension(file);
                 if (fileType.equals("m4a")) {
@@ -60,10 +60,6 @@ public class TestDefaults {
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
-        };
-        String[] sampleMusicFiles = new String[] { "AfterDark.mp3", "CrunkKnight.m4a", "Cute.wav" };
-        for (String file : sampleMusicFiles) {
-            sampleMusicRegistrar.accept(file);
         }
         return Collections.unmodifiableMap(sampleMusicMap);
     }
