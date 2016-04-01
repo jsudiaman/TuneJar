@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sudicode.tunejar.player.PlayerController">
+<BorderPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sudicode.tunejar.player.PlayerController">
 	<center>
 		<TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<columns>
@@ -46,7 +58,7 @@
 						</Menu>
 						<Menu mnemonicParsing="false" text="Playback">
 							<items>
-								<MenuItem mnemonicParsing="false" onAction="#play" text="Play" />
+								<MenuItem fx:id="playMenuItem" mnemonicParsing="false" onAction="#play" text="Play" />
 								<MenuItem fx:id="menuPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
 								<MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
 								<MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />

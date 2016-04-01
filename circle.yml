@@ -4,6 +4,10 @@ machine:
   java:
     version: oraclejdk8
 
+dependencies:
+  pre:
+    - sudo apt-get update; sudo apt-get install libavformat
+
 test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
