@@ -11,8 +11,6 @@ import org.junit.Test;
 
 import java.util.function.Supplier;
 
-import javafx.scene.media.MediaException;
-
 public class PlaybackMenuTest extends IntegrationTest {
 
     @Test
@@ -29,7 +27,7 @@ public class PlaybackMenuTest extends IntegrationTest {
             assertTrue(status.get().startsWith("Now Playing"));
             getDriver().clickOn("Playback").clickOn("#menuStop");
             assertEquals("", status.get());
-        } catch (MediaException e) {
+        } catch (NullPointerException e) {
             assumeFalse("Linux error", SystemUtils.IS_OS_LINUX);
             throw e;
         }
