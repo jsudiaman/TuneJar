@@ -61,9 +61,7 @@ public class TestDefaults {
                 throw new RuntimeException(e);
             }
         };
-        String[] sampleMusicFiles = new String[] {"AfterDark.mp3", "Dubstep.mp3", "Highrider.mp3", "MorningCruise.mp3",
-                "QueenOfTheNight.mp3", "CrunkKnight.m4a", "MeatballParade.m4a", "Cute.wav", "FunnySong.wav",
-                "LittleIdea.wav"};
+        String[] sampleMusicFiles = new String[] { "AfterDark.mp3", "CrunkKnight.m4a", "Cute.wav" };
         for (String file : sampleMusicFiles) {
             sampleMusicRegistrar.accept(file);
         }
