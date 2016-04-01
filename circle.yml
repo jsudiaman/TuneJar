@@ -6,7 +6,7 @@ machine:
 
 dependencies:
   pre:
-    - sudo apt-get update; sudo apt-get install libavformat54
+    - sudo apt-get update; sudo apt-get install libavformat53
 
 test:
   post:
