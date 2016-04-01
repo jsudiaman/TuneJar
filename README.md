@@ -21,6 +21,8 @@ Avoid the hassles of manual library management. If you add or delete files from 
 ### [<span class="octicon octicon-link"></span>](#no-java-no-problem)No Java? No Problem!
 TuneJar is available as a native app which can be used without ever installing Java on your machine. These applications are built directly from the TuneJar archive. Thus, they are *fully functional copies* of TuneJar - not stripped down versions with less features!
 
+<sub>Native applications provided by [JWrapper](http://www.jwrapper.com/).</sub>
+
 ### Links
 * [Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds)
 * [Wiki](https://github.com/sudiamanj/TuneJar/wiki)
