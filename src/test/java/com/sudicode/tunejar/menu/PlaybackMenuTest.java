@@ -1,23 +1,34 @@
 package com.sudicode.tunejar.menu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 import com.sudicode.tunejar.player.IntegrationTest;
+
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
+
+import java.util.function.Supplier;
 
 public class PlaybackMenuTest extends IntegrationTest {
 
     @Test
     public void testMediaControls() {
-        final String testSongTitle = "Cute.wav";
+        // Currently having trouble with this on CircleCI
+        assumeFalse(SystemUtils.IS_OS_LINUX);
 
-        // Select song
-        getDriver().clickOn("All Music").clickOn(testSongTitle);
-
-        // Test play
-        getDriver().clickOn("Playback").clickOn("#playMenuItem");
-        getDriver().sleep(1000);
-        assertEquals(testSongTitle, getController().getPlayer().getNowPlaying().getTitle());
+        // Test play, pause, and stop controls
+        Supplier<String> status = () -> getController().getStatus().getText();
+        getDriver().clickOn("All Music").clickOn("Cute.wav");
+        getDriver().clickOn("Playback").clickOn("#menuPlay");
+        assertTrue(status.get().startsWith("Now Playing"));
+        getDriver().clickOn("Playback").clickOn("#menuPause");
+        assertTrue(status.get().startsWith("Paused"));
+        getDriver().clickOn("Playback").clickOn("#menuPause");
+        assertTrue(status.get().startsWith("Now Playing"));
+        getDriver().clickOn("Playback").clickOn("#menuStop");
+        assertEquals("", status.get());
     }
 
 }

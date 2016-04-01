@@ -58,9 +58,9 @@
 						</Menu>
 						<Menu mnemonicParsing="false" text="Playback">
 							<items>
-								<MenuItem fx:id="playMenuItem" mnemonicParsing="false" onAction="#play" text="Play" />
+								<MenuItem fx:id="menuPlay" mnemonicParsing="false" onAction="#play" text="Play" />
 								<MenuItem fx:id="menuPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
-								<MenuItem mnemonicParsing="false" onAction="#stop" text="Stop" />
+								<MenuItem fx:id="menuStop" mnemonicParsing="false" onAction="#stop" text="Stop" />
 								<MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
 								<MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
 		                        <SeparatorMenuItem mnemonicParsing="false" />

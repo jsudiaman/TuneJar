@@ -4,10 +4,6 @@ machine:
   java:
     version: oraclejdk8
 
-dependencies:
-  pre:
-    - sudo apt-get update; sudo apt-get install libavcodec53; sudo apt-get autoremove; sudo apt-get install libavformat53; sudo apt-get autoremove; sudo apt-get install libglib2.0-dev; sudo apt-get autoremove;
-
 test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
