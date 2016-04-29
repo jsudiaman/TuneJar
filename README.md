@@ -2,7 +2,7 @@
 
 ![Screenshot](http://sudicode.com/images/screenshot.png)
 
-[Download](http://github.com/sudiamanj/TuneJar/releases/tag/v0.1-alpha)
+[![Download TuneJar](http://sudicode.com/images/download-button.png)](http://github.com/sudiamanj/TuneJar/releases/tag/v0.1-alpha)
 
 ### [<span class="octicon octicon-link"></span>](#what-is-tunejar)What is TuneJar?
 TuneJar is a Java-based music player that is lightweight, cross-platform, and best of all, open source.
