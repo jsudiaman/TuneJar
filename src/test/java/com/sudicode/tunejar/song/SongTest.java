@@ -42,7 +42,7 @@ public abstract class SongTest {
             System.out.println("Done.");
         }
 
-        _song = Songs.create(file);
+        _song = SongFactory.create(file);
         _originalTitle = _song.getTitle();
         _originalArtist = _song.getArtist();
         _originalAlbum = _song.getAlbum();
@@ -50,7 +50,7 @@ public abstract class SongTest {
 
     @After
     public final void tearDown() throws Exception {
-        _song = Songs.create(new File(_songFile));
+        _song = SongFactory.create(new File(_songFile));
         _song.setTitle(_originalTitle);
         _song.setArtist(_originalArtist);
         _song.setAlbum(_originalAlbum);
@@ -62,7 +62,7 @@ public abstract class SongTest {
         _song.setTitle("abc123");
 
         // Assertion: ONLY the title has changed in the metadata.
-        Song song = Songs.create(new File(_songFile));
+        Song song = SongFactory.create(new File(_songFile));
         assertEquals("abc123", song.getTitle());
         assertEquals(_originalArtist, song.getArtist());
         assertEquals(_originalAlbum, song.getAlbum());
@@ -74,7 +74,7 @@ public abstract class SongTest {
         _song.setArtist("abc123");
 
         // Assertion: ONLY the artist has changed in the metadata.
-        Song song = Songs.create(new File(_songFile));
+        Song song = SongFactory.create(new File(_songFile));
         assertEquals(_originalTitle, song.getTitle());
         assertEquals("abc123", song.getArtist());
         assertEquals(_originalAlbum, song.getAlbum());
@@ -86,7 +86,7 @@ public abstract class SongTest {
         _song.setAlbum("abc123");
 
         // Assertion: ONLY the album has changed in the metadata.
-        Song song = Songs.create(new File(_songFile));
+        Song song = SongFactory.create(new File(_songFile));
         assertEquals(_originalTitle, song.getTitle());
         assertEquals(_originalArtist, song.getArtist());
         assertEquals("abc123", song.getAlbum());

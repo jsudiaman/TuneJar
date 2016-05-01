@@ -80,7 +80,7 @@ public class Playlist implements List<Song> {
      */
     @Override
     public boolean add(Song s) {
-        return list.add(Songs.duplicate(s));
+        return list.add(SongFactory.duplicate(s));
     }
 
     /**

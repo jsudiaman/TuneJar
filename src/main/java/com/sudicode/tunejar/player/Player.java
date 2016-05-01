@@ -4,7 +4,7 @@ import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
-import com.sudicode.tunejar.song.Songs;
+import com.sudicode.tunejar.song.SongFactory;
 
 import com.google.common.collect.HashMultiset;
 
@@ -301,7 +301,7 @@ public class Player extends Application {
                 ExecutorService innerExec = Executors.newWorkStealingPool();
                 for (String nextLine; (nextLine = reader.readLine()) != null;) {
                     final String s = nextLine;
-                    sFutures.add(innerExec.submit(() -> Songs.create(new File(s))));
+                    sFutures.add(innerExec.submit(() -> SongFactory.create(new File(s))));
                 }
                 innerExec.shutdown();
             }
@@ -536,7 +536,7 @@ public class Player extends Application {
             // Depth first search through each directory for supported files
             try (Stream<Path> str = Files.walk(directory.toPath())) {
                 str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
-                                .forEach(path -> futures.add(executor.submit(() -> Songs.create(path.toFile()))));
+                                .forEach(path -> futures.add(executor.submit(() -> SongFactory.create(path.toFile()))));
             } catch (IOException e) {
                 logger.error("Failed to access directory: " + directory, e);
             }

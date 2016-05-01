@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class Songs {
+public class SongFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(Songs.class);
+    private static final Logger logger = LoggerFactory.getLogger(SongFactory.class);
 
-    private Songs() {}
+    private SongFactory() {}
 
     /**
      * Constructs a {@link Song} out of a file.
