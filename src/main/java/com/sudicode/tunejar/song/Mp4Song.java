@@ -2,12 +2,18 @@ package com.sudicode.tunejar.song;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.mp4.Mp4FieldKey;
 import org.jaudiotagger.tag.mp4.Mp4Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Mp4Song extends Song {
 
@@ -34,7 +40,8 @@ public class Mp4Song extends Song {
     }
 
     @Override
-    public void setTitle(String title) throws Exception {
+    public void setTitle(String title) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
+            InvalidAudioFrameException, CannotWriteException {
         AudioFile f = AudioFileIO.read(audioFile);
         Mp4Tag tag = (Mp4Tag) f.getTag();
         tag.setField(tag.createField(Mp4FieldKey.TITLE, title));
@@ -43,7 +50,8 @@ public class Mp4Song extends Song {
     }
 
     @Override
-    public void setArtist(String artist) throws Exception {
+    public void setArtist(String artist) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
+            InvalidAudioFrameException, CannotWriteException {
         AudioFile f = AudioFileIO.read(audioFile);
         Mp4Tag tag = (Mp4Tag) f.getTag();
         tag.setField(tag.createField(Mp4FieldKey.ARTIST, artist));
@@ -52,7 +60,8 @@ public class Mp4Song extends Song {
     }
 
     @Override
-    public void setAlbum(String album) throws Exception {
+    public void setAlbum(String album) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
+            InvalidAudioFrameException, CannotWriteException {
         AudioFile f = AudioFileIO.read(audioFile);
         Mp4Tag tag = (Mp4Tag) f.getTag();
         tag.setField(tag.createField(Mp4FieldKey.ALBUM, album));

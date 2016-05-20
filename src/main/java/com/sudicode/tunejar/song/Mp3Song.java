@@ -1,8 +1,12 @@
 package com.sudicode.tunejar.song;
 
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.id3.ID3v1Tag;
 import org.jaudiotagger.tag.id3.ID3v24Frames;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
@@ -10,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Mp3Song extends Song {
 
@@ -33,7 +38,8 @@ public class Mp3Song extends Song {
                 artist.set(tag.getFirst(FieldKey.ARTIST));
                 album.set(tag.getFirst(FieldKey.ALBUM));
             }
-        } catch (Exception e) {
+        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException
+                | InvalidAudioFrameException e) {
             logger.error("Unable to parse: " + mp3File, e);
         }
     }

@@ -2,13 +2,19 @@ package com.sudicode.tunejar.song;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
+import java.io.IOException;
 
 import javafx.beans.property.SimpleStringProperty;
 
@@ -31,7 +37,7 @@ public abstract class Song {
      * <p>
      * Constructs a new Song.
      * </p>
-     * <p>
+     * 
      * <p>
      * Note that this constructor does not initialize <code>audioFile</code>. To
      * avoid possible NPEs, care should be taken to ensure that at the very
@@ -77,7 +83,8 @@ public abstract class Song {
             setArtist(getArtist());
             setAlbum(getAlbum());
             return true;
-        } catch (Exception e) {
+        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException
+                | CannotWriteException e) {
             logger.error("Unable to edit song: " + toString(), e);
             return false;
         }
@@ -86,7 +93,8 @@ public abstract class Song {
     /**
      * Sets the title in both this object and the audio file.
      */
-    public void setTitle(String title) throws Exception {
+    public void setTitle(String title) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
+            InvalidAudioFrameException, CannotWriteException {
         AudioFile f = AudioFileIO.read(audioFile);
         Tag tag = f.getTag();
         tag.setField(FieldKey.TITLE, title);
@@ -105,7 +113,8 @@ public abstract class Song {
     /**
      * Sets the artist in both this object and the audio file.
      */
-    public void setArtist(String artist) throws Exception {
+    public void setArtist(String artist) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
+            InvalidAudioFrameException, CannotWriteException {
         AudioFile f = AudioFileIO.read(audioFile);
         Tag tag = f.getTag();
         tag.setField(FieldKey.ARTIST, artist);
@@ -120,7 +129,8 @@ public abstract class Song {
     /**
      * Sets the album in both this object and the audio file.
      */
-    public void setAlbum(String album) throws Exception {
+    public void setAlbum(String album) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
+            InvalidAudioFrameException, CannotWriteException {
         AudioFile f = AudioFileIO.read(audioFile);
         Tag tag = f.getTag();
         tag.setField(FieldKey.ALBUM, album);
