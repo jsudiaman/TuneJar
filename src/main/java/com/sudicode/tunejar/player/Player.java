@@ -27,9 +27,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,7 +77,7 @@ public class Player extends Application {
     // Data
     private AtomicBoolean initialized;
     private Playlist masterPlaylist;
-    private Set<File> directories;
+    private LinkedHashSet<File> directories;
     private Options options;
     private double mediaPlayerSpeed;
 
@@ -123,7 +123,7 @@ public class Player extends Application {
         // Initialization.
         setInstance(this);
         setSpeed(1);
-        setOptions(new Options(Defaults.OPTIONS_FILE.toFile()));
+        setOptions(Options.newInstance());
 
         // Load the FXML file and display the interface.
         primaryStage = stage;
@@ -503,7 +503,7 @@ public class Player extends Application {
      *
      * @return A set containing the directories
      */
-    private Set<File> readDirectories() {
+    private LinkedHashSet<File> readDirectories() {
         return getOptions().getDirectories();
     }
 

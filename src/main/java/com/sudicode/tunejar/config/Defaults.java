@@ -9,15 +9,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class Defaults {
 
-    public static final Set<File> DIRECTORIES;
+    public static final LinkedHashSet<File> DIRECTORIES;
     public static final long TIMEOUT;
     public static final String ICON;
     public static final Path LOG_FOLDER;
-    public static final Path OPTIONS_FILE;
     public static final String PLAYER_FXML;
     public static final Path PLAYLISTS_FOLDER;
     public static final String[] SORT_ORDER;
@@ -42,7 +40,6 @@ public class Defaults {
 
         // TuneJar home
         TUNEJAR_HOME = Paths.get(System.getProperty("user.home"), "Documents", "TuneJar");
-        OPTIONS_FILE = TUNEJAR_HOME.resolve("options.json");
         PLAYLISTS_FOLDER = TUNEJAR_HOME.resolve("Playlists");
         LOG_FOLDER = TUNEJAR_HOME.resolve("Logs");
 

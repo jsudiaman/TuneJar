@@ -1,197 +1,88 @@
 package com.sudicode.tunejar.config;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.prefs.Preferences;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn.SortType;
 
-@SuppressWarnings("unchecked")
+/**
+ * The {@link Options} object is a set of getter/setter pairs which safely
+ * interact with TuneJar's {@link Preferences} node. It can be instantiated once
+ * per session using the {@link Options#newInstance()} method.
+ */
 public class Options {
 
-    private static final Logger logger = LoggerFactory.getLogger(Options.class);
+    private static Options instance;
 
-    // Data
-    private JSONObject backingMap;
-    private boolean writeEnabled;
+    private Preferences prefs;
 
-    // I/O
-    private final File optionsFile;
-    private RandomAccessFile raf;
-
-    public Options(File optionsFile) {
-        this.optionsFile = optionsFile;
-        this.writeEnabled = true;
-
-        try {
-            init();
-        } catch (ParseException e) {
-            handleParseException(e);
-        } catch (IOException e) {
-            handleIOException(e);
-        }
+    private Options() {
+        prefs = Preferences.userNodeForPackage(getClass());
     }
 
-    private void init() throws IOException, ParseException {
-        if (optionsFile.exists()) {
-            raf = new RandomAccessFile(optionsFile, "rw");
-            backingMap = read();
+    /**
+     * Instantiates {@link Options}.
+     * 
+     * @return An instance of {@link Options}.
+     * @throws IllegalStateException If an instance already exists.
+     */
+    public static synchronized Options newInstance() {
+        if (instance == null) {
+            instance = new Options();
+            return instance;
         } else {
-            optionsFile.createNewFile();
-            raf = new RandomAccessFile(optionsFile, "rw");
-            reset();
+            throw new IllegalStateException("Instance already exists");
         }
-    }
-
-    /** Builds the backing map by parsing the options file. */
-    private JSONObject read() throws IOException, ParseException {
-        String jsonString = raf.readLine();
-        JSONParser parser = new JSONParser();
-        return (JSONObject) parser.parse(jsonString);
-    }
-
-    /** Writes the backing map to the options file. */
-    private void write() {
-        if (writeEnabled) {
-            try {
-                raf.setLength(0);
-                raf.write(backingMap.toJSONString().getBytes());
-                logger.debug("Settings saved successfully to: " + optionsFile);
-            } catch (IOException e) {
-                handleIOException(e);
-            }
-        } else {
-            logger.debug("Write is disabled.");
-        }
-    }
-
-    /** Resets options back to their default settings. */
-    private void reset() {
-        backingMap = new JSONObject();
-        setTheme(Defaults.THEME);
-        setDirectories(Defaults.DIRECTORIES);
-        setVolume(Defaults.VOLUME);
-        setSortOrder(Defaults.SORT_ORDER);
-        setColumnOrder(Defaults.COLUMN_ORDER);
-        setTitleSortDirection(Defaults.SORT_DIRECTION);
-        setArtistSortDirection(Defaults.SORT_DIRECTION);
-        setAlbumSortDirection(Defaults.SORT_DIRECTION);
     }
 
     public String getTheme() {
-        if (backingMap.get("theme") == null)
-            setTheme(Defaults.THEME);
-
-        return (String) backingMap.get("theme");
+        return prefs.get("theme", Defaults.THEME);
     }
 
     public void setTheme(String theme) {
-        backingMap.put("theme", theme);
-        write();
+        prefs.put("theme", theme);
     }
 
-    public Set<File> getDirectories() {
-        if (backingMap.get("directories") == null)
-            setDirectories(Defaults.DIRECTORIES);
-
-        // Convert JSONArray to Set
-        Set<File> dirSet = new LinkedHashSet<>();
-        JSONArray arr = (JSONArray) backingMap.get("directories");
-        arr.forEach((dir) -> dirSet.add(new File(dir.toString())));
-
-        // Return the resulting set
-        return dirSet;
+    public LinkedHashSet<File> getDirectories() {
+        byte[] buff = prefs.getByteArray("directories", null);
+        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.DIRECTORIES;
     }
 
-    public void setDirectories(Set<File> directories) {
-        // Convert Set to JSONArray
-        JSONArray arr = new JSONArray();
-        directories.forEach((dir) -> arr.add(dir.getAbsolutePath()));
-
-        // Store the resulting JSONArray
-        backingMap.put("directories", arr);
-        write();
+    public void setDirectories(LinkedHashSet<File> directories) {
+        prefs.putByteArray("directories", SerializationUtils.serialize(directories));
     }
 
-    public Double getVolume() {
-        if (backingMap.get("volume") == null)
-            setVolume(Defaults.VOLUME);
-
-        return (Double) backingMap.get("volume");
+    public double getVolume() {
+        return prefs.getDouble("volume", Defaults.VOLUME);
     }
 
-    public void setVolume(Double volume) {
-        backingMap.put("volume", volume);
-        write();
+    public void setVolume(double volume) {
+        prefs.putDouble("volume", volume);
     }
 
     public String[] getSortOrder() {
-        if (backingMap.get("sortOrder") == null)
-            setSortOrder(Defaults.SORT_ORDER);
-
-        // Convert JSONArray to String array
-        JSONArray arr = (JSONArray) backingMap.get("sortOrder");
-        List<String> list = new ArrayList<>();
-        arr.forEach((o) -> list.add(o.toString()));
-
-        // Return the resulting String array
-        return list.toArray(new String[list.size()]);
+        byte[] buff = prefs.getByteArray("sortOrder", null);
+        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.SORT_ORDER;
     }
 
     public void setSortOrder(String... sorts) {
-        // Convert String array to JSONArray
-        JSONArray arr = new JSONArray();
-        arr.addAll(Arrays.asList(sorts));
-
-        // Store the resulting JSONArray
-        backingMap.put("sortOrder", arr);
-        write();
+        prefs.putByteArray("sortOrder", SerializationUtils.serialize(sorts));
     }
 
     public String[] getColumnOrder() {
-        if (backingMap.get("columnOrder") == null) {
-            setColumnOrder(Defaults.COLUMN_ORDER);
-        }
-
-        // Convert JSONArray to String array
-        JSONArray arr = (JSONArray) backingMap.get("columnOrder");
-        List<String> list = new ArrayList<>();
-        arr.forEach((o) -> list.add(o.toString()));
-
-        // Return the resulting String array
-        return list.toArray(new String[list.size()]);
+        byte[] buff = prefs.getByteArray("columnOrder", null);
+        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.COLUMN_ORDER;
     }
 
     public void setColumnOrder(String... columns) {
-        // Convert String array to JSONArray
-        JSONArray arr = new JSONArray();
-        arr.addAll(Arrays.asList(columns));
-
-        // Store the resulting JSONArray
-        backingMap.put("columnOrder", arr);
-        write();
+        prefs.putByteArray("columnOrder", SerializationUtils.serialize(columns));
     }
 
     public SortType getTitleSortDirection() {
-        if (backingMap.get("titleSortDirection") == null) {
-            setTitleSortDirection(Defaults.SORT_DIRECTION);
-        }
-
-        switch ((String) backingMap.get("titleSortDirection")) {
+        switch (prefs.get("titleSortDirection", Defaults.SORT_DIRECTION)) {
             case "ASCENDING":
                 return SortType.ASCENDING;
             case "DESCENDING":
@@ -202,16 +93,11 @@ public class Options {
     }
 
     public void setTitleSortDirection(String direction) {
-        backingMap.put("titleSortDirection", direction);
-        write();
+        prefs.put("titleSortDirection", direction);
     }
 
     public SortType getArtistSortDirection() {
-        if (backingMap.get("artistSortDirection") == null) {
-            setArtistSortDirection(Defaults.SORT_DIRECTION);
-        }
-
-        switch ((String) backingMap.get("artistSortDirection")) {
+        switch (prefs.get("artistSortDirection", Defaults.SORT_DIRECTION)) {
             case "ASCENDING":
                 return SortType.ASCENDING;
             case "DESCENDING":
@@ -222,16 +108,11 @@ public class Options {
     }
 
     public void setArtistSortDirection(String direction) {
-        backingMap.put("artistSortDirection", direction);
-        write();
+        prefs.put("artistSortDirection", direction);
     }
 
     public SortType getAlbumSortDirection() {
-        if (backingMap.get("albumSortDirection") == null) {
-            setAlbumSortDirection(Defaults.SORT_DIRECTION);
-        }
-
-        switch ((String) backingMap.get("albumSortDirection")) {
+        switch (prefs.get("albumSortDirection", Defaults.SORT_DIRECTION)) {
             case "ASCENDING":
                 return SortType.ASCENDING;
             case "DESCENDING":
@@ -242,49 +123,15 @@ public class Options {
     }
 
     public void setAlbumSortDirection(String direction) {
-        backingMap.put("albumSortDirection", direction);
-        write();
+        prefs.put("albumSortDirection", direction);
     }
 
     public boolean isShuffle() {
-        if (backingMap.get("shuffle") == null) {
-            setShuffle(Defaults.SHUFFLE);
-        }
-
-        return (boolean) backingMap.get("shuffle");
+        return prefs.getBoolean("shuffle", Defaults.SHUFFLE);
     }
 
     public void setShuffle(boolean shuffle) {
-        backingMap.put("shuffle", shuffle);
-        write();
-    }
-
-    public void fixCorruptedFile() {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("File Corrupted");
-        alert.setHeaderText(null);
-        alert.setContentText(optionsFile + " is corrupted. Your settings have been reset.");
-        alert.showAndWait();
-        reset();
-    }
-
-    private void handleParseException(ParseException e) {
-        logger.error(e.getMessage(), e);
-        fixCorruptedFile();
-    }
-
-    private void handleIOException(IOException e) {
-        // Log the error and alert the user.
-        logger.error(e.getMessage(), e);
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Read Error");
-        alert.setHeaderText(null);
-        alert.setContentText("Could not access " + optionsFile + ". Your settings will not be saved.");
-        alert.showAndWait();
-
-        // Disable write access, then reset.
-        writeEnabled = false;
-        reset();
+        prefs.putBoolean("shuffle", shuffle);
     }
 
 }

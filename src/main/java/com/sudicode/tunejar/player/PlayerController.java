@@ -1,5 +1,6 @@
 package com.sudicode.tunejar.player;
 
+import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.menu.FileMenu;
 import com.sudicode.tunejar.menu.PlaybackMenu;
 import com.sudicode.tunejar.menu.PlaylistMenu;
@@ -184,7 +185,7 @@ public class PlayerController implements Initializable {
         if (columnOrder.size() == 3) {
             getSongTable().getColumns().setAll(columnOrder);
         } else {
-            getPlayer().getOptions().fixCorruptedFile();
+            getPlayer().getOptions().setColumnOrder(Defaults.COLUMN_ORDER);
         }
 
         // When the column order changes, save changes to the options file.
