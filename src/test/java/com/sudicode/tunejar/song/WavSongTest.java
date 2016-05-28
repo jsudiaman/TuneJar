@@ -48,16 +48,16 @@ public class WavSongTest {
     }
 
     /**
-     * Ensure that the setter for the title throws {@link AssertionError}.
+     * Ensure that the setter for the title throws
+     * {@link UnsupportedOperationException}.
      */
     @Test
     public void testSetTitle() {
         try {
             wavSong.setTitle("New Title");
-        } catch (AssertionError expected) {
-            return;
+            fail();
+        } catch (UnsupportedOperationException expected) {
         }
-        fail("Expected to catch java.lang.AssertionError");
     }
 
     /**
@@ -69,16 +69,16 @@ public class WavSongTest {
     }
 
     /**
-     * Ensure that the setter for the artist throws {@link AssertionError}.
+     * Ensure that the setter for the artist throws
+     * {@link UnsupportedOperationException}.
      */
     @Test
     public void testSetArtist() {
         try {
             wavSong.setArtist("New Artist");
-        } catch (AssertionError expected) {
-            return;
+            fail();
+        } catch (UnsupportedOperationException expected) {
         }
-        fail("Expected to catch java.lang.AssertionError");
     }
 
     /**
@@ -90,16 +90,16 @@ public class WavSongTest {
     }
 
     /**
-     * Ensure that the setter for the album throws {@link AssertionError}.
+     * Ensure that the setter for the album throws
+     * {@link UnsupportedOperationException}.
      */
     @Test
     public void testSetAlbum() {
         try {
             wavSong.setAlbum("New Album");
-        } catch (AssertionError expected) {
-            return;
+            fail();
+        } catch (UnsupportedOperationException expected) {
         }
-        fail("Expected to catch java.lang.AssertionError");
     }
 
     /**

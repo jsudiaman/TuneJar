@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-public class Defaults {
+public final class Defaults {
 
     public static final LinkedHashSet<File> DIRECTORIES;
     public static final long TIMEOUT;

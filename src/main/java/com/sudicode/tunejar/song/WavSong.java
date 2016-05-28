@@ -22,17 +22,17 @@ public class WavSong extends Song {
 
     @Override
     public void setTitle(String title) {
-        throw new AssertionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setArtist(String artist) {
-        throw new AssertionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setAlbum(String album) {
-        throw new AssertionError();
+        throw new UnsupportedOperationException();
     }
 
 }

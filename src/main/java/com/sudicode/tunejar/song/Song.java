@@ -72,8 +72,8 @@ public abstract class Song {
      * implies that changes can be made to the audio file itself (not just this
      * object). If such an operation is unsupported, it is acceptable to
      * hard-code this method to return <code>false</code>. In that case, setters
-     * should also throw an {@link AssertionError}, since setters should
-     * <b>not</b> be accessible if this method returns false.
+     * should also throw an {@link UnsupportedOperationException}, since setters
+     * should <b>not</b> be functional if this method returns false.
      *
      * @return True if the song can be edited.
      */

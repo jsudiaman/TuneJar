@@ -13,7 +13,7 @@ import javafx.scene.control.TableColumn.SortType;
  * interact with TuneJar's {@link Preferences} node. It can be instantiated once
  * per session using the {@link Options#newInstance()} method.
  */
-public class Options {
+public final class Options {
 
     private static Options instance;
 
