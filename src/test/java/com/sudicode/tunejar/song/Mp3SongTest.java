@@ -3,6 +3,7 @@ package com.sudicode.tunejar.song;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
@@ -39,7 +40,8 @@ public class Mp3SongTest {
      */
     @Test
     public void testGetAbsoluteFilename() {
-        assertTrue(mp3Song.getAbsoluteFilename().endsWith(FILENAME));
+        String absoluteFilename = FilenameUtils.separatorsToUnix(mp3Song.getAbsoluteFilename());
+        assertTrue(absoluteFilename.endsWith(FILENAME));
     }
 
     /**

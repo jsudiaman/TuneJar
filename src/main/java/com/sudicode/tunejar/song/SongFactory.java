@@ -49,8 +49,7 @@ public class SongFactory {
             return new WavSong((WavSong) song);
         }
 
-        // All implementations of Song should have a copy constructor.
-        throw new AssertionError();
+        throw new IllegalArgumentException("'" + song + "' does not have a copy constructor.");
     }
 
 }
