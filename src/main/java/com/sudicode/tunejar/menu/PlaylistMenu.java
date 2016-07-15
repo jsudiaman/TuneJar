@@ -1,6 +1,6 @@
 package com.sudicode.tunejar.menu;
 
-import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
@@ -8,11 +8,8 @@ import com.sudicode.tunejar.song.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,10 +67,7 @@ public class PlaylistMenu extends PlayerMenu {
             }
             p.addAll(songsToAdd);
             try {
-                p.save();
-            } catch (IOException e) {
-                controller.getStatus().setText("Playlist \"" + p.getName() + "\" save unsuccessful.");
-                logger.error("Failed to save the playlist.", e);
+                p.save(controller.getPlayer().getOptions());
             } finally {
                 controller.refreshTables();
                 event.consume();
@@ -87,7 +81,6 @@ public class PlaylistMenu extends PlayerMenu {
     public void renamePlaylist() {
         Playlist pl = controller.getPlaylistTable().getSelectionModel().getSelectedItem();
         String oldName = pl.getName();
-        File oldFile = Defaults.PLAYLISTS_FOLDER.resolve(oldName + ".m3u").toFile();
 
         // Prompt the user for a playlist name.
         TextInputDialog dialog = new TextInputDialog(oldName);
@@ -112,10 +105,13 @@ public class PlaylistMenu extends PlayerMenu {
         }
 
         try {
-            // Rename the playlist and attempt to save changes.
+            // Rename the playlist and save changes.
+            Options options = controller.getPlayer().getOptions();
             pl.setName(playlistName.get());
-            pl.save();
-            Files.delete(Paths.get(oldFile.toURI()));
+            pl.save(options);
+            LinkedHashMap<String, String> playlists = options.getPlaylists();
+            playlists.remove(oldName);
+            options.setPlaylists(playlists);
             controller.refreshTables();
 
             // Also, rename the playlist in the "Song -> Add to...<PLAYLIST>"
@@ -153,7 +149,10 @@ public class PlaylistMenu extends PlayerMenu {
             return;
         }
         try {
-            Files.delete(Defaults.PLAYLISTS_FOLDER.resolve(pl.getName() + ".m3u"));
+            Options options = controller.getPlayer().getOptions();
+            LinkedHashMap<String, String> playlists = options.getPlaylists();
+            playlists.remove(pl.getName());
+            options.setPlaylists(playlists);
             controller.getPlaylistList().remove(pl);
 
             // Remove the playlist from the "Song -> Add To..." menu.

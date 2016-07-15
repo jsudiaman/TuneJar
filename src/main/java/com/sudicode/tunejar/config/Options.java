@@ -3,6 +3,7 @@ package com.sudicode.tunejar.config;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.prefs.Preferences;
 
@@ -132,6 +133,15 @@ public final class Options {
 
     public void setShuffle(boolean shuffle) {
         prefs.putBoolean("shuffle", shuffle);
+    }
+
+    public LinkedHashMap<String, String> getPlaylists() {
+        byte[] buff = prefs.getByteArray("playlists", null);
+        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.PLAYLISTS;
+    }
+
+    public void setPlaylists(LinkedHashMap<String, String> playlists) {
+        prefs.putByteArray("playlists", SerializationUtils.serialize(playlists));
     }
 
 }

@@ -4,10 +4,6 @@ import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.util.Optional;
 
 import javafx.application.Platform;
@@ -19,8 +15,6 @@ import javafx.scene.control.TextInputDialog;
  * Helper class for handling the File menu.
  */
 public class FileMenu extends PlayerMenu {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileMenu.class);
 
     public FileMenu(PlayerController controller) {
         super(controller);
@@ -56,20 +50,9 @@ public class FileMenu extends PlayerMenu {
             }
 
             Playlist p = new Playlist(pName);
-            try {
-                p.save();
-                controller.getPlaylistMenu().loadPlaylist(p);
-                return p;
-            } catch (IOException e) {
-                // Playlist creation fails if it cannot be successfully saved.
-                Alert failAlert = new Alert(Alert.AlertType.ERROR);
-                failAlert.setTitle("Playlist Write Error");
-                failAlert.setHeaderText("Failed to create playlist: " + pName);
-                failAlert.setContentText("The playlist failed to save. Make sure the name "
-                        + "does not contain any illegal characters.");
-                failAlert.showAndWait();
-                logger.error("Failed to save playlist: " + pName + ".m3u", e);
-            }
+            p.save(controller.getPlayer().getOptions());
+            controller.getPlaylistMenu().loadPlaylist(p);
+            return p;
         }
         return null;
     }

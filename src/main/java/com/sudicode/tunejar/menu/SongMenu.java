@@ -8,7 +8,6 @@ import com.sudicode.tunejar.song.WavSong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -142,9 +141,7 @@ public class SongMenu extends PlayerMenu {
         if ((pl = controller.getFileMenu().createPlaylist()) != null) {
             pl.addAll(songs);
             try {
-                pl.save();
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                pl.save(controller.getPlayer().getOptions());
             } finally {
                 controller.refreshTables();
             }
@@ -167,11 +164,7 @@ public class SongMenu extends PlayerMenu {
         Playlist pl = controller.getPlaylistTable().getSelectionModel().getSelectedItem();
         pl.removeAll(songs);
         controller.refreshTables();
-        try {
-            pl.save();
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
+        pl.save(controller.getPlayer().getOptions());
     }
 
     public void search() {

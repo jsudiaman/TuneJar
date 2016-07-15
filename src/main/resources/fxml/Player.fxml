@@ -127,13 +127,13 @@
       						<Label fx:id="status" focusTraversable="false" />
       					</items>
       				</ToolBar>
-      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
+      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="NEVER">
       					<items>
-      						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
-      						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
-      						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
-      						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
       						<Button mnemonicParsing="false" onAction="#play" text="Play" />
+      						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
+      						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
+      						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
+      						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
       					</items>
       				</ToolBar>
       			</children>

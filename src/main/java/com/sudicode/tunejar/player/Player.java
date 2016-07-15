@@ -8,17 +8,15 @@ import com.sudicode.tunejar.song.SongFactory;
 
 import com.google.common.collect.HashMultiset;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
@@ -27,8 +25,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -87,13 +87,6 @@ public class Player extends Application {
      * @param args The command line arguments
      */
     public static void main(String[] args) {
-        try {
-            // Make directories
-            FileUtils.forceMkdir(Defaults.LOG_FOLDER.toFile());
-            FileUtils.forceMkdir(Defaults.PLAYLISTS_FOLDER.toFile());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
         launch(args);
     }
 
@@ -272,14 +265,9 @@ public class Player extends Application {
                 ExecutorService outerExec = Executors.newWorkStealingPool();
 
                 // Iterate through each file in the working directory.
-                FilenameFilter filter = (dir, name) -> name.endsWith(".m3u");
-                File[] fileList = Defaults.PLAYLISTS_FOLDER.toFile().listFiles(filter);
-                if (fileList == null) {
-                    logger.error("Unable to access the working directory.");
-                } else {
-                    for (File f : fileList) {
-                        pFutures.add(outerExec.submit(() -> createPlaylist(f)));
-                    }
+                LinkedHashMap<String, String> lhm = getOptions().getPlaylists();
+                for (Entry<String, String> nameToM3UString : lhm.entrySet()) {
+                    pFutures.add(outerExec.submit(() -> createPlaylist(nameToM3UString)));
                 }
                 outerExec.shutdown();
                 for (Future<Playlist> playlist : pFutures) {
@@ -292,12 +280,15 @@ public class Player extends Application {
         /**
          * Creates a playlist out of an m3u file.
          */
-        private Playlist createPlaylist(File m3uFile) throws IOException, InterruptedException, ExecutionException {
-            Playlist playlist = new Playlist(m3uFile.getName().substring(0, m3uFile.getName().lastIndexOf(".m3u")));
+        private Playlist createPlaylist(Entry<String, String> nameToM3UString) throws IOException, InterruptedException, ExecutionException {
+            String name = nameToM3UString.getKey();
+            String m3uString = nameToM3UString.getValue();
+            
+            Playlist playlist = new Playlist(name);
             Collection<Future<Song>> sFutures = new ArrayDeque<>();
 
             // Get each song, line by line.
-            try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
+            try (BufferedReader reader = new BufferedReader(new StringReader(m3uString))) {
                 ExecutorService innerExec = Executors.newWorkStealingPool();
                 for (String nextLine; (nextLine = reader.readLine()) != null;) {
                     final String s = nextLine;

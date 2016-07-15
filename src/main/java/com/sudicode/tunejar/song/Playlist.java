@@ -1,17 +1,15 @@
 package com.sudicode.tunejar.song;
 
-import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.config.Options;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -58,19 +56,20 @@ public class Playlist implements List<Song> {
     // --------------- Saving --------------- //
 
     /**
-     * Save the playlist as a .m3u file.
+     * Save the playlist.
      *
+     * @param The {@link Options} object to save to
      * @throws IOException Failed to save the playlist
      */
-    public void save() throws IOException {
-        File outFile = Defaults.PLAYLISTS_FOLDER.resolve(name.get() + ".m3u").toFile();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outFile, false));
+    public void save(Options options) {
+        LinkedHashMap<String, String> playlists = options.getPlaylists();
+        StringBuilder sb = new StringBuilder();
         for (Song song : this) {
-            writer.write(song.getAbsoluteFilename());
-            writer.newLine();
+            sb.append(song.getAbsoluteFilename()).append(System.lineSeparator());
         }
-        writer.close();
-        logger.info("Successfully saved playlist: " + name.get() + ".m3u");
+        playlists.put(getName(), sb.toString());
+        options.setPlaylists(playlists);
+        logger.info("Successfully saved playlist: " + name.get());
     }
 
     // --------------- Method Overriding --------------- //
