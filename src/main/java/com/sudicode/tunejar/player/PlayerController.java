@@ -280,6 +280,10 @@ public class PlayerController implements Initializable {
         getFileMenu().removeDirectory();
     }
 
+    public void restart() {
+        getFileMenu().restart();
+    }
+
     // --------------- Playback --------------- //
 
     /** Plays or resumes the selected song. */

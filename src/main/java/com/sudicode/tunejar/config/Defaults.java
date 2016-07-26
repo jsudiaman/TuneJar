@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 public final class Defaults {
 
@@ -25,6 +26,7 @@ public final class Defaults {
     public static final double[] PRESET_SPEEDS;
     public static final boolean SHUFFLE;
     public static final LinkedHashMap<String, String> PLAYLISTS;
+    public static final Preferences PREFERENCES_NODE;
 
     static {
         DIRECTORIES = new LinkedHashSet<>();
@@ -42,6 +44,7 @@ public final class Defaults {
         PRESET_SPEEDS = new double[] {.25, .5, 1, 1.25, 1.5, 2};
         SHUFFLE = false;
         PLAYLISTS = new LinkedHashMap<>();
+        PREFERENCES_NODE = Preferences.userNodeForPackage(Options.class);
     }
 
     private Defaults() {}

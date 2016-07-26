@@ -53,6 +53,7 @@
 									</items>
 								</Menu>
                         <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#restart" text="Restart" />
 								<MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
 							</items>
 						</Menu>

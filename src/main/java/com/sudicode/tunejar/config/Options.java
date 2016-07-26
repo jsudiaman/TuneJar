@@ -1,6 +1,7 @@
 package com.sudicode.tunejar.config;
 
-import org.apache.commons.lang3.SerializationUtils;
+import static org.apache.commons.lang3.SerializationUtils.deserialize;
+import static org.apache.commons.lang3.SerializationUtils.serialize;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -11,32 +12,14 @@ import javafx.scene.control.TableColumn.SortType;
 
 /**
  * The {@link Options} object is a set of getter/setter pairs which safely
- * interact with TuneJar's {@link Preferences} node. It can be instantiated once
- * per session using the {@link Options#newInstance()} method.
+ * interact with a {@link Preferences} node.
  */
 public final class Options {
 
-    private static Options instance;
-
     private Preferences prefs;
 
-    private Options() {
-        prefs = Preferences.userNodeForPackage(getClass());
-    }
-
-    /**
-     * Instantiates {@link Options}.
-     * 
-     * @return An instance of {@link Options}.
-     * @throws IllegalStateException If an instance already exists.
-     */
-    public static synchronized Options newInstance() {
-        if (instance == null) {
-            instance = new Options();
-            return instance;
-        } else {
-            throw new IllegalStateException("Instance already exists");
-        }
+    public Options(Preferences prefs) {
+        this.prefs = prefs;
     }
 
     public String getTheme() {
@@ -49,11 +32,11 @@ public final class Options {
 
     public LinkedHashSet<File> getDirectories() {
         byte[] buff = prefs.getByteArray("directories", null);
-        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.DIRECTORIES;
+        return buff != null ? deserialize(buff) : Defaults.DIRECTORIES;
     }
 
     public void setDirectories(LinkedHashSet<File> directories) {
-        prefs.putByteArray("directories", SerializationUtils.serialize(directories));
+        prefs.putByteArray("directories", serialize(directories));
     }
 
     public double getVolume() {
@@ -66,20 +49,20 @@ public final class Options {
 
     public String[] getSortOrder() {
         byte[] buff = prefs.getByteArray("sortOrder", null);
-        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.SORT_ORDER;
+        return buff != null ? deserialize(buff) : Defaults.SORT_ORDER;
     }
 
     public void setSortOrder(String... sorts) {
-        prefs.putByteArray("sortOrder", SerializationUtils.serialize(sorts));
+        prefs.putByteArray("sortOrder", serialize(sorts));
     }
 
     public String[] getColumnOrder() {
         byte[] buff = prefs.getByteArray("columnOrder", null);
-        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.COLUMN_ORDER;
+        return buff != null ? deserialize(buff) : Defaults.COLUMN_ORDER;
     }
 
     public void setColumnOrder(String... columns) {
-        prefs.putByteArray("columnOrder", SerializationUtils.serialize(columns));
+        prefs.putByteArray("columnOrder", serialize(columns));
     }
 
     public SortType getTitleSortDirection() {
@@ -137,11 +120,11 @@ public final class Options {
 
     public LinkedHashMap<String, String> getPlaylists() {
         byte[] buff = prefs.getByteArray("playlists", null);
-        return buff != null ? SerializationUtils.deserialize(buff) : Defaults.PLAYLISTS;
+        return buff != null ? deserialize(buff) : Defaults.PLAYLISTS;
     }
 
     public void setPlaylists(LinkedHashMap<String, String> playlists) {
-        prefs.putByteArray("playlists", SerializationUtils.serialize(playlists));
+        prefs.putByteArray("playlists", serialize(playlists));
     }
 
 }

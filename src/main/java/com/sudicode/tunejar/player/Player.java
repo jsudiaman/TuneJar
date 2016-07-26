@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.WeakChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -116,7 +118,7 @@ public class Player extends Application {
         // Initialization.
         setInstance(this);
         setSpeed(1);
-        setOptions(Options.newInstance());
+        setOptions(new Options(Defaults.PREFERENCES_NODE));
 
         // Load the FXML file and display the interface.
         primaryStage = stage;
@@ -135,13 +137,10 @@ public class Player extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
         primaryStage.show();
 
-        // Load the directories. If none are present, prompt the user for one.
+        // Load the directories. If none are present, alert the user.
         directories = readDirectories();
         if (directories.isEmpty()) {
-            File directory = initialDirectory(primaryStage);
-            if (directory != null) {
-                directories.add(directory);
-            }
+            showNoDirectoriesAlert(primaryStage);
         }
         writeDirectories();
 
@@ -168,6 +167,34 @@ public class Player extends Application {
         // Create and display a playlist containing all songs from each
         // directory.
         refresh();
+    }
+
+    /**
+     * Restart the program.
+     */
+    public void restart() {
+        primaryStage.close();
+
+        // Stop any playing songs
+        stopSong();
+
+        // Set variables to null
+        instance = null;
+        mediaPlayer = null;
+        nowPlaying = null;
+        scene = null;
+        controller = null;
+        initialized = null;
+        masterPlaylist = null;
+        directories = null;
+        options = null;
+
+        // Re-initialize
+        try {
+            init(primaryStage);
+        } catch (Exception e) {
+            exitWithAlert(e);
+        }
     }
 
     /**
@@ -209,7 +236,7 @@ public class Player extends Application {
             long begin = System.nanoTime();
 
             refreshMasterPlaylist();
-            Collection<Playlist> playlists = getPlaylists();
+            List<Playlist> playlists = getPlaylists();
 
             // Refresh the view.
             Platform.runLater(() -> {
@@ -258,13 +285,13 @@ public class Player extends Application {
          *
          * @return The collection of constructed playlists.
          */
-        private Collection<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
-            Collection<Playlist> playlists = HashMultiset.create();
+        private List<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
+            List<Playlist> playlists = new ArrayList<>();
             if (!isInitialized()) {
-                Collection<Future<Playlist>> pFutures = HashMultiset.create();
+                List<Future<Playlist>> pFutures = new ArrayList<>();
                 ExecutorService outerExec = Executors.newWorkStealingPool();
 
-                // Iterate through each file in the working directory.
+                // Iterate through each playlist.
                 LinkedHashMap<String, String> lhm = getOptions().getPlaylists();
                 for (Entry<String, String> nameToM3UString : lhm.entrySet()) {
                     pFutures.add(outerExec.submit(() -> createPlaylist(nameToM3UString)));
@@ -285,7 +312,7 @@ public class Player extends Application {
             String m3uString = nameToM3UString.getValue();
             
             Playlist playlist = new Playlist(name);
-            Collection<Future<Song>> sFutures = new ArrayDeque<>();
+            Queue<Future<Song>> sFutures = new ArrayDeque<>();
 
             // Get each song, line by line.
             try (BufferedReader reader = new BufferedReader(new StringReader(m3uString))) {
@@ -331,7 +358,7 @@ public class Player extends Application {
             setVolume(getController().getVolumeSlider().getValue());
             logger.info("Playing: " + getNowPlaying());
 
-            mediaPlayer.currentTimeProperty().addListener((val, oldTime, newTime) -> {
+            mediaPlayer.currentTimeProperty().addListener(new WeakChangeListener<>((val, oldTime, newTime) -> {
                 // Current Time
                 int ctMin = (int) newTime.toMinutes();
                 int ctSec = (int) newTime.toSeconds();
@@ -346,7 +373,7 @@ public class Player extends Application {
 
                 // Seek Bar
                 getController().getSeekBar().setProgress(((double) ctSec / (double) tdSec));
-            });
+            }));
 
             // Allow user to seek using the seek bar
             EventHandler<MouseEvent> seeker = event -> {
@@ -463,30 +490,13 @@ public class Player extends Application {
         return chooser.showDialog(stage);
     }
 
-    /**
-     * Prompts the user for a directory.
-     *
-     * @param stage The stage that will hold the dialog box
-     * @return A directory chosen by the user, or null if the user cancels
-     */
-    private File initialDirectory(Stage stage) {
-        // Alert the user that no directories were found
+    // Alert the user that no directories were found
+    private void showNoDirectoriesAlert(Stage stage) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Welcome!");
+        alert.setTitle("Empty Music Library");
         alert.setHeaderText(null);
-        alert.setContentText("Hi there! It seems like you don't have any directories set up. "
-                        + "That usually happens when you run this for the first time. "
-                        + "If that's the case, let's find your songs!");
+        alert.setContentText("To add a music folder, click 'File' > 'Import' > 'Music Folder...'.");
         alert.showAndWait();
-
-        // Begin building up a data structure to store directories
-        File chosenDirectory = chooseDirectory(stage);
-        if (chosenDirectory == null) {
-            logger.info("User pressed 'cancel' when asked to choose a directory.");
-            return null;
-        } else {
-            return chosenDirectory;
-        }
     }
 
     /**
@@ -554,8 +564,9 @@ public class Player extends Application {
         e.printStackTrace(pw);
 
         // Create an alert to let the user know what happened.
-        alert.setTitle("Fatal Error!");
-        alert.setHeaderText(e.getClass().toString().substring(6) + ": " + e.getMessage());
+        alert.setTitle("Error");
+        alert.setHeaderText("Fatal Error!");
+        alert.setContentText("A fatal error has occured. TuneJar will now be closed.");
 
         // Store the stack trace string in a textarea hidden by a "Show/Hide
         // Details" button.

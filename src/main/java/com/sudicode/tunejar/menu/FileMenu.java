@@ -86,4 +86,8 @@ public class FileMenu extends PlayerMenu {
         }
     }
 
+    public void restart() {
+        controller.getPlayer().restart();
+    }
+
 }
