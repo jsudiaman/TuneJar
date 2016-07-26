@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.WeakChangeListener;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -358,7 +357,7 @@ public class Player extends Application {
             setVolume(getController().getVolumeSlider().getValue());
             logger.info("Playing: " + getNowPlaying());
 
-            mediaPlayer.currentTimeProperty().addListener(new WeakChangeListener<>((val, oldTime, newTime) -> {
+            mediaPlayer.currentTimeProperty().addListener((val, oldTime, newTime) -> {
                 // Current Time
                 int ctMin = (int) newTime.toMinutes();
                 int ctSec = (int) newTime.toSeconds();
@@ -373,7 +372,7 @@ public class Player extends Application {
 
                 // Seek Bar
                 getController().getSeekBar().setProgress(((double) ctSec / (double) tdSec));
-            }));
+            });
 
             // Allow user to seek using the seek bar
             EventHandler<MouseEvent> seeker = event -> {
