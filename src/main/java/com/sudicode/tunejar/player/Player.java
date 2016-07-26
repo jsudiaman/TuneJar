@@ -563,9 +563,9 @@ public class Player extends Application {
         e.printStackTrace(pw);
 
         // Create an alert to let the user know what happened.
-        alert.setTitle("Error");
-        alert.setHeaderText("Fatal Error!");
-        alert.setContentText("A fatal error has occured. TuneJar will now be closed.");
+        alert.setTitle("Critical Error");
+        alert.setHeaderText(null);
+        alert.setContentText("A critical error has occured. The application will now terminate.");
 
         // Store the stack trace string in a textarea hidden by a "Show/Hide
         // Details" button.
