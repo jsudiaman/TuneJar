@@ -1,4 +1,5 @@
 # TuneJar
+[![CircleCI](https://img.shields.io/circleci/project/sudiamanj/TuneJar.svg)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html)
 
 ![Screenshot](http://sudicode.com/images/screenshot.png)
 
@@ -26,8 +27,5 @@ TuneJar is available as a native app which can be used without ever installing J
 ### Links
 * [Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds)
 * [Wiki](https://github.com/sudiamanj/TuneJar/wiki)
-
-[![CircleCI](https://img.shields.io/circleci/project/sudiamanj/TuneJar.svg)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html)
-
 
 <sup>\*Tested on a MacBook Pro. Your results may vary.</sup>
