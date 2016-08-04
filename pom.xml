@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sudicode</groupId>
   <artifactId>tunejar</artifactId>
+  <version>v0.1-beta</version>
   <build>
     <sourceDirectory>src/main/java/</sourceDirectory>
     <testSourceDirectory>src/test/java/</testSourceDirectory>
@@ -60,7 +61,6 @@
       </plugin>
     </plugins>
   </build>
-  <version>v0.1-beta</version>
   <repositories>
     <repository>
       <id>maven-central-repo</id>

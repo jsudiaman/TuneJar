@@ -1,7 +1,6 @@
 package com.sudicode.tunejar.song;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.apache.commons.io.FilenameUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;

@@ -516,10 +516,10 @@ public class Player extends Application {
 
     /**
      * Traverses each directory, obtaining all supported audio files. Each audio
-     * file found is wrapped in a Future Song, which is then added to a
-     * collection.
+     * file found is wrapped in a <code>Future&lt;Song&gt;</code>, which is then
+     * added to a collection.
      *
-     * @return The collection of Future Songs
+     * @return A collection of type <code>Future&lt;Song&gt;</code>
      */
     private Collection<Future<Song>> getFutures(Collection<File> directories) {
         // Initialization

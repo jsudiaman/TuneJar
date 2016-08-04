@@ -1,11 +1,10 @@
 package com.sudicode.tunejar.song;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import java.io.File;
 
 public class SongFactoryTest {
 
