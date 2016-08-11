@@ -32,7 +32,7 @@
 	<top>
 		<HBox>
 			<children>
-				<MenuBar fx:id="topMenuBar">
+				<MenuBar fx:id="topMenuBar" HBox.hgrow="ALWAYS">
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
@@ -92,19 +92,6 @@
 						<Menu fx:id="themeSelector" mnemonicParsing="false" text="Theme" />
 					</menus>
 				</MenuBar>
-				<MenuBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="ALWAYS">
-					<menus>
-						<Menu mnemonicParsing="false" text="Volume">
-							<items>
-								<MenuItem mnemonicParsing="false">
-									<graphic>
-										<Slider fx:id="volumeSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="0" orientation="VERTICAL" value="1.0" />
-									</graphic>
-								</MenuItem>
-							</items>
-						</Menu>
-					</menus>
-				</MenuBar>
 			</children>
 		</HBox>
 	</top>
@@ -121,24 +108,11 @@
 	<bottom>
       <VBox>
          <children>
-      		<HBox>
-      			<children>
-      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-      					<items>
-      						<Label fx:id="status" focusTraversable="false" />
-      					</items>
-      				</ToolBar>
-      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="NEVER">
-      					<items>
-      						<Button mnemonicParsing="false" onAction="#play" text="Play" />
-      						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
-      						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
-      						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
-      						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
-      					</items>
-      				</ToolBar>
-      			</children>
-      		</HBox>
+				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+					<items>
+						<Label fx:id="status" focusTraversable="false" />
+					</items>
+				</ToolBar>
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <children>
                   <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
@@ -150,6 +124,25 @@
                   <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <items>
                         <Label fx:id="totalDuration" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="0:00" />
+                     </items>
+                  </ToolBar>
+               </children>
+            </HBox>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                     <items>
+      						<Button mnemonicParsing="false" onAction="#play" text="Play" />
+      						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
+      						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
+      						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
+      						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
+                     </items>
+      				</ToolBar>
+                  <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="NEVER">
+                     <items>
+                        <Label text="Volume" />
+            										<Slider fx:id="volumeSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minorTickCount="0" value="1.0" />
                      </items>
                   </ToolBar>
                </children>

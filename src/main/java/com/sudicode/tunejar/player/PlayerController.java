@@ -29,6 +29,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
@@ -100,6 +101,8 @@ public class PlayerController implements Initializable {
     private Menu speedMenu = new Menu();
     @FXML
     private CheckMenuItem menuShuffle = new CheckMenuItem();
+    @FXML
+    private MenuBar topMenuBar = new MenuBar();
 
     // --------------- Initialization --------------- //
 
@@ -113,6 +116,9 @@ public class PlayerController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Initialize the menu bar.
+        topMenuBar.setUseSystemMenuBar(true);
+
         // Initialize the menus.
         setFileMenu(new FileMenu(this));
         setPlaybackMenu(new PlaybackMenu(this));
