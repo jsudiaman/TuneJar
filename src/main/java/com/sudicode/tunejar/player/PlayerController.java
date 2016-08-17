@@ -1,6 +1,7 @@
 package com.sudicode.tunejar.player;
 
 import com.sudicode.tunejar.config.Defaults;
+import com.sudicode.tunejar.menu.AdvancedMenu;
 import com.sudicode.tunejar.menu.FileMenu;
 import com.sudicode.tunejar.menu.PlaybackMenu;
 import com.sudicode.tunejar.menu.PlaylistMenu;
@@ -57,6 +58,7 @@ public class PlayerController implements Initializable {
     private SongMenu songMenu;
     private ThemeMenu themeMenu;
     private VolumeMenu volumeMenu;
+    private AdvancedMenu advancedMenu;
 
     // FXML Injections
     @FXML
@@ -126,6 +128,7 @@ public class PlayerController implements Initializable {
         songMenu = new SongMenu(this);
         themeMenu = new ThemeMenu(this);
         volumeMenu = new VolumeMenu(this);
+        advancedMenu = new AdvancedMenu(this);
 
         // Initialize the song table.
         setSongList(FXCollections.observableArrayList());
@@ -359,6 +362,12 @@ public class PlayerController implements Initializable {
 
     public void initVolume() {
         volumeMenu.init();
+    }
+
+    // --------------- Advanced --------------- //
+
+    public void reset() {
+        advancedMenu.reset();
     }
 
     // --------------- Utilities --------------- //

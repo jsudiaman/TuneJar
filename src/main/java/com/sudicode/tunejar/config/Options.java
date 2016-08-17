@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.SerializationUtils.serialize;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javafx.scene.control.TableColumn.SortType;
@@ -125,6 +126,13 @@ public final class Options {
 
     public void setPlaylists(LinkedHashMap<String, String> playlists) {
         prefs.putByteArray("playlists", serialize(playlists));
+    }
+
+    /**
+     * Clears all key-value mappings in the {@link Preferences} node.
+     */
+    public void clear() throws BackingStoreException {
+        prefs.clear();
     }
 
 }

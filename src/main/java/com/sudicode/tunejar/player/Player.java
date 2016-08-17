@@ -139,7 +139,7 @@ public class Player extends Application {
         // Load the directories. If none are present, alert the user.
         directories = readDirectories();
         if (directories.isEmpty()) {
-            showNoDirectoriesAlert(primaryStage);
+            showNoDirectoriesAlert();
         }
         writeDirectories();
 
@@ -358,6 +358,10 @@ public class Player extends Application {
             logger.info("Playing: " + getNowPlaying());
 
             mediaPlayer.currentTimeProperty().addListener((val, oldTime, newTime) -> {
+                if (mediaPlayer == null) {
+                    return;
+                }
+
                 // Current Time
                 int ctMin = (int) newTime.toMinutes();
                 int ctSec = (int) newTime.toSeconds();
@@ -490,7 +494,7 @@ public class Player extends Application {
     }
 
     // Alert the user that no directories were found
-    private void showNoDirectoriesAlert(Stage stage) {
+    private void showNoDirectoriesAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Empty Music Library");
         alert.setHeaderText(null);

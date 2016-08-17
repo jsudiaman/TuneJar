@@ -30,9 +30,7 @@
 		</TableView>
 	</center>
 	<top>
-		<HBox>
-			<children>
-				<MenuBar fx:id="topMenuBar" HBox.hgrow="ALWAYS">
+				<MenuBar fx:id="topMenuBar">
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
@@ -41,7 +39,7 @@
 										<MenuItem mnemonicParsing="false" onAction="#createPlaylistButton" text="Playlist..." />
 									</items>
 								</Menu>
-                        <SeparatorMenuItem mnemonicParsing="false" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
 								<Menu mnemonicParsing="false" text="Import">
 									<items>
 										<MenuItem mnemonicParsing="false" onAction="#addDirectory" text="Music Folder..." />
@@ -52,8 +50,8 @@
 										<MenuItem mnemonicParsing="false" onAction="#removeDirectory" text="Music Folder..." />
 									</items>
 								</Menu>
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#restart" text="Restart" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#restart" text="Restart" />
 								<MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
 							</items>
 						</Menu>
@@ -90,10 +88,13 @@
 							</items>
 						</Menu>
 						<Menu fx:id="themeSelector" mnemonicParsing="false" text="Theme" />
+            <Menu mnemonicParsing="false" text="Advanced">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#reset" text="Reset..." />
+              </items>
+            </Menu>
 					</menus>
 				</MenuBar>
-			</children>
-		</HBox>
 	</top>
 	<left>
 		<TableView fx:id="playlistTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
