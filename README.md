@@ -1,5 +1,6 @@
 # TuneJar
-[![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html) [![Github All Releases](https://img.shields.io/github/downloads/sudiamanj/TuneJar/total.svg?maxAge=2592000)](https://github.com/sudiamanj/TuneJar/releases)
+[![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html) [![Github All Releases](https://img.shields.io/github/downloads/sudiamanj/TuneJar/total.svg?maxAge=2592000)](https://github.com/sudiamanj/TuneJar/releases)  
+[Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds) | [Wiki](https://github.com/sudiamanj/TuneJar/wiki)
 
 ![Screenshot](http://sudicode.com/images/screenshot.png)
 
@@ -23,6 +24,3 @@ Avoid the hassles of manual library management. If you add or delete files from 
 TuneJar is available as a native app which can be used without ever installing Java on your machine. These applications are built directly from the TuneJar archive. Thus, they are *fully functional copies* of TuneJar - not stripped down versions with less features!
 
 <sup>Native applications provided by [JWrapper](http://www.jwrapper.com/).</sup>
-
-* [Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds)
-* [Wiki](https://github.com/sudiamanj/TuneJar/wiki)
