@@ -24,6 +24,5 @@ TuneJar is available as a native app which can be used without ever installing J
 
 <sup>Native applications provided by [JWrapper](http://www.jwrapper.com/).</sup>
 
-### Links
 * [Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds)
 * [Wiki](https://github.com/sudiamanj/TuneJar/wiki)
