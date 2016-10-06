@@ -14,7 +14,7 @@ TuneJar's interface is built with JavaFX, the latest and greatest in Java GUI te
 #### Fast
 Performance tests show that TuneJar can load over *100 gigabytes* of songs in just under ten seconds.
 
-<sub>Tested on a MacBook Pro. Your results may vary.</sub>
+<sup>Tested on a MacBook Pro. Your results may vary.</sup>
 
 #### User-Friendly
 Avoid the hassles of manual library management. If you add or delete files from your music folders, TuneJar will automatically pick up the changes and update your library accordingly (on its next launch). Let TuneJar do all the hard work for you, so that you can spend more time enjoying your tunes.
@@ -22,7 +22,7 @@ Avoid the hassles of manual library management. If you add or delete files from 
 ### [<span class="octicon octicon-link"></span>](#no-java-no-problem)No Java? No Problem!
 TuneJar is available as a native app which can be used without ever installing Java on your machine. These applications are built directly from the TuneJar archive. Thus, they are *fully functional copies* of TuneJar - not stripped down versions with less features!
 
-<sub>Native applications provided by [JWrapper](http://www.jwrapper.com/).</sub>
+<sup>Native applications provided by [JWrapper](http://www.jwrapper.com/).</sup>
 
 ### Links
 * [Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds)
