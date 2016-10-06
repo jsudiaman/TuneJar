@@ -1,9 +1,7 @@
 # TuneJar
-[![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html)
+[![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html) [![Github All Releases](https://img.shields.io/github/downloads/sudiamanj/TuneJar/total.svg?maxAge=2592000)](https://github.com/sudiamanj/TuneJar/releases)
 
 ![Screenshot](http://sudicode.com/images/screenshot.png)
-
-[![Download TuneJar](http://sudicode.com/images/download-button.png)](http://github.com/sudiamanj/TuneJar/releases/tag/v0.1-alpha)
 
 ### [<span class="octicon octicon-link"></span>](#what-is-tunejar)What is TuneJar?
 TuneJar is a Java-based music player that is lightweight, cross-platform, and best of all, open source.
