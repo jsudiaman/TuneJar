@@ -4,8 +4,7 @@
 
 ![icon](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/icon.png)
 
-## [<span class="octicon octicon-link"></span>](#what-is-tunejar)What is TuneJar?
-TuneJar is a Java-based music player that is lightweight, cross-platform, and best of all, open source.
+**TuneJar** is a Java-based music player that is lightweight, cross-platform, and best of all, open source.
 
 ## [<span class="octicon octicon-link"></span>](#why-tunejar)TuneJar is...
 
