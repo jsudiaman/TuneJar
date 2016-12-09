@@ -1,5 +1,5 @@
 # TuneJar
-[![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![GNU LGPL v3](https://img.shields.io/badge/license-LGPLv3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0-standalone.html) [![Github All Releases](https://img.shields.io/github/downloads/sudiamanj/TuneJar/total.svg?maxAge=2592000)](https://github.com/sudiamanj/TuneJar/releases)  
+[![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![Github All Releases](https://img.shields.io/github/downloads/sudiamanj/TuneJar/total.svg?maxAge=2592000)](https://github.com/sudiamanj/TuneJar/releases)  
 [Nightly Builds](https://github.com/sudiamanj/TuneJar/wiki/Nightly-Builds) | [Wiki](https://github.com/sudiamanj/TuneJar/wiki)
 
 ![icon](https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/icon.png)
