@@ -1,13 +1,32 @@
 package com.sudicode.tunejar.player;
 
+import com.google.common.collect.HashMultiset;
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
 import com.sudicode.tunejar.song.SongFactory;
-
-import com.google.common.collect.HashMultiset;
-
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,28 +58,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaException;
-import javafx.scene.media.MediaPlayer;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Player extends Application {
 
@@ -111,7 +108,7 @@ public class Player extends Application {
      *
      * @param stage The stage that will hold the interface
      * @throws IOException Failed to load the FXML, or could not load/save a
-     *         file.
+     *                     file.
      */
     private void init(Stage stage) throws IOException {
         // Initialization.
@@ -125,15 +122,26 @@ public class Player extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(location.openStream());
 
-        setScene(new Scene(root, 1000, 600));
+        setScene(new Scene(root));
         setController(fxmlLoader.getController());
         String theme = Defaults.THEME_MAP.get(getOptions().getTheme());
         getScene().getStylesheets().add(theme);
         logger.debug("Loaded theme: " + theme);
 
+        // Set scene
         primaryStage.setTitle("TuneJar");
         primaryStage.setScene(getScene());
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
+
+        // Set dimensions
+        primaryStage.setMaximized(false);
+        primaryStage.setWidth(getOptions().getWindowWidth());
+        primaryStage.setHeight(getOptions().getWindowHeight());
+        primaryStage.setMinWidth(360);
+        primaryStage.setMinHeight(240);
+
+        // Show stage
+        logger.info("Initializing stage (Dimensions: {}x{})", primaryStage.getWidth(), primaryStage.getHeight());
         primaryStage.show();
 
         // Load the directories. If none are present, alert the user.
@@ -162,6 +170,16 @@ public class Player extends Application {
             }
         }
         getController().setSortOrder(sortOrder);
+
+        // Save changes to window size / maximization
+        getScene().getWindow().widthProperty().addListener((obs, oldV, newV) -> {
+            getOptions().setWindowWidth(newV.doubleValue());
+            logger.trace("Window resized to {}px in width", newV);
+        });
+        getScene().getWindow().heightProperty().addListener(((obs, oldV, newV) -> {
+            getOptions().setWindowHeight(newV.doubleValue());
+            logger.trace("Window resized to {}px in height", newV);
+        }));
 
         // Create and display a playlist containing all songs from each
         // directory.
@@ -198,13 +216,12 @@ public class Player extends Application {
 
     /**
      * First, adds all music files that can be found in available directories to
-     * the master playlist. Then loads all available playlists from the working
-     * directory.
+     * the master playlist. Then loads all available playlists.
      */
     public void refresh() {
         Task<?> refresher = new Refresher();
         refresher.progressProperty().addListener((obs, oldVal, newVal) -> getController().getStatus()
-                        .setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal)));
+                .setText(refresher.getMessage() + new DecimalFormat("#0%").format(newVal)));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<?> future = executor.submit(refresher);
         executor.shutdown();
@@ -214,7 +231,7 @@ public class Player extends Application {
             } catch (ExecutionException | InterruptedException | TimeoutException e) {
                 logger.error(e.getMessage(), e);
                 Platform.runLater(() -> getController().getStatus()
-                                .setText("An error has occurred: " + e.getClass().getSimpleName()));
+                        .setText("An error has occurred: " + e.getClass().getSimpleName()));
             }
         }).start();
     }
@@ -309,14 +326,14 @@ public class Player extends Application {
         private Playlist createPlaylist(Entry<String, String> nameToM3UString) throws IOException, InterruptedException, ExecutionException {
             String name = nameToM3UString.getKey();
             String m3uString = nameToM3UString.getValue();
-            
+
             Playlist playlist = new Playlist(name);
             Queue<Future<Song>> sFutures = new ArrayDeque<>();
 
             // Get each song, line by line.
             try (BufferedReader reader = new BufferedReader(new StringReader(m3uString))) {
                 ExecutorService innerExec = Executors.newWorkStealingPool();
-                for (String nextLine; (nextLine = reader.readLine()) != null;) {
+                for (String nextLine; (nextLine = reader.readLine()) != null; ) {
                     final String s = nextLine;
                     sFutures.add(innerExec.submit(() -> SongFactory.create(new File(s))));
                 }
@@ -540,7 +557,7 @@ public class Player extends Application {
             // Depth first search through each directory for supported files
             try (Stream<Path> str = Files.walk(directory.toPath())) {
                 str.filter(path -> FilenameUtils.getExtension(path.toString()).matches("mp3|mp4|m4a|wav"))
-                                .forEach(path -> futures.add(executor.submit(() -> SongFactory.create(path.toFile()))));
+                        .forEach(path -> futures.add(executor.submit(() -> SongFactory.create(path.toFile()))));
             } catch (IOException e) {
                 logger.error("Failed to access directory: " + directory, e);
             }

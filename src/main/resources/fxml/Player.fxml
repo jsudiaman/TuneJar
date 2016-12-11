@@ -16,139 +16,141 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sudicode.tunejar.player.PlayerController">
-	<center>
-		<TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-			<columns>
-				<TableColumn fx:id="title" prefWidth="-1.0" text="Title" />
-				<TableColumn fx:id="artist" prefWidth="-1.0" text="Artist" />
-				<TableColumn fx:id="album" prefWidth="-1.0" text="Album" />
-			</columns>
-			<columnResizePolicy>
-				<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-			</columnResizePolicy>
-		</TableView>
-	</center>
-	<top>
-				<MenuBar fx:id="topMenuBar">
-					<menus>
-						<Menu mnemonicParsing="false" text="File">
-							<items>
-								<Menu mnemonicParsing="false" text="New">
-									<items>
-										<MenuItem mnemonicParsing="false" onAction="#createPlaylistButton" text="Playlist..." />
-									</items>
-								</Menu>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-								<Menu mnemonicParsing="false" text="Import">
-									<items>
-										<MenuItem mnemonicParsing="false" onAction="#addDirectory" text="Music Folder..." />
-									</items>
-								</Menu>
-								<Menu mnemonicParsing="false" text="Remove">
-									<items>
-										<MenuItem mnemonicParsing="false" onAction="#removeDirectory" text="Music Folder..." />
-									</items>
-								</Menu>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#restart" text="Restart" />
-								<MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="Playback">
-							<items>
-								<MenuItem fx:id="menuPlay" mnemonicParsing="false" onAction="#play" text="Play" />
-								<MenuItem fx:id="menuPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
-								<MenuItem fx:id="menuStop" mnemonicParsing="false" onAction="#stop" text="Stop" />
-								<MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
-								<MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
-		                        <SeparatorMenuItem mnemonicParsing="false" />
-		                        <CheckMenuItem fx:id="menuShuffle" mnemonicParsing="false" onAction="#toggleShuffle" text="Shuffle" />
-		                        <SeparatorMenuItem mnemonicParsing="false" />
-		                        <Menu fx:id="speedMenu" mnemonicParsing="false" text="Speed" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="Song">
-							<items>
-								<Menu fx:id="addToPlaylist" mnemonicParsing="false" text="Add to">
-									<items>
-										<MenuItem mnemonicParsing="false" onAction="#toNewPlaylist" text="New Playlist..." />
-										<SeparatorMenuItem mnemonicParsing="false" />
-									</items>
-								</Menu>
-								<MenuItem mnemonicParsing="false" onAction="#editSong" text="Edit" />
-								<MenuItem fx:id="menuRemoveSong" mnemonicParsing="false" onAction="#removeSong" text="Remove" />
-								<MenuItem mnemonicParsing="false" onAction="#search" text="Search" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="Playlist">
-							<items>
-								<MenuItem fx:id="menuRenamePlaylist" mnemonicParsing="false" onAction="#renamePlaylist" text="Rename" />
-								<MenuItem fx:id="menuDeletePlaylist" mnemonicParsing="false" onAction="#deletePlaylist" text="Delete" />
-							</items>
-						</Menu>
-						<Menu fx:id="themeSelector" mnemonicParsing="false" text="Theme" />
-            <Menu mnemonicParsing="false" text="Advanced">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#reset" text="Reset..." />
-              </items>
-            </Menu>
-					</menus>
-				</MenuBar>
-	</top>
-	<left>
-		<TableView fx:id="playlistTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-			<columns>
-				<TableColumn fx:id="name" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Playlists" />
-			</columns>
-			<columnResizePolicy>
-				<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-			</columnResizePolicy>
-		</TableView>
-	</left>
-	<bottom>
-      <VBox>
-         <children>
-				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-					<items>
-						<Label fx:id="status" focusTraversable="false" />
-					</items>
-				</ToolBar>
-            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-               <children>
-                  <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                     <items>
-                        <Label fx:id="currentTime" text="0:00" />
-                     </items>
-                  </ToolBar>
-                  <ProgressBar fx:id="seekBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" progress="0.0" HBox.hgrow="ALWAYS" />
-                  <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                     <items>
-                        <Label fx:id="totalDuration" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="0:00" />
-                     </items>
-                  </ToolBar>
-               </children>
-            </HBox>
-            <HBox VBox.vgrow="ALWAYS">
-               <children>
-      				<ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-                     <items>
-      						<Button mnemonicParsing="false" onAction="#play" text="Play" />
-      						<Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
-      						<Button mnemonicParsing="false" onAction="#stop" text="Stop" />
-      						<Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
-      						<Button mnemonicParsing="false" onAction="#playNext" text="Next" />
-                     </items>
-      				</ToolBar>
-                  <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="NEVER">
-                     <items>
-                        <Label text="Volume" />
-            										<Slider fx:id="volumeSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minorTickCount="0" value="1.0" />
-                     </items>
-                  </ToolBar>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-	</bottom>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sudicode.tunejar.player.PlayerController">
+    <center>
+        <TableView fx:id="songTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="title" prefWidth="-1.0" text="Title" />
+                <TableColumn fx:id="artist" prefWidth="-1.0" text="Artist" />
+                <TableColumn fx:id="album" prefWidth="-1.0" text="Album" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </center>
+    <top>
+        <MenuBar fx:id="topMenuBar">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <Menu mnemonicParsing="false" text="New">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#createPlaylistButton" text="Playlist..." />
+                            </items>
+                        </Menu>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu mnemonicParsing="false" text="Import">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#addDirectory" text="Music Folder..." />
+                                <MenuItem mnemonicParsing="false" onAction="#importPlaylist" text="Playlist..." />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Remove">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#removeDirectory" text="Music Folder..." />
+                            </items>
+                        </Menu>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#restart" text="Restart" />
+                        <MenuItem mnemonicParsing="false" onAction="#quit" text="Exit" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Playback">
+                    <items>
+                        <MenuItem fx:id="menuPlay" mnemonicParsing="false" onAction="#play" text="Play" />
+                        <MenuItem fx:id="menuPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
+                        <MenuItem fx:id="menuStop" mnemonicParsing="false" onAction="#stop" text="Stop" />
+                        <MenuItem mnemonicParsing="false" onAction="#playPrev" text="Previous Song" />
+                        <MenuItem mnemonicParsing="false" onAction="#playNext" text="Next Song" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <CheckMenuItem fx:id="menuShuffle" mnemonicParsing="false" onAction="#toggleShuffle" text="Shuffle" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <Menu fx:id="speedMenu" mnemonicParsing="false" text="Speed" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Song">
+                    <items>
+                        <Menu fx:id="addToPlaylist" mnemonicParsing="false" text="Add to">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#toNewPlaylist" text="New Playlist..." />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                            </items>
+                        </Menu>
+                        <MenuItem mnemonicParsing="false" onAction="#editSong" text="Edit..." />
+                        <MenuItem fx:id="menuRemoveSong" mnemonicParsing="false" onAction="#removeSong" text="Remove" />
+                        <MenuItem mnemonicParsing="false" onAction="#search" text="Search..." />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Playlist">
+                    <items>
+                        <MenuItem fx:id="menuExportPlaylist" mnemonicParsing="false" onAction="#exportPlaylist" text="Export..." />
+                        <MenuItem fx:id="menuRenamePlaylist" mnemonicParsing="false" onAction="#renamePlaylist" text="Rename..." />
+                        <MenuItem fx:id="menuDeletePlaylist" mnemonicParsing="false" onAction="#deletePlaylist" text="Delete..." />
+                    </items>
+                </Menu>
+                <Menu fx:id="themeSelector" mnemonicParsing="false" text="Theme" />
+                <Menu mnemonicParsing="false" text="Advanced">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#reset" text="Reset..." />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <left>
+        <TableView fx:id="playlistTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="name" editable="false" prefWidth="200.0" resizable="false" sortable="false" text="Playlists" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </left>
+    <bottom>
+        <VBox>
+            <children>
+                <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                    <items>
+                        <Label fx:id="status" focusTraversable="false" />
+                    </items>
+                </ToolBar>
+                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                            <items>
+                                <Label fx:id="currentTime" text="0:00" />
+                            </items>
+                        </ToolBar>
+                        <ProgressBar fx:id="seekBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" progress="0.0" HBox.hgrow="ALWAYS" />
+                        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                            <items>
+                                <Label fx:id="totalDuration" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="0:00" />
+                            </items>
+                        </ToolBar>
+                    </children>
+                </HBox>
+                <HBox VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                            <items>
+                                <Button mnemonicParsing="false" onAction="#play" text="Play" />
+                                <Button fx:id="shortcutPause" mnemonicParsing="false" onAction="#pause" text="Pause" />
+                                <Button mnemonicParsing="false" onAction="#stop" text="Stop" />
+                                <Button mnemonicParsing="false" onAction="#playPrev" text="Prev" />
+                                <Button mnemonicParsing="false" onAction="#playNext" text="Next" />
+                            </items>
+                        </ToolBar>
+                        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="NEVER">
+                            <items>
+                                <Label text="Volume" />
+                                <Slider fx:id="volumeSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minorTickCount="0" value="1.0" />
+                            </items>
+                        </ToolBar>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </bottom>
 </BorderPane>

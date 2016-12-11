@@ -3,18 +3,31 @@ package com.sudicode.tunejar.menu;
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
-
-import java.util.Optional;
-
+import com.sudicode.tunejar.song.Song;
+import com.sudicode.tunejar.song.SongFactory;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.FileChooser;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Helper class for handling the File menu.
  */
 public class FileMenu extends PlayerMenu {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileMenu.class);
 
     public FileMenu(PlayerController controller) {
         super(controller);
@@ -90,4 +103,64 @@ public class FileMenu extends PlayerMenu {
         controller.getPlayer().restart();
     }
 
+    /**
+     * Imports playlist.
+     */
+    public void importPlaylist() {
+        // Choose file to import
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select M3U file to import");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Playlist File (*.m3u)", "*.m3u"));
+        File m3uFile = fileChooser.showOpenDialog(controller.getPlayer().getScene().getWindow());
+        if (m3uFile == null) {
+            return;
+        }
+        String baseName = FilenameUtils.getBaseName(m3uFile.getName());
+
+        // Check if playlist exists
+        for (Playlist p : controller.getPlaylistList()) {
+            if (p.getName().equalsIgnoreCase(baseName)) {
+                Alert conflictAlert = new Alert(Alert.AlertType.WARNING);
+                conflictAlert.setTitle("Playlist Conflict");
+                conflictAlert.setHeaderText("A playlist named " + baseName + " already exists.");
+                conflictAlert.setContentText("Please rename/delete the existing playlist, or rename the M3U file.");
+                conflictAlert.showAndWait();
+                return;
+            }
+        }
+
+        // Create playlist in memory
+        List<Song> songs = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                Song song = SongFactory.create(new File(line));
+                if (song != null) {
+                    songs.add(song);
+                }
+            }
+        } catch (IOException e) {
+            String err = String.format("Could not import playlist: %s", m3uFile.getAbsolutePath());
+            logger.error(err, e);
+
+            // Show alert
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(err);
+            alert.showAndWait();
+
+            // Return without adding playlist
+            return;
+        }
+
+        // Add playlist
+        Playlist pl = new Playlist(baseName);
+        pl.addAll(songs);
+        try {
+            controller.getPlaylistMenu().loadPlaylist(pl);
+            pl.save(controller.getPlayer().getOptions());
+        } finally {
+            controller.refreshTables();
+        }
+    }
 }

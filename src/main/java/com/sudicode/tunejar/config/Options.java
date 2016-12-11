@@ -1,7 +1,6 @@
 package com.sudicode.tunejar.config;
 
-import static org.apache.commons.lang3.SerializationUtils.deserialize;
-import static org.apache.commons.lang3.SerializationUtils.serialize;
+import javafx.scene.control.TableColumn.SortType;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -9,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javafx.scene.control.TableColumn.SortType;
+import static org.apache.commons.lang3.SerializationUtils.*;
 
 /**
  * The {@link Options} object is a set of getter/setter pairs which safely
@@ -126,6 +125,22 @@ public final class Options {
 
     public void setPlaylists(LinkedHashMap<String, String> playlists) {
         prefs.putByteArray("playlists", serialize(playlists));
+    }
+
+    public double getWindowWidth() {
+        return prefs.getDouble("windowWidth", Defaults.WINDOW_WIDTH);
+    }
+
+    public void setWindowWidth(double windowWidth) {
+        prefs.putDouble("windowWidth", windowWidth);
+    }
+
+    public double getWindowHeight() {
+        return prefs.getDouble("windowHeight", Defaults.WINDOW_HEIGHT);
+    }
+
+    public void setWindowHeight(double windowHeight) {
+        prefs.putDouble("windowHeight", windowHeight);
     }
 
     /**

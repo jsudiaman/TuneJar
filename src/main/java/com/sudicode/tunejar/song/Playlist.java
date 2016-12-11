@@ -58,8 +58,7 @@ public class Playlist implements List<Song> {
     /**
      * Save the playlist.
      *
-     * @param The {@link Options} object to save to
-     * @throws IOException Failed to save the playlist
+     * @param options The {@link Options} object to save to
      */
     public void save(Options options) {
         LinkedHashMap<String, String> playlists = options.getPlaylists();

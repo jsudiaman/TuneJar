@@ -10,17 +10,6 @@ import com.sudicode.tunejar.menu.ThemeMenu;
 import com.sudicode.tunejar.menu.VolumeMenu;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -42,6 +31,15 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 public class PlayerController implements Initializable {
 
@@ -84,6 +82,8 @@ public class PlayerController implements Initializable {
     @FXML
     private MenuItem menuDeletePlaylist = new MenuItem();
     @FXML
+    private MenuItem menuExportPlaylist = new MenuItem();
+    @FXML
     private Button shortcutPause = new Button();
     @FXML
     private Label status = new Label();
@@ -111,10 +111,10 @@ public class PlayerController implements Initializable {
     /**
      * Sets up the playlist viewer.
      *
-     * @param location The location used to resolve relative paths for the root
-     *        object, or <code>null</code> if the location is not known.
+     * @param location  The location used to resolve relative paths for the root
+     *                  object, or <code>null</code> if the location is not known.
      * @param resources The resources used to localize the root object, or
-     *        <code>null</code> if the root object was not localized.
+     *                  <code>null</code> if the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -175,7 +175,8 @@ public class PlayerController implements Initializable {
 
         // Load the order of the columns.
         Set<TableColumn<Song, ?>> columnOrder = new LinkedHashSet<>();
-        loadCols: for (int i = 0; i < 3; i++) {
+        loadCols:
+        for (int i = 0; i < 3; i++) {
             String[] arr = getPlayer().getOptions().getColumnOrder();
             switch (arr[i]) {
                 case "Title":
@@ -252,11 +253,12 @@ public class PlayerController implements Initializable {
             getSongTable().setItems(getSongList());
             getPlaybackMenu().buildShuffledRowList();
 
-            // The master playlist cannot be renamed, deleted, or altered,
+            // The master playlist cannot be renamed, deleted, exported, or altered,
             // so disable that functionality if the master playlist is selected.
             menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
             menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
             menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
+            menuExportPlaylist.setDisable(newValue.getName().equals("All Music"));
 
             // Restore sort order
             setSortOrder(sortOrder);
@@ -285,6 +287,10 @@ public class PlayerController implements Initializable {
         getFileMenu().addDirectory();
     }
 
+    public void importPlaylist() {
+        getFileMenu().importPlaylist();
+    }
+
     public void removeDirectory() {
         getFileMenu().removeDirectory();
     }
@@ -295,7 +301,9 @@ public class PlayerController implements Initializable {
 
     // --------------- Playback --------------- //
 
-    /** Plays or resumes the selected song. */
+    /**
+     * Plays or resumes the selected song.
+     */
     public void play() {
         getPlaybackMenu().play();
     }
@@ -352,6 +360,10 @@ public class PlayerController implements Initializable {
         getPlaylistMenu().deletePlaylist();
     }
 
+    public void exportPlaylist() {
+        getPlaylistMenu().exportPlaylist();
+    }
+
     // --------------- Themes --------------- //
 
     public void initThemes() {
@@ -375,7 +387,7 @@ public class PlayerController implements Initializable {
     /**
      * Scrolls to and focuses the specified row in the specified table.
      *
-     * @param t The table in which the selection occurs
+     * @param t     The table in which the selection occurs
      * @param index The row that should be selected
      */
     public void focus(TableView<?> t, int index) {

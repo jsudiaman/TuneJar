@@ -1,8 +1,7 @@
 package com.sudicode.tunejar.config;
 
-import com.sudicode.tunejar.player.Player;
-
 import com.google.common.collect.ImmutableMap;
+import com.sudicode.tunejar.player.Player;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -27,6 +26,8 @@ public final class Defaults {
     public static final boolean SHUFFLE;
     public static final LinkedHashMap<String, String> PLAYLISTS;
     public static final Preferences PREFERENCES_NODE;
+    public static final double WINDOW_WIDTH;
+    public static final double WINDOW_HEIGHT;
 
     static {
         DIRECTORIES = new LinkedHashSet<>();
@@ -34,19 +35,22 @@ public final class Defaults {
         ICON = "/img/icon.png";
         PLAYER_FXML = "/fxml/Player.fxml";
         SORT_ORDER = new String[0];
-        COLUMN_ORDER = new String[] {"Title", "Artist", "Album"};
+        COLUMN_ORDER = new String[]{"Title", "Artist", "Album"};
         SORT_DIRECTION = "ASCENDING";
         THEME = "Modena";
         THEME_MAP = ImmutableMap.of("Modena", Player.class.getResource("/theme/Modena.css").toString(), "Dark Theme",
                 Player.class.getResource("/theme/Dark Theme.css").toString());
         VOLUME = 1.0;
         PLAYLIST_NAME = "Untitled Playlist";
-        PRESET_SPEEDS = new double[] {.25, .5, 1, 1.25, 1.5, 2};
+        PRESET_SPEEDS = new double[]{.25, .5, 1, 1.25, 1.5, 2};
         SHUFFLE = false;
         PLAYLISTS = new LinkedHashMap<>();
         PREFERENCES_NODE = Preferences.userNodeForPackage(Options.class);
+        WINDOW_WIDTH = 1000;
+        WINDOW_HEIGHT = 600;
     }
 
-    private Defaults() {}
+    private Defaults() {
+    }
 
 }

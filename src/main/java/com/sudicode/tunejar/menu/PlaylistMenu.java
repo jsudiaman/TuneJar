@@ -4,21 +4,24 @@ import com.sudicode.tunejar.config.Options;
 import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Helper class for handling the Playlist menu.
@@ -174,4 +177,36 @@ public class PlaylistMenu extends PlayerMenu {
         }
     }
 
+    /**
+     * Exports the current playlist.
+     */
+    public void exportPlaylist() {
+        // Choose file to export to
+        Playlist playlist = controller.getPlaylistTable().getSelectionModel().getSelectedItem();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export " + playlist.getName() + " as M3U file");
+        fileChooser.setInitialFileName(playlist.getName());
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Playlist File (*.m3u)", "*.m3u"));
+        File m3uFile = fileChooser.showSaveDialog(controller.getPlayer().getScene().getWindow());
+
+        // Export playlist
+        if (m3uFile != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(m3uFile))) {
+                for (Song song : playlist) {
+                    writer.write(song.getAbsoluteFilename());
+                    writer.newLine();
+                }
+            } catch (IOException e) {
+                String err = String.format("Could not export playlist: %s to file: %s", playlist.getName(), m3uFile.getAbsolutePath());
+                logger.error(err, e);
+
+                // Show alert
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText(err);
+                alert.showAndWait();
+            }
+        }
+    }
 }
