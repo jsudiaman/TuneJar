@@ -28,6 +28,7 @@ public final class Defaults {
     public static final Preferences PREFERENCES_NODE;
     public static final double WINDOW_WIDTH;
     public static final double WINDOW_HEIGHT;
+    public static final boolean MAXIMIZED;
 
     static {
         DIRECTORIES = new LinkedHashSet<>();
@@ -48,6 +49,7 @@ public final class Defaults {
         PREFERENCES_NODE = Preferences.userNodeForPackage(Options.class);
         WINDOW_WIDTH = 1000;
         WINDOW_HEIGHT = 600;
+        MAXIMIZED = false;
     }
 
     private Defaults() {

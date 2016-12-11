@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -25,9 +26,12 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,11 +138,16 @@ public class Player extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(Defaults.ICON)));
 
         // Set dimensions
-        primaryStage.setMaximized(false);
-        primaryStage.setWidth(getOptions().getWindowWidth());
-        primaryStage.setHeight(getOptions().getWindowHeight());
-        primaryStage.setMinWidth(360);
-        primaryStage.setMinHeight(240);
+        if (SystemUtils.IS_OS_WINDOWS) {
+            primaryStage.setMaximized(getOptions().isMaximized());
+        } else {
+            primaryStage.setMaximized(false); // Issues with maximizing on OS X
+        }
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        primaryStage.setMinWidth(Math.min(360, screen.getWidth()));
+        primaryStage.setMinHeight(Math.min(240, screen.getHeight()));
+        primaryStage.setWidth(Math.min(getOptions().getWindowWidth(), screen.getWidth()));
+        primaryStage.setHeight(Math.min(getOptions().getWindowHeight(), screen.getHeight()));
 
         // Show stage
         logger.info("Initializing stage (Dimensions: {}x{})", primaryStage.getWidth(), primaryStage.getHeight());
@@ -172,14 +181,23 @@ public class Player extends Application {
         getController().setSortOrder(sortOrder);
 
         // Save changes to window size / maximization
-        getScene().getWindow().widthProperty().addListener((obs, oldV, newV) -> {
-            getOptions().setWindowWidth(newV.doubleValue());
-            logger.trace("Window resized to {}px in width", newV);
+        Window window = getScene().getWindow();
+        window.widthProperty().addListener((obs, oldV, newV) -> {
+            if (!SystemUtils.IS_OS_WINDOWS || !primaryStage.isMaximized()) {
+                getOptions().setWindowWidth(newV.doubleValue());
+                logger.trace("Window resized to {}px in width", newV);
+            }
         });
-        getScene().getWindow().heightProperty().addListener(((obs, oldV, newV) -> {
-            getOptions().setWindowHeight(newV.doubleValue());
-            logger.trace("Window resized to {}px in height", newV);
+        window.heightProperty().addListener(((obs, oldV, newV) -> {
+            if (!SystemUtils.IS_OS_WINDOWS || !primaryStage.isMaximized()) {
+                getOptions().setWindowHeight(newV.doubleValue());
+                logger.trace("Window resized to {}px in height", newV);
+            }
         }));
+        primaryStage.maximizedProperty().addListener((obs, oldV, newV) -> {
+            getOptions().setMaximized(newV);
+            logger.trace(newV ? "Window maximized" : "Window restored");
+        });
 
         // Create and display a playlist containing all songs from each
         // directory.

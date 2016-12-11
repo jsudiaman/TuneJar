@@ -143,6 +143,14 @@ public final class Options {
         prefs.putDouble("windowHeight", windowHeight);
     }
 
+    public boolean isMaximized() {
+        return prefs.getBoolean("maximized", Defaults.MAXIMIZED);
+    }
+
+    public void setMaximized(boolean maximized) {
+        prefs.putBoolean("maximized", maximized);
+    }
+
     /**
      * Clears all key-value mappings in the {@link Preferences} node.
      */
