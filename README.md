@@ -1,5 +1,5 @@
 # TuneJar
-[![GitHub release](https://img.shields.io/github/release/sudiamanj/TuneJar.svg)](https://github.com/sudiamanj/TuneJar/releases) [![Build Status](https://travis-ci.org/sudiamanj/TuneJar.svg?branch=master)](https://travis-ci.org/sudiamanj/TuneJar) [![Quality Gate](https://sonarqube.com/api/badges/measure?key=com.sudicode:tunejar&metric=coverage)](https://sonarqube.com/dashboard/index/com.sudicode:tunejar)
+[![GitHub release](https://img.shields.io/github/release/sudiamanj/TuneJar.svg)](https://github.com/sudiamanj/TuneJar/releases) [![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![Quality Gate](https://sonarqube.com/api/badges/measure?key=com.sudicode:tunejar&metric=coverage)](https://sonarqube.com/dashboard/index/com.sudicode:tunejar)
 
 <img src="https://raw.githubusercontent.com/sudiamanj/TuneJar/master/src/main/resources/img/screenshot.png" alt="Screenshot" width="800" height="480">
 

@@ -1,6 +1,7 @@
 package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.player.Gui;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ public class ThemeMenuTest {
 
     private Gui gui = Gui.getInstance();
 
+    @Test
     public void testDarkTheme() throws Exception {
         gui.getRobot().clickOn("#themeSelector");
         await().atMost(FIVE_SECONDS).until(() -> gui.getRobot().clickOn("Dark Theme"));
@@ -23,6 +25,7 @@ public class ThemeMenuTest {
         assertThat(gui.getPlayer().getOptions().getTheme(), is(equalTo(("Dark Theme"))));
     }
 
+    @Test
     public void testModena() throws Exception {
         gui.getRobot().clickOn("#themeSelector");
         await().atMost(FIVE_SECONDS).until(() -> gui.getRobot().clickOn("Modena"));
