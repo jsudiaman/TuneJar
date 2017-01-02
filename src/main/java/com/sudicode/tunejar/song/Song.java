@@ -25,7 +25,6 @@ public abstract class Song {
     protected SimpleStringProperty title;
     protected SimpleStringProperty artist;
     protected SimpleStringProperty album;
-    protected File audioFile;
 
     // Redirect JAudioTagger's JUL to TuneJar's SLF4J
     static {
@@ -37,19 +36,17 @@ public abstract class Song {
      * <p>
      * Constructs a new Song.
      * </p>
-     * 
-     * <p>
-     * Note that this constructor does not initialize <code>audioFile</code>. To
-     * avoid possible NPEs, care should be taken to ensure that at the very
-     * least, <code>audioFile</code> is set to a meaningful value
-     * <b>immediately</b> after this constructor is called.
-     * </p>
      */
     protected Song() {
         title = new SimpleStringProperty("");
         artist = new SimpleStringProperty("");
         album = new SimpleStringProperty("");
     }
+
+    /**
+     * @return The audio file.
+     */
+    protected abstract File getAudioFile();
 
     /**
      * Finds the absolute path of the audio file. For example, if the audio file
@@ -59,11 +56,11 @@ public abstract class Song {
      * @return The absolute path
      */
     public String getAbsoluteFilename() {
-        if (audioFile == null) {
+        if (getAudioFile() == null) {
             return "null";
         }
 
-        return audioFile.getAbsolutePath();
+        return getAudioFile().getAbsolutePath();
     }
 
     /**
@@ -95,7 +92,7 @@ public abstract class Song {
      */
     public void setTitle(String title) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
             InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(audioFile);
+        AudioFile f = AudioFileIO.read(getAudioFile());
         Tag tag = f.getTag();
         tag.setField(FieldKey.TITLE, title);
         f.commit();
@@ -104,7 +101,7 @@ public abstract class Song {
 
     public String getTitle() {
         if (title.get().equals("")) {
-            return new SimpleStringProperty(audioFile.getName()).get();
+            return new SimpleStringProperty(getAudioFile().getName()).get();
         } else {
             return title.get();
         }
@@ -115,7 +112,7 @@ public abstract class Song {
      */
     public void setArtist(String artist) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
             InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(audioFile);
+        AudioFile f = AudioFileIO.read(getAudioFile());
         Tag tag = f.getTag();
         tag.setField(FieldKey.ARTIST, artist);
         f.commit();
@@ -131,7 +128,7 @@ public abstract class Song {
      */
     public void setAlbum(String album) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
             InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(audioFile);
+        AudioFile f = AudioFileIO.read(getAudioFile());
         Tag tag = f.getTag();
         tag.setField(FieldKey.ALBUM, album);
         f.commit();

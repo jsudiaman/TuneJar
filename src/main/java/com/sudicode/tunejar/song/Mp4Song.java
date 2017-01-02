@@ -19,6 +19,8 @@ public class Mp4Song extends Song {
 
     private static final Logger logger = LoggerFactory.getLogger(Mp4Song.class);
 
+    private final File audioFile;
+
     public Mp4Song(File mp4File) {
         audioFile = mp4File;
 
@@ -67,6 +69,11 @@ public class Mp4Song extends Song {
         tag.setField(tag.createField(Mp4FieldKey.ALBUM, album));
         f.commit();
         this.album.set(album);
+    }
+
+    @Override
+    protected File getAudioFile() {
+        return audioFile;
     }
 
 }

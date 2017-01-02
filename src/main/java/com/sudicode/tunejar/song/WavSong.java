@@ -7,6 +7,8 @@ import java.io.File;
  */
 public class WavSong extends Song {
 
+    private final File audioFile;
+
     public WavSong(File wavFile) {
         audioFile = wavFile;
     }
@@ -33,6 +35,11 @@ public class WavSong extends Song {
     @Override
     public void setAlbum(String album) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected File getAudioFile() {
+        return audioFile;
     }
 
 }

@@ -20,6 +20,8 @@ public class Mp3Song extends Song {
 
     private static final Logger logger = LoggerFactory.getLogger(Mp3Song.class);
 
+    private final File audioFile;
+
     public Mp3Song(File mp3File) {
         audioFile = mp3File;
 
@@ -46,6 +48,11 @@ public class Mp3Song extends Song {
 
     public Mp3Song(Mp3Song mp3Song) {
         this(mp3Song.audioFile);
+    }
+
+    @Override
+    protected File getAudioFile() {
+        return audioFile;
     }
 
 }

@@ -18,6 +18,7 @@ public class SongFactory {
      * @return The constructed {@link Song}, or <code>null</code> if the file
      *         type is not supported.
      */
+    // TODO Try to avoid NULL. Use Optional or throw an exception.
     public static Song create(File file) {
         if (file.getName().endsWith(".mp3")) {
             logger.debug("From file: " + file);
@@ -49,7 +50,7 @@ public class SongFactory {
             return new WavSong((WavSong) song);
         }
 
-        throw new IllegalArgumentException("'" + song + "' does not have a copy constructor.");
+        throw new IllegalArgumentException(song.getClass() + " does not have a copy constructor.");
     }
 
 }
