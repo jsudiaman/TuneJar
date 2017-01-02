@@ -1,6 +1,10 @@
 machine:
   java:
     version: oraclejdk8
-test:
-  post:
-    - bash <(curl -s https://codecov.io/bash)
+  pre:
+    - sudo apt-get install libavformat53
+deployment:
+  staging:
+    branch: master
+    commands:
+      - bash <(curl -s https://codecov.io/bash)
