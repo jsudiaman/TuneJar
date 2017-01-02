@@ -81,12 +81,12 @@ public class PlaybackMenu extends PlayerMenu {
             return;
         }
 
-        if (controller.getMenuPause().getText().equals("Pause")) {
+        if ("Pause".equals(controller.getMenuPause().getText())) {
             controller.getStatus().setText("Paused: " + controller.getPlayer().getNowPlaying().toString());
             controller.getPlayer().pauseSong();
             controller.getShortcutPause().setText("Resume");
             controller.getMenuPause().setText("Resume");
-        } else if (controller.getMenuPause().getText().equals("Resume")) {
+        } else if ("Resume".equals(controller.getMenuPause().getText())) {
             controller.getStatus().setText("Now Playing: " + controller.getPlayer().getNowPlaying().toString());
             controller.getPlayer().resumeSong();
             controller.getShortcutPause().setText("Pause");
@@ -177,10 +177,10 @@ public class PlaybackMenu extends PlayerMenu {
     public void initSpeedMenu() {
         ToggleGroup group = new ToggleGroup();
         for (double speed : Defaults.PRESET_SPEEDS) {
-            RadioMenuItem nextItem = new RadioMenuItem(speed + "");
+            RadioMenuItem nextItem = new RadioMenuItem(Double.toString(speed));
             nextItem.setOnAction((click) -> controller.getPlayer().setSpeed(speed));
             nextItem.setToggleGroup(group);
-            if (speed == 1) {
+            if (Double.compare(speed, 1) == 0) {
                 group.selectToggle(nextItem);
             }
             controller.getSpeedMenu().getItems().add(nextItem);
@@ -203,7 +203,7 @@ public class PlaybackMenu extends PlayerMenu {
             if (controller.getPlayer().getNowPlaying() != null) {
                 list.add(0, controller.getSongList().indexOf(controller.getPlayer().getNowPlaying()));
             }
-            logger.debug("Built shuffled row list: {}", list);
+            logger.debug("Built shuffled row list");
             shuffledRowList = list;
             shuffledRowIter = 0;
         } else {

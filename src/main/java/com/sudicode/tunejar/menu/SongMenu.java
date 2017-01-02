@@ -177,7 +177,7 @@ public class SongMenu extends PlayerMenu {
 
         // Perform the search.
         if (keyword.isPresent() && keyword.get().trim().length() > 0) {
-            int count = search(keyword.get().trim());
+            int count = search(keyword.get().trim().toLowerCase());
             if (count == 0) {
                 controller.getStatus().setText("No matches found.");
             } else {
@@ -193,8 +193,6 @@ public class SongMenu extends PlayerMenu {
      * @return The amount of songs that match
      */
     public int search(String keyword) {
-        keyword = keyword.toLowerCase();
-
         // Assign priorities to the songs, depending on relevance.
         int count = 0;
         Map<Song, Integer> priorityMap = new HashMap<>();

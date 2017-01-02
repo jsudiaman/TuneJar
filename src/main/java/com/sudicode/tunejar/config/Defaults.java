@@ -32,7 +32,7 @@ public final class Defaults {
 
     static {
         DIRECTORIES = new LinkedHashSet<>();
-        TIMEOUT = 5 * 60;
+        TIMEOUT = 5L * 60;
         ICON = "/img/icon.png";
         PLAYER_FXML = "/fxml/Player.fxml";
         SORT_ORDER = new String[0];

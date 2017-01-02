@@ -54,7 +54,7 @@ public class PlaylistMenu extends PlayerMenu {
         // Restore sort order
         controller.setSortOrder(sortOrder);
 
-        if (p.getName().equals("All Music")) {
+        if ("All Music".equals(p.getName())) {
             return;
         }
         // Enable the user to add songs to the playlist.
@@ -148,7 +148,7 @@ public class PlaylistMenu extends PlayerMenu {
         alert.setContentText("Are you sure you would like to delete playlist \"" + pl.getName() + "\"?");
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.get() != ButtonType.OK) {
+        if (result.orElse(ButtonType.CANCEL) != ButtonType.OK) {
             return;
         }
         try {

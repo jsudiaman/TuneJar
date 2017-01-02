@@ -80,7 +80,7 @@ public class FileMenu extends PlayerMenu {
         alert.setContentText("Are you sure you would like to exit?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        if (result.orElse(ButtonType.CANCEL) == ButtonType.OK) {
             Platform.exit();
         }
     }
@@ -133,9 +133,10 @@ public class FileMenu extends PlayerMenu {
         List<Song> songs = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(m3uFile))) {
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                Song song = SongFactory.create(new File(line));
-                if (song != null) {
-                    songs.add(song);
+                try {
+                    songs.add(SongFactory.create(new File(line)));
+                } catch (IllegalArgumentException e) {
+                    logger.error("Could not add file: " + line, e);
                 }
             }
         } catch (IOException e) {

@@ -118,9 +118,6 @@ public class PlayerController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialize the menu bar.
-        topMenuBar.setUseSystemMenuBar(true);
-
         // Initialize the menus.
         setFileMenu(new FileMenu(this));
         setPlaybackMenu(new PlaybackMenu(this));
@@ -167,7 +164,7 @@ public class PlayerController implements Initializable {
             // For custom playlists, restore the original order when unsorted
             if (list.isEmpty()) {
                 Playlist pl = getPlaylistTable().getSelectionModel().getSelectedItem();
-                if (!pl.getName().equals("All Music")) {
+                if (!"All Music".equals(pl.getName())) {
                     FXCollections.copy(getSongList(), pl);
                 }
             }
@@ -255,10 +252,10 @@ public class PlayerController implements Initializable {
 
             // The master playlist cannot be renamed, deleted, exported, or altered,
             // so disable that functionality if the master playlist is selected.
-            menuRemoveSong.setDisable(newValue.getName().equals("All Music"));
-            menuRenamePlaylist.setDisable(newValue.getName().equals("All Music"));
-            menuDeletePlaylist.setDisable(newValue.getName().equals("All Music"));
-            menuExportPlaylist.setDisable(newValue.getName().equals("All Music"));
+            menuRemoveSong.setDisable("All Music".equals(newValue.getName()));
+            menuRenamePlaylist.setDisable("All Music".equals(newValue.getName()));
+            menuDeletePlaylist.setDisable("All Music".equals(newValue.getName()));
+            menuExportPlaylist.setDisable("All Music".equals(newValue.getName()));
 
             // Restore sort order
             setSortOrder(sortOrder);

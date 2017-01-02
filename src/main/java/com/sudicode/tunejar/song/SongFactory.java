@@ -1,5 +1,6 @@
 package com.sudicode.tunejar.song;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,16 +10,16 @@ public class SongFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(SongFactory.class);
 
-    private SongFactory() {}
+    private SongFactory() {
+    }
 
     /**
      * Constructs a {@link Song} out of a file.
      *
      * @param file The file to be used.
-     * @return The constructed {@link Song}, or <code>null</code> if the file
-     *         type is not supported.
+     * @return The constructed {@link Song}
+     * @throws IllegalArgumentException if the file type is not supported
      */
-    // TODO Try to avoid NULL. Use Optional or throw an exception.
     public static Song create(File file) {
         if (file.getName().endsWith(".mp3")) {
             logger.debug("From file: " + file);
@@ -31,8 +32,7 @@ public class SongFactory {
             return new WavSong(file);
         }
 
-        // Unsupported file type.
-        return null;
+        throw new IllegalArgumentException("Unsupported file type: " + FilenameUtils.getExtension(file.getName()));
     }
 
     /**
@@ -50,7 +50,7 @@ public class SongFactory {
             return new WavSong((WavSong) song);
         }
 
-        throw new IllegalArgumentException(song.getClass() + " does not have a copy constructor.");
+        throw new IllegalArgumentException("Cannot duplicate instance of " + song.getClass());
     }
 
 }

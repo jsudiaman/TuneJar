@@ -100,7 +100,7 @@ public abstract class Song {
     }
 
     public String getTitle() {
-        if (title.get().equals("")) {
+        if ("".equals(title.get())) {
             return new SimpleStringProperty(getAudioFile().getName()).get();
         } else {
             return title.get();
@@ -145,7 +145,7 @@ public abstract class Song {
      * @return Title - Artist
      */
     public String toString() {
-        if (getArtist().equals(""))
+        if ("".equals(getArtist()))
             return getTitle();
         else
             return getTitle() + " - " + getArtist();

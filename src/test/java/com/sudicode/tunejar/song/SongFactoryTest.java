@@ -23,8 +23,16 @@ public class SongFactoryTest {
         assertThat(SongFactory.create(mp3File), is(instanceOf(Mp3Song.class)));
         assertThat(SongFactory.create(mp4File), is(instanceOf(Mp4Song.class)));
         assertThat(SongFactory.create(wavFile), is(instanceOf(WavSong.class)));
-        assertThat(SongFactory.create(directory), is(nullValue()));
-        assertThat(SongFactory.create(nonSongFile), is(nullValue()));
+        try {
+            SongFactory.create(directory);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
+        try {
+            SongFactory.create(nonSongFile);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test

@@ -623,7 +623,7 @@ public class Player extends Application {
         // Display the alert, then exit the program.
         alert.getDialogPane().setExpandableContent(gridPane);
         alert.showAndWait();
-        System.exit(-1);
+        Platform.exit();
     }
 
     // ------------------- Getters and Setters ------------------- //
