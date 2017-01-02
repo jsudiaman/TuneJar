@@ -2,7 +2,5 @@ machine:
   java:
     version: oraclejdk8
 test:
-  override:
-    - mvn cobertura:cobertura
   post:
     - bash <(curl -s https://codecov.io/bash)
