@@ -10,6 +10,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -48,6 +49,7 @@ public class Gui {
             File resourceFolder = new File(resourceURL.toURI());
             Options options = new Options(Defaults.PREFERENCES_NODE);
             options.setDirectories(new LinkedHashSet<>(Collections.singleton(resourceFolder)));
+            options.setPlaylists(new LinkedHashMap<>());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -81,6 +83,13 @@ public class Gui {
      */
     public Player getPlayer() {
         return Player.getPlayer();
+    }
+
+    /**
+     * @return The {@link PlayerController}.
+     */
+    public PlayerController getController() {
+        return getPlayer().getController();
     }
 
 }
