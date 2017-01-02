@@ -1,13 +1,19 @@
 language: java
 sudo: false
 install: true
-os:
-  - osx
-osx_image: xcode8.2
 addons:
+  apt:
+    packages:
+      - oracle-java8-installer
   sonarqube:
     token:
       secure: "l5Tuz1vT4nOOCWlpNrXdfOZr1IwzomiQcbnCBx8M5DuyHdApKzqmGoOA8bLy8dofEb6Ks1Oi/Irt7381osL1ccXrLbfmiodbLLfsX2Il8a7tu11IbtUlassEekc/SG//k/Fl0/45C7K1k9fBmZbOFoHqJQB3EzwEBMP03QArDw+C3goVhwiP97Mih8n94gddT+NSJ+TzUVde6Hd9r+67ue+Z+rfn9Ws4hQ8qwQzDz5+MnZ6DpRzQ+WMU3Kn6HKMMncb0fCOFtJv+Hujw6gOVTtprwFOELAm96GKHSbXYoGRbHRlFOUKK/lY9rYMEPbg4zeN7klgd5Lz4VbpIPoBteO2bCthIIqs0dFTbCR13cMW59C3HIdRoyOAtpMZnw+9YmOCwhuTkG3yCoXUoucP+qVegeOScfsGKnNoaqbAILEjcQxU8a1gB80XaWJqITK/fxOIushm2ktT0VOfpfKKC1sBMAsfmK0Tqo8YSQ9uq7ZmvZ0bP7gFLyGsUqSR/pWdxn6P3OpKdKmN0otD8K3+Kp3O6Nkxvlod8EqUgrzlLhaBBtAqzk8fngSv86m/gRwzFOfmYXg/D4VxEXzXjfxIhMXaF5ETC0CVurR0RslSYB6iO9O6gdRpqN8TbqWJsDuTwqjl9VsERzTz8/DxZRtc2OczIacSNiNjjK27TrYvxYxg="
+jdk:
+  - oraclejdk8
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "export MAVEN_OPTS=\"-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.text=t2k\""
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 cache:
