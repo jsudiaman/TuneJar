@@ -1,7 +1,6 @@
 package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.player.Gui;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,21 +15,19 @@ public class ThemeMenuTest {
 
     private Gui gui = Gui.getInstance();
 
-    @Test
     public void testDarkTheme() throws Exception {
         gui.getRobot().clickOn("#themeSelector");
         await().atMost(FIVE_SECONDS).until(() -> gui.getRobot().clickOn("Dark Theme"));
         logger.info("Clicked on Dark Theme");
-//        await().atMost(FIVE_SECONDS).until(() -> gui.getPlayer().getScene().getStylesheets().get(0), endsWith("Dark%20Theme.css"));
+        await().atMost(FIVE_SECONDS).until(() -> gui.getPlayer().getScene().getStylesheets().get(0), endsWith("Dark%20Theme.css"));
         assertThat(gui.getPlayer().getOptions().getTheme(), is(equalTo(("Dark Theme"))));
     }
 
-    @Test
     public void testModena() throws Exception {
         gui.getRobot().clickOn("#themeSelector");
         await().atMost(FIVE_SECONDS).until(() -> gui.getRobot().clickOn("Modena"));
         logger.info("Clicked on Modena");
-//        await().atMost(FIVE_SECONDS).until(() -> gui.getPlayer().getScene().getStylesheets().get(0), endsWith("Modena.css"));
+        await().atMost(FIVE_SECONDS).until(() -> gui.getPlayer().getScene().getStylesheets().get(0), endsWith("Modena.css"));
         assertThat(gui.getPlayer().getOptions().getTheme(), is(equalTo("Modena")));
     }
 
