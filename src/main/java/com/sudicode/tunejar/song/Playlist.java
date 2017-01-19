@@ -1,19 +1,16 @@
 package com.sudicode.tunejar.song;
 
 import com.sudicode.tunejar.config.Options;
-
+import javafx.beans.property.SimpleStringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
-
-import javafx.beans.property.SimpleStringProperty;
 
 /**
  * An ordered collection of Song objects.

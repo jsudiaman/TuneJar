@@ -2,16 +2,14 @@ package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
-
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleGroup;
 
 /** Helper class for handling the Playback menu. */
 public class PlaybackMenu extends PlayerMenu {

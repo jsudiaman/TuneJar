@@ -1,12 +1,12 @@
 package com.sudicode.tunejar.song;
 
-import static org.junit.Assert.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+
+import static org.junit.Assert.*;
 
 /** Unit test for the {@link WavSong} class. */
 public class WavSongTest {

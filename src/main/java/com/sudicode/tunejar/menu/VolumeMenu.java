@@ -1,12 +1,10 @@
 package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.player.PlayerController;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VolumeMenu extends PlayerMenu {
 

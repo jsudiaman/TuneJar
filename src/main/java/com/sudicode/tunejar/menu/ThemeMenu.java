@@ -2,7 +2,6 @@ package com.sudicode.tunejar.menu;
 
 import com.sudicode.tunejar.config.Defaults;
 import com.sudicode.tunejar.player.PlayerController;
-
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 

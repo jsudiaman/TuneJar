@@ -1,20 +1,17 @@
 package com.sudicode.tunejar.song;
 
-import static org.junit.Assert.*;
-
+import com.sudicode.tunejar.TuneJarException;
 import org.apache.commons.io.FilenameUtils;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.TagException;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
-/** Unit test for the {@link Mp3Song} class. */
+import static org.junit.Assert.*;
+
+/**
+ * Unit test for the {@link Mp3Song} class.
+ */
 public class Mp3SongTest {
 
     private static final String TITLE = "After Dark";
@@ -57,8 +54,7 @@ public class Mp3SongTest {
      * file.
      */
     @Test
-    public void testSetTitle() throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
+    public void testSetTitle() throws TuneJarException {
         try {
             mp3Song.setTitle("New Title");
             assertEquals("New Title", mp3Song.title.get());
@@ -81,8 +77,7 @@ public class Mp3SongTest {
      * file.
      */
     @Test
-    public void testSetArtist() throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
+    public void testSetArtist() throws TuneJarException {
         try {
             mp3Song.setArtist("New Artist");
             assertEquals("New Artist", mp3Song.artist.get());
@@ -105,8 +100,7 @@ public class Mp3SongTest {
      * file.
      */
     @Test
-    public void testSetAlbum() throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
+    public void testSetAlbum() throws TuneJarException {
         try {
             mp3Song.setAlbum("New Album");
             assertEquals("New Album", mp3Song.album.get());

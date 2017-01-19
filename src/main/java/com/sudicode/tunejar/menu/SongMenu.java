@@ -4,17 +4,6 @@ import com.sudicode.tunejar.player.PlayerController;
 import com.sudicode.tunejar.song.Playlist;
 import com.sudicode.tunejar.song.Song;
 import com.sudicode.tunejar.song.WavSong;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar;
@@ -24,6 +13,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Helper class for handling the Song menu.
