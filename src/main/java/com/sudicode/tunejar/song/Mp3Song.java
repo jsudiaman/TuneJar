@@ -16,13 +16,21 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class Mp3Song extends Song {
+/**
+ * MP3 file.
+ */
+public final class Mp3Song extends Song {
 
     private static final Logger logger = LoggerFactory.getLogger(Mp3Song.class);
 
     private final File audioFile;
 
-    public Mp3Song(File mp3File) {
+    /**
+     * Constructor.
+     *
+     * @param mp3File The MP3 (.mp3) file to use.
+     */
+    Mp3Song(final File mp3File) {
         audioFile = mp3File;
 
         try {
@@ -46,7 +54,12 @@ public class Mp3Song extends Song {
         }
     }
 
-    public Mp3Song(Mp3Song mp3Song) {
+    /**
+     * Constructor.
+     *
+     * @param mp3Song The {@link Mp3Song} to copy.
+     */
+    Mp3Song(final Mp3Song mp3Song) {
         this(mp3Song.audioFile);
     }
 

@@ -1,5 +1,7 @@
 package com.sudicode.tunejar.song;
 
+import com.sudicode.tunejar.TuneJarException;
+import javafx.beans.property.SimpleStringProperty;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -16,8 +18,10 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.io.File;
 import java.io.IOException;
 
-import javafx.beans.property.SimpleStringProperty;
-
+/**
+ * Represents a single audio file that is compatible with TuneJar. Subclasses must override <code>getAudioFile()</code>
+ * which will return the file path.
+ */
 public abstract class Song {
 
     private static final Logger logger = LoggerFactory.getLogger(Song.class);
@@ -33,9 +37,7 @@ public abstract class Song {
     }
 
     /**
-     * <p>
      * Constructs a new Song.
-     * </p>
      */
     protected Song() {
         title = new SimpleStringProperty("");
@@ -80,8 +82,7 @@ public abstract class Song {
             setArtist(getArtist());
             setAlbum(getAlbum());
             return true;
-        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException
-                | CannotWriteException e) {
+        } catch (TuneJarException e) {
             logger.error("Unable to edit song: " + toString(), e);
             return false;
         }
@@ -89,16 +90,26 @@ public abstract class Song {
 
     /**
      * Sets the title in both this object and the audio file.
+     *
+     * @param title The title
+     * @throws TuneJarException if an error occurs.
      */
-    public void setTitle(String title) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(getAudioFile());
-        Tag tag = f.getTag();
-        tag.setField(FieldKey.TITLE, title);
-        f.commit();
-        this.title.set(title);
+    public void setTitle(final String title) throws TuneJarException {
+        try {
+            AudioFile f = AudioFileIO.read(getAudioFile());
+            Tag tag = f.getTag();
+            tag.setField(FieldKey.TITLE, title);
+            f.commit();
+            this.title.set(title);
+        } catch (IOException | CannotReadException | TagException | ReadOnlyFileException
+                | InvalidAudioFrameException | CannotWriteException e) {
+            throw new TuneJarException(e);
+        }
     }
 
+    /**
+     * @return The title of the song.
+     */
     public String getTitle() {
         if ("".equals(title.get())) {
             return new SimpleStringProperty(getAudioFile().getName()).get();
@@ -109,32 +120,52 @@ public abstract class Song {
 
     /**
      * Sets the artist in both this object and the audio file.
+     *
+     * @param artist The artist
+     * @throws TuneJarException if an error occurs.
      */
-    public void setArtist(String artist) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(getAudioFile());
-        Tag tag = f.getTag();
-        tag.setField(FieldKey.ARTIST, artist);
-        f.commit();
-        this.artist.set(artist);
+    public void setArtist(final String artist) throws TuneJarException {
+        try {
+            AudioFile f = AudioFileIO.read(getAudioFile());
+            Tag tag = f.getTag();
+            tag.setField(FieldKey.ARTIST, artist);
+            f.commit();
+            this.artist.set(artist);
+        } catch (IOException | CannotReadException | TagException | ReadOnlyFileException
+                | InvalidAudioFrameException | CannotWriteException e) {
+            throw new TuneJarException(e);
+        }
     }
 
+    /**
+     * @return The artist of the song.
+     */
     public String getArtist() {
         return artist.get();
     }
 
     /**
      * Sets the album in both this object and the audio file.
+     *
+     * @param album The album
+     * @throws TuneJarException if an error occurs.
      */
-    public void setAlbum(String album) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(getAudioFile());
-        Tag tag = f.getTag();
-        tag.setField(FieldKey.ALBUM, album);
-        f.commit();
-        this.album.set(album);
+    public void setAlbum(final String album) throws TuneJarException {
+        try {
+            AudioFile f = AudioFileIO.read(getAudioFile());
+            Tag tag = f.getTag();
+            tag.setField(FieldKey.ALBUM, album);
+            f.commit();
+            this.album.set(album);
+        } catch (IOException | CannotReadException | TagException | ReadOnlyFileException
+                | InvalidAudioFrameException | CannotWriteException e) {
+            throw new TuneJarException(e);
+        }
     }
 
+    /**
+     * @return The album of the song.
+     */
     public String getAlbum() {
         return album.get();
     }
@@ -145,10 +176,11 @@ public abstract class Song {
      * @return Title - Artist
      */
     public String toString() {
-        if ("".equals(getArtist()))
+        if ("".equals(getArtist())) {
             return getTitle();
-        else
+        } else {
             return getTitle() + " - " + getArtist();
+        }
     }
 
 }

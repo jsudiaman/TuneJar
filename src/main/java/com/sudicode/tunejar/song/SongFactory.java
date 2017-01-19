@@ -6,10 +6,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+/**
+ * Creates {@link Song} instances from audio files or other {@link Song Songs}.
+ */
 public class SongFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(SongFactory.class);
 
+    /**
+     * Illegal.
+     */
     private SongFactory() {
     }
 
@@ -20,7 +26,7 @@ public class SongFactory {
      * @return The constructed {@link Song}
      * @throws IllegalArgumentException if the file type is not supported
      */
-    public static Song create(File file) {
+    public static Song create(final File file) {
         if (file.getName().endsWith(".mp3")) {
             logger.debug("From file: " + file);
             return new Mp3Song(file);
@@ -41,7 +47,7 @@ public class SongFactory {
      * @param song The song to be used.
      * @return The duplicate {@link Song}.
      */
-    public static Song duplicate(Song song) {
+    public static Song duplicate(final Song song) {
         if (song instanceof Mp3Song) {
             return new Mp3Song((Mp3Song) song);
         } else if (song instanceof Mp4Song) {

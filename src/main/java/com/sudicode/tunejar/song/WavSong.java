@@ -3,17 +3,27 @@ package com.sudicode.tunejar.song;
 import java.io.File;
 
 /**
- * Currently does not support reading or writing of metadata.
+ * WAV file. Currently does not support reading or writing of metadata.
  */
-public class WavSong extends Song {
+public final class WavSong extends Song {
 
     private final File audioFile;
 
-    public WavSong(File wavFile) {
+    /**
+     * Constructor.
+     *
+     * @param wavFile The WAV (.wav) file to use.
+     */
+    WavSong(final File wavFile) {
         audioFile = wavFile;
     }
 
-    public WavSong(WavSong wavSong) {
+    /**
+     * Constructor.
+     *
+     * @param wavSong The {@link WavSong} to copy.
+     */
+    WavSong(final WavSong wavSong) {
         this(wavSong.audioFile);
     }
 
@@ -23,17 +33,17 @@ public class WavSong extends Song {
     }
 
     @Override
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setArtist(String artist) {
+    public void setArtist(final String artist) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setAlbum(String album) {
+    public void setAlbum(final String album) {
         throw new UnsupportedOperationException();
     }
 

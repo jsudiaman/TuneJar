@@ -1,5 +1,6 @@
 package com.sudicode.tunejar.song;
 
+import com.sudicode.tunejar.TuneJarException;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -15,13 +16,21 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class Mp4Song extends Song {
+/**
+ * MP4 file.
+ */
+public final class Mp4Song extends Song {
 
     private static final Logger logger = LoggerFactory.getLogger(Mp4Song.class);
 
     private final File audioFile;
 
-    public Mp4Song(File mp4File) {
+    /**
+     * Constructor.
+     *
+     * @param mp4File The MP4 (.mp4/.m4a) file to use.
+     */
+    Mp4Song(final File mp4File) {
         audioFile = mp4File;
 
         try {
@@ -32,43 +41,61 @@ public class Mp4Song extends Song {
             title.set(tag.getFirst(Mp4FieldKey.TITLE));
             artist.set(tag.getFirst(Mp4FieldKey.ARTIST));
             album.set(tag.getFirst(Mp4FieldKey.ALBUM));
-        } catch (Exception e) {
+        } catch (IOException | CannotReadException | InvalidAudioFrameException | ReadOnlyFileException
+                | TagException e) {
             logger.error("Unable to parse: " + mp4File, e);
         }
     }
 
-    public Mp4Song(Mp4Song mp4Song) {
+    /**
+     * Constructor.
+     *
+     * @param mp4Song The {@link Mp4Song} to copy.
+     */
+    Mp4Song(final Mp4Song mp4Song) {
         this(mp4Song.audioFile);
     }
 
     @Override
-    public void setTitle(String title) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(audioFile);
-        Mp4Tag tag = (Mp4Tag) f.getTag();
-        tag.setField(tag.createField(Mp4FieldKey.TITLE, title));
-        f.commit();
-        this.title.set(title);
+    public void setTitle(final String title) throws TuneJarException {
+        try {
+            AudioFile f = AudioFileIO.read(audioFile);
+            Mp4Tag tag = (Mp4Tag) f.getTag();
+            tag.setField(tag.createField(Mp4FieldKey.TITLE, title));
+            f.commit();
+            this.title.set(title);
+        } catch (IOException | CannotReadException | InvalidAudioFrameException | ReadOnlyFileException
+                | TagException | CannotWriteException e) {
+            throw new TuneJarException(e);
+        }
     }
 
     @Override
-    public void setArtist(String artist) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(audioFile);
-        Mp4Tag tag = (Mp4Tag) f.getTag();
-        tag.setField(tag.createField(Mp4FieldKey.ARTIST, artist));
-        f.commit();
-        this.artist.set(artist);
+    public void setArtist(final String artist) throws TuneJarException {
+        try {
+            AudioFile f = AudioFileIO.read(audioFile);
+            Mp4Tag tag = (Mp4Tag) f.getTag();
+            tag.setField(tag.createField(Mp4FieldKey.ARTIST, artist));
+            f.commit();
+            this.artist.set(artist);
+        } catch (IOException | CannotReadException | InvalidAudioFrameException | ReadOnlyFileException
+                | TagException | CannotWriteException e) {
+            throw new TuneJarException(e);
+        }
     }
 
     @Override
-    public void setAlbum(String album) throws CannotReadException, IOException, TagException, ReadOnlyFileException,
-            InvalidAudioFrameException, CannotWriteException {
-        AudioFile f = AudioFileIO.read(audioFile);
-        Mp4Tag tag = (Mp4Tag) f.getTag();
-        tag.setField(tag.createField(Mp4FieldKey.ALBUM, album));
-        f.commit();
-        this.album.set(album);
+    public void setAlbum(final String album) throws TuneJarException {
+        try {
+            AudioFile f = AudioFileIO.read(audioFile);
+            Mp4Tag tag = (Mp4Tag) f.getTag();
+            tag.setField(tag.createField(Mp4FieldKey.ALBUM, album));
+            f.commit();
+            this.album.set(album);
+        } catch (IOException | CannotReadException | InvalidAudioFrameException | ReadOnlyFileException
+                | TagException | CannotWriteException e) {
+            throw new TuneJarException(e);
+        }
     }
 
     @Override

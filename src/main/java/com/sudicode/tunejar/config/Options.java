@@ -16,55 +16,96 @@ import static org.apache.commons.lang3.SerializationUtils.*;
  */
 public final class Options {
 
+    /**
+     * {@link Preferences} node.
+     */
     private Preferences prefs;
 
-    public Options(Preferences prefs) {
+    /**
+     * Construct a new {@link Options} object.
+     *
+     * @param prefs {@link Preferences} node to use
+     */
+    public Options(final Preferences prefs) {
         this.prefs = prefs;
     }
 
+    /**
+     * @return Current player theme.
+     */
     public String getTheme() {
         return prefs.get("theme", Defaults.THEME);
     }
 
-    public void setTheme(String theme) {
+    /**
+     * @param theme Player theme to use.
+     */
+    public void setTheme(final String theme) {
         prefs.put("theme", theme);
     }
 
+    /**
+     * @return Music directories.
+     */
     public LinkedHashSet<File> getDirectories() {
         byte[] buff = prefs.getByteArray("directories", null);
         return buff != null ? deserialize(buff) : Defaults.DIRECTORIES;
     }
 
-    public void setDirectories(LinkedHashSet<File> directories) {
+    /**
+     * @param directories Music directories to use.
+     */
+    public void setDirectories(final LinkedHashSet<File> directories) {
         prefs.putByteArray("directories", serialize(directories));
     }
 
+    /**
+     * @return Current player volume, ranging from [0-1].
+     */
     public double getVolume() {
         return prefs.getDouble("volume", Defaults.VOLUME);
     }
 
-    public void setVolume(double volume) {
+    /**
+     * @param volume Player volume to use, ranging from [0-1].
+     */
+    public void setVolume(final double volume) {
         prefs.putDouble("volume", volume);
     }
 
+    /**
+     * @return Current sort order (Title / Artist / Album).
+     */
     public String[] getSortOrder() {
         byte[] buff = prefs.getByteArray("sortOrder", null);
         return buff != null ? deserialize(buff) : Defaults.SORT_ORDER;
     }
 
-    public void setSortOrder(String... sorts) {
+    /**
+     * @param sorts Sort order to use (Title / Artist / Album).
+     */
+    public void setSortOrder(final String... sorts) {
         prefs.putByteArray("sortOrder", serialize(sorts));
     }
 
+    /**
+     * @return Current order of the columns.
+     */
     public String[] getColumnOrder() {
         byte[] buff = prefs.getByteArray("columnOrder", null);
         return buff != null ? deserialize(buff) : Defaults.COLUMN_ORDER;
     }
 
-    public void setColumnOrder(String... columns) {
+    /**
+     * @param columns Column order to use.
+     */
+    public void setColumnOrder(final String... columns) {
         prefs.putByteArray("columnOrder", serialize(columns));
     }
 
+    /**
+     * @return Direction to sort titles.
+     */
     public SortType getTitleSortDirection() {
         switch (prefs.get("titleSortDirection", Defaults.SORT_DIRECTION)) {
             case "ASCENDING":
@@ -76,10 +117,16 @@ public final class Options {
         }
     }
 
-    public void setTitleSortDirection(String direction) {
+    /**
+     * @param direction Direction to sort titles (ASCENDING / DESCENDING).
+     */
+    public void setTitleSortDirection(final String direction) {
         prefs.put("titleSortDirection", direction);
     }
 
+    /**
+     * @return Direction to sort artists.
+     */
     public SortType getArtistSortDirection() {
         switch (prefs.get("artistSortDirection", Defaults.SORT_DIRECTION)) {
             case "ASCENDING":
@@ -91,10 +138,16 @@ public final class Options {
         }
     }
 
-    public void setArtistSortDirection(String direction) {
+    /**
+     * @param direction Direction to sort artists (ASCENDING / DESCENDING).
+     */
+    public void setArtistSortDirection(final String direction) {
         prefs.put("artistSortDirection", direction);
     }
 
+    /**
+     * @return Direction to sort albums.
+     */
     public SortType getAlbumSortDirection() {
         switch (prefs.get("albumSortDirection", Defaults.SORT_DIRECTION)) {
             case "ASCENDING":
@@ -106,53 +159,89 @@ public final class Options {
         }
     }
 
-    public void setAlbumSortDirection(String direction) {
+    /**
+     * @param direction Direction to sort albums (ASCENDING / DESCENDING).
+     */
+    public void setAlbumSortDirection(final String direction) {
         prefs.put("albumSortDirection", direction);
     }
 
+    /**
+     * @return <code>true</code> if playback is shuffled.
+     */
     public boolean isShuffle() {
         return prefs.getBoolean("shuffle", Defaults.SHUFFLE);
     }
 
-    public void setShuffle(boolean shuffle) {
+    /**
+     * @param shuffle <code>true</code> to shuffle playback.
+     */
+    public void setShuffle(final boolean shuffle) {
         prefs.putBoolean("shuffle", shuffle);
     }
 
+    /**
+     * @return Map of playlist titles to their respective M3U strings.
+     */
     public LinkedHashMap<String, String> getPlaylists() {
         byte[] buff = prefs.getByteArray("playlists", null);
         return buff != null ? deserialize(buff) : Defaults.PLAYLISTS;
     }
 
-    public void setPlaylists(LinkedHashMap<String, String> playlists) {
+    /**
+     * @param playlists Map of playlist titles to their respective M3U strings.
+     */
+    public void setPlaylists(final LinkedHashMap<String, String> playlists) {
         prefs.putByteArray("playlists", serialize(playlists));
     }
 
+    /**
+     * @return Current width of the player.
+     */
     public double getWindowWidth() {
         return prefs.getDouble("windowWidth", Defaults.WINDOW_WIDTH);
     }
 
-    public void setWindowWidth(double windowWidth) {
+    /**
+     * @param windowWidth Player width to use.
+     */
+    public void setWindowWidth(final double windowWidth) {
         prefs.putDouble("windowWidth", windowWidth);
     }
 
+    /**
+     * @return Current height of the player.
+     */
     public double getWindowHeight() {
         return prefs.getDouble("windowHeight", Defaults.WINDOW_HEIGHT);
     }
 
-    public void setWindowHeight(double windowHeight) {
+    /**
+     * @param windowHeight Player height to use.
+     */
+    public void setWindowHeight(final double windowHeight) {
         prefs.putDouble("windowHeight", windowHeight);
     }
 
+    /**
+     * @return <code>true</code> if the player is maximized.
+     */
     public boolean isMaximized() {
         return prefs.getBoolean("maximized", Defaults.MAXIMIZED);
     }
 
-    public void setMaximized(boolean maximized) {
+    /**
+     * @param maximized <code>true</code> to maximize the player.
+     */
+    public void setMaximized(final boolean maximized) {
         prefs.putBoolean("maximized", maximized);
     }
 
     /**
      * Clears all key-value mappings in the {@link Preferences} node.
+     *
+     * @throws BackingStoreException if this operation cannot be completed due to a failure in the backing store, or
+     *                               inability to communicate with it.
      */
     public void clear() throws BackingStoreException {
         prefs.clear();
