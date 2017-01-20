@@ -58,10 +58,6 @@ public abstract class Song {
      * @return The absolute path
      */
     public String getAbsoluteFilename() {
-        if (getAudioFile() == null) {
-            return "null";
-        }
-
         return getAudioFile().getAbsolutePath();
     }
 

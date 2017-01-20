@@ -15,7 +15,7 @@ import java.util.ListIterator;
 /**
  * An ordered collection of Song objects.
  */
-public class Playlist implements List<Song> {
+public final class Playlist implements List<Song> {
 
     private static final Logger logger = LoggerFactory.getLogger(Playlist.class);
 
@@ -25,27 +25,28 @@ public class Playlist implements List<Song> {
     // --------------- Constructors --------------- //
 
     /**
-     * Creates a new instance of Playlist that is named "Untitled".
-     */
-    public Playlist() {
-        this.name = new SimpleStringProperty("Untitled");
-    }
-
-    /**
      * Creates a new instance of Playlist.
      *
      * @param name The name of the playlist
      */
-    public Playlist(String name) {
+    public Playlist(final String name) {
         this.name = new SimpleStringProperty(name);
     }
 
     // --------------- Getters and Setters --------------- //
 
-    public void setName(String newName) {
+    /**
+     * Rename this playlist.
+     *
+     * @param newName New name of the playlist
+     */
+    public void setName(final String newName) {
         name.set(newName);
     }
 
+    /**
+     * @return The name of the playlist
+     */
     public String getName() {
         return name.get();
     }
@@ -57,7 +58,7 @@ public class Playlist implements List<Song> {
      *
      * @param options The {@link Options} object to save to
      */
-    public void save(Options options) {
+    public void save(final Options options) {
         LinkedHashMap<String, String> playlists = options.getPlaylists();
         StringBuilder sb = new StringBuilder();
         for (Song song : this) {
@@ -74,7 +75,7 @@ public class Playlist implements List<Song> {
      * Uses the copy constructor instead of directly adding the argument.
      */
     @Override
-    public boolean add(Song s) {
+    public boolean add(final Song s) {
         return list.add(SongFactory.duplicate(s));
     }
 
@@ -84,10 +85,10 @@ public class Playlist implements List<Song> {
      *
      * @param songs A song collection
      * @return True if at least one song in the collection was added to this
-     *         playlist.
+     * playlist.
      */
     @Override
-    public boolean addAll(Collection<? extends Song> songs) {
+    public boolean addAll(final Collection<? extends Song> songs) {
         boolean added = false;
         for (Song s : songs) {
             if (add(s)) {

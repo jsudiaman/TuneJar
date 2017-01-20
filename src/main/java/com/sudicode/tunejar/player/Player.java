@@ -63,6 +63,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
+/**
+ * Main class.
+ */
 public class Player extends Application {
 
     // Static
@@ -199,8 +202,7 @@ public class Player extends Application {
             logger.trace(newV ? "Window maximized" : "Window restored");
         });
 
-        // Create and display a playlist containing all songs from each
-        // directory.
+        // Create and display a playlist containing all songs from each directory.
         refresh();
     }
 
@@ -295,6 +297,9 @@ public class Player extends Application {
         /**
          * Clears the master playlist, then constructs a new one out of all
          * supported audio files found in the set of directories.
+         *
+         * @throws InterruptedException if the current thread was interrupted while waiting
+         * @throws ExecutionException   if the computation threw an exception
          */
         private void refreshMasterPlaylist() throws InterruptedException, ExecutionException {
             setMasterPlaylist(new Playlist("All Music"));
@@ -318,6 +323,8 @@ public class Player extends Application {
          * folder. The constructed playlists are then wrapped into a collection.
          *
          * @return The collection of constructed playlists.
+         * @throws InterruptedException if the current thread was interrupted while waiting
+         * @throws ExecutionException   if the computation threw an exception
          */
         private List<Playlist> getPlaylists() throws InterruptedException, ExecutionException {
             List<Playlist> playlists = new ArrayList<>();
@@ -340,6 +347,11 @@ public class Player extends Application {
 
         /**
          * Creates a playlist out of an m3u file.
+         *
+         * @param nameToM3UString An {@link Entry} which maps playlist name to the contents of its respective M3U file.
+         * @throws IOException          If an I/O error occurs
+         * @throws InterruptedException if the current thread was interrupted while waiting
+         * @throws ExecutionException   if the computation threw an exception
          */
         private Playlist createPlaylist(Entry<String, String> nameToM3UString) throws IOException, InterruptedException, ExecutionException {
             String name = nameToM3UString.getKey();
@@ -528,7 +540,9 @@ public class Player extends Application {
         return chooser.showDialog(stage);
     }
 
-    // Alert the user that no directories were found
+    /**
+     * Alert the user that no directories were found.
+     */
     private void showNoDirectoriesAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Empty Music Library");
@@ -638,73 +652,136 @@ public class Player extends Application {
         mediaPlayer.setOnEndOfMedia(action);
     }
 
+    /**
+     * @return The {@link Song} that is currently playing
+     */
     public Song getNowPlaying() {
         return nowPlaying;
     }
 
+    /**
+     * @param nowPlaying The {@link Song} to set <code>nowPlaying</code> to
+     */
     private void setNowPlaying(Song nowPlaying) {
         this.nowPlaying = nowPlaying;
     }
 
+    /**
+     * Adjust media volume.
+     *
+     * @param value Between [0.0, 1.0]
+     */
     public void setVolume(double value) {
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(value);
         }
     }
 
+    /**
+     * @return <code>Playlist</code> containing all available music.
+     */
     public Playlist getMasterPlaylist() {
         return masterPlaylist;
     }
 
+    /**
+     * @param masterPlaylist The {@link Playlist} to set <code>masterPlaylist</code> to
+     */
     private void setMasterPlaylist(Playlist masterPlaylist) {
         this.masterPlaylist = masterPlaylist;
     }
 
+    /**
+     * Set the {@link Player} instance.
+     *
+     * @param instance An instance of {@link Player}
+     */
     private static void setInstance(Player instance) {
         Player.instance = instance;
     }
 
+    /**
+     * Get the {@link Player} instance. Since {@link Application} can only be launched once, the instance should remain
+     * consistent once initialized.
+     *
+     * @return Instance of {@link Player}
+     */
     protected static Player getPlayer() {
         return instance;
     }
 
+    /**
+     * @return The {@link PlayerController} associated with this {@link Player}.
+     */
     protected PlayerController getController() {
         return controller;
     }
 
+    /**
+     * @param controller The {@link PlayerController} to set <code>controller</code> to
+     */
     private void setController(PlayerController controller) {
         this.controller = controller;
     }
 
+    /**
+     * @return The {@link Scene} associated with this {@link Player}.
+     */
     public Scene getScene() {
         return scene;
     }
 
+    /**
+     * @param scene The {@link Scene} to set <code>scene</code> to
+     */
     private void setScene(Scene scene) {
         this.scene = scene;
     }
 
+    /**
+     * Set the <code>initialized</code> state.
+     *
+     * @param initialized <code>true</code> if the application is initialized
+     */
     private void setInitialized(boolean initialized) {
-        if (this.initialized == null)
+        if (this.initialized == null) {
             this.initialized = new AtomicBoolean(initialized);
-        else
+        } else {
             this.initialized.set(initialized);
+        }
     }
 
+    /**
+     * Get the <code>initialized</code> state.
+     *
+     * @return <code>true</code> if the application is initialized
+     */
     public boolean isInitialized() {
-        if (this.initialized == null)
+        if (this.initialized == null) {
             this.initialized = new AtomicBoolean();
+        }
         return initialized.get();
     }
 
+    /**
+     * @return The {@link Options} associated with this {@link Player}.
+     */
     public Options getOptions() {
         return options;
     }
 
+    /**
+     * @param options The {@link Options} to set <code>options</code> to
+     */
     private void setOptions(Options options) {
         this.options = options;
     }
 
+    /**
+     * Set playback speed.
+     *
+     * @param speed Between [0.0, 8.0]. (1.0 is normal speed, 2.0 is twice as fast, .5 is half as fast, etc)
+     */
     public void setSpeed(double speed) {
         if (mediaPlayer != null) {
             mediaPlayer.setRate(speed);
@@ -712,6 +789,9 @@ public class Player extends Application {
         this.mediaPlayerSpeed = speed;
     }
 
+    /**
+     * @return The playback speed (multiplier).
+     */
     private double getSpeed() {
         return mediaPlayerSpeed;
     }
