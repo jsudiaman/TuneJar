@@ -1,0 +1,8 @@
+image: 3.5.3-jdk-8
+
+before_script:
+- apt-get update -qq && apt-get install -y -qq openjfx
+
+build:
+  script:
+  - mvn clean install -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
