@@ -1,7 +1,6 @@
 # TuneJar
-[![GitHub release](https://img.shields.io/github/release/sudiamanj/TuneJar.svg)](https://github.com/sudiamanj/TuneJar/releases) [![CircleCI](https://circleci.com/gh/sudiamanj/TuneJar.svg?style=shield)](https://circleci.com/gh/sudiamanj/TuneJar) [![codecov](https://codecov.io/gh/sudiamanj/TuneJar/branch/master/graph/badge.svg)](https://codecov.io/gh/sudiamanj/TuneJar)
 
-<img src="https://raw.githubusercontent.com/sudiamanj/TuneJar/master/screenshot.png" alt="Screenshot" width="800" height="480">
+<img src="/screenshot.png" alt="Screenshot" width="800" height="480">
 
 **TuneJar** is a Java-based music player that is lightweight, cross-platform, and best of all, open source.
 
@@ -18,7 +17,17 @@ Performance tests show that TuneJar can load over *100 gigabytes* of songs in ju
 ### User-Friendly
 Avoid the hassles of manual library management. If you add or delete files from your music folders, TuneJar will automatically pick up the changes and update your library accordingly (on its next launch). Let TuneJar do all the hard work for you, so that you can spend more time enjoying your tunes.
 
-## No Java? No Problem!
-TuneJar is available as a native app which can be used without ever installing Java on your machine. These applications are built directly from the TuneJar archive. Thus, they are *fully functional copies* of TuneJar - not stripped down versions with less features!
+## Developing TuneJar
 
-<sup>Native applications provided by [JWrapper](http://www.jwrapper.com/).</sup>
+### Running TuneJar using the Command Line
+[Install Apache Maven](https://maven.apache.org/install.html), then run TuneJar using the following commands:
+
+```shell
+mvn compile
+mvn exec:java -Dexec.mainClass="com.sudicode.tunejar.player.Player"
+```
+
+### Running TuneJar using an IDE
+Import the TuneJar folder as a Maven project, then run `src/main/java/com.sudicode.tunejar.player.Player.java`.
+
+**Note:** If Eclipse gives you an access restriction error, install the [e(fx)clipse](http://www.eclipse.org/efxclipse/index.html) plugin to fix that.
