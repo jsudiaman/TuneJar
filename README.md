@@ -1,5 +1,4 @@
 # TuneJar
-[![SonarQube](https://sonarcloud.io/api/project_badges/measure?project=com.sudicode%3Atunejar&metric=coverage)](https://sonarcloud.io/dashboard?id=com.sudicode%3Atunejar)
 
 <img src="/screenshot.png" alt="Screenshot" width="800" height="480">
 
