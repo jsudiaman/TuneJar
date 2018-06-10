@@ -7,7 +7,12 @@ stages:
 - build_jar
 - build_exe
 
-build_jar_job:
+cache:
+  paths:
+  - .m2/repository
+  - .sonar/cache
+
+jar:
   stage: build_jar
   script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sudiamanj-github -Dsonar.login=$SONAR_TOKEN
@@ -16,7 +21,7 @@ build_jar_job:
     paths:
     - TuneJar.jar
 
-build_exe_job:
+exe:
   stage: build_exe
   script:
   - wget https://astuteinternet.dl.sourceforge.net/project/launch4j/launch4j-3/3.12/launch4j-3.12-linux-x64.tgz
