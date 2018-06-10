@@ -6,3 +6,7 @@ before_script:
 build:
   script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sudiamanj-github -Dsonar.login=$SONAR_TOKEN
+  - cp target/tunejar-1.0-jar-with-dependencies.jar TuneJar.jar
+  artifacts:
+    paths:
+    - TuneJar.jar
