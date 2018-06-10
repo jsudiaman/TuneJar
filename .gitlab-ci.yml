@@ -2,9 +2,13 @@ image: maven:3.5.3-jdk-8
 
 before_script:
 - apt-get update -qq && apt-get install -y -qq openjfx
-- lscpu
 
-build_jar:
+stages:
+- build_jar
+- build_exe
+
+build_jar_job:
+  stage: build_jar
   script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sudiamanj-github -Dsonar.login=$SONAR_TOKEN
   - cp target/tunejar-1.0-jar-with-dependencies.jar TuneJar.jar
@@ -12,13 +16,12 @@ build_jar:
     paths:
     - TuneJar.jar
 
-build_exe:
+build_exe_job:
+  stage: build_exe
   script:
   - wget https://astuteinternet.dl.sourceforge.net/project/launch4j/launch4j-3/3.12/launch4j-3.12-linux-x64.tgz
   - tar -xvzf launch4j-3.12-linux-x64.tgz
   - ./launch4j/launch4j launch4j.xml
-  dependencies:
-  - build_jar
   artifacts:
     paths:
     - TuneJar.exe
