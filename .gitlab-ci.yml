@@ -5,8 +5,8 @@ before_script:
 
 cache:
   paths:
-  - .m2/repository
-  - .sonar/cache
+  - ~/.m2/repository
+  - ~/.sonar/cache
   - launch4j-3.12-linux-x64.tgz
 
 build:
@@ -19,3 +19,4 @@ build:
   artifacts:
     paths:
     - TuneJar.jar
+    - TuneJar.exe
