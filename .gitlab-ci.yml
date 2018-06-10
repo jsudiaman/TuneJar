@@ -5,8 +5,8 @@ before_script:
 
 cache:
   paths:
-  - /root/.m2/repository
-  - /root/.sonar/cache
+  - /root/.m2/repository/
+  - /root/.sonar/cache/
   - launch4j-3.12-linux-x64.tgz
 
 build:
