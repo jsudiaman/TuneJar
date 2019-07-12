@@ -1,14 +1,26 @@
 dist: xenial
 language: java
 jdk:
-  - openjdk8
+- openjdk8
 addons:
   apt:
     update: true
     packages:
-      - openjfx
+    - openjfx
   sonarcloud:
-    organization: "sudiamanj-github"
+    organization: sudiamanj-github
     token:
-      secure: "zhmT89Tnuh+MdqsNL7+yBtUZpEj/4ntCiJs9xgsniaCm4utlUKf8KvYIVvhP51NyViuPAXDfx9dzVvw3ap4xYi7uiapnvzJL/ZEBjoiKi1quyFnUBVMQNpVYnuRJfZSUqktTHgdl7IbAVmMrq6+iKjN+YEq4deXtnRG4w78fAJGu5SSrrCghafWzHGM/3mHY7UxMlfGLtB7dQ9qpAqk6Qxpo/M5qSzdupxPl4REUZXKZ4ZJegI1NKJy/sEYQGtIoG5Iba+3oekgIKLCBugxpubVogQ1655hhIqL2bKj9Hiqb+r/DZK8hbwX7KgtAnqGYqvVSP3RoaCX0Or4soMjYZqccI9/Qg/ONp8fQS5rlzOATnhfeY5cf5lLeoWDgtbIk62wKLP7/uKF2JtTJcyqX9ODfiXnVJ2/ta4Am6EroB7qpg6QrMdAiJLsb9UlnQE0WYaZt8S4ETCYaANIA1gUtEvBByw/fhy39tqHbUIJDDS816mui9KOaY3gUDnHCAZrjXHJKySSwUnv1LntoGlG4CiWqw2p2qJvQkobT+DU9LjmpHw2NQaOeqQE3avstOST8VL+w76Hewaeh53mPsj4dnqJmdcNfHq0FdW+ql6KujKZJQ1GVJaTVMyGbk1T4wDs4hSVx+eEuUfmCYrShEjbJDcftTqs7ANTwoG3nZoNq5gk="
-script: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw -Dsonar.projectKey=sudiamanj_TuneJar
+      secure: zhmT89Tnuh+MdqsNL7+yBtUZpEj/4ntCiJs9xgsniaCm4utlUKf8KvYIVvhP51NyViuPAXDfx9dzVvw3ap4xYi7uiapnvzJL/ZEBjoiKi1quyFnUBVMQNpVYnuRJfZSUqktTHgdl7IbAVmMrq6+iKjN+YEq4deXtnRG4w78fAJGu5SSrrCghafWzHGM/3mHY7UxMlfGLtB7dQ9qpAqk6Qxpo/M5qSzdupxPl4REUZXKZ4ZJegI1NKJy/sEYQGtIoG5Iba+3oekgIKLCBugxpubVogQ1655hhIqL2bKj9Hiqb+r/DZK8hbwX7KgtAnqGYqvVSP3RoaCX0Or4soMjYZqccI9/Qg/ONp8fQS5rlzOATnhfeY5cf5lLeoWDgtbIk62wKLP7/uKF2JtTJcyqX9ODfiXnVJ2/ta4Am6EroB7qpg6QrMdAiJLsb9UlnQE0WYaZt8S4ETCYaANIA1gUtEvBByw/fhy39tqHbUIJDDS816mui9KOaY3gUDnHCAZrjXHJKySSwUnv1LntoGlG4CiWqw2p2qJvQkobT+DU9LjmpHw2NQaOeqQE3avstOST8VL+w76Hewaeh53mPsj4dnqJmdcNfHq0FdW+ql6KujKZJQ1GVJaTVMyGbk1T4wDs4hSVx+eEuUfmCYrShEjbJDcftTqs7ANTwoG3nZoNq5gk=
+script: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+  -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
+  -Dsonar.projectKey=sudiamanj_TuneJar
+deploy:
+  provider: releases
+  api_key:
+    secure: h7ddGIjZk1iW0QU7lcd+6Eum7EEdKWpobP4ZM1yUfXDDf24HZA9UcS5OUxaVhEiAPeJo2h0PGXLhknxXlTRCZCibf+XzizBCvnE0yphL9KRJ5usD7z0K0VxlBkapYVx5bP7zexLTewuLUd5mjMR/DJzODhhj3x9QdzhtZpcG9Bqb+/HbpVxqtw73cyTCcyRvA4NO71yMGx4v4YzcmWigtdUscEuPSlwvxz8tUb8YDw4+L9hq1IZOwXqoAN9gTH52T/zz8OCm93z4sNBLZj4308/dATP05NavvWhiSrvKasstzSM1IqyyEiiO09q8/VkrFzutRAaJeqRV9/QHIM0Ea43f9e6WFGZA1xzhdoOjenhRhmtVMuxw39inTy15DTqKLIaaiwk/4F1hva4WNe9Oj+arfmdL+Avz/iBXox+V0CRjH/gymEuABcF2q+VV+SPv1mbwxexvD3Bdmaskj2eva634INwBYDDvkWkn1Y0PiQxpe4RjaqlWUqzLOxR3PTfAWWQju4SWgfZn0vpS2EHYaYB/E8Ht68lskRGCu2qcRJaUfhowZvGg4uh0yVYH4Tfwfzr8JTaa1388U038h4v5/NWZhH7PJeu4m2fMOXB2UaEwsygtj1copZp3CwQZjDn3O2yO3JcuZuzkHOjMvMgJNIw5E40XpaYcphYP6aKc5do=
+  file:
+    - "target/TuneJar.exe"
+    - "target/TuneJar.jar"
+  skip_cleanup: true
+  on:
+    repo: sudiamanj/TuneJar
