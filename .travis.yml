@@ -2,6 +2,8 @@ dist: xenial
 language: java
 jdk:
 - openjdk8
+git:
+  depth: false
 addons:
   apt:
     update: true
@@ -11,7 +13,7 @@ addons:
     organization: sudiamanj-github
     token:
       secure: zhmT89Tnuh+MdqsNL7+yBtUZpEj/4ntCiJs9xgsniaCm4utlUKf8KvYIVvhP51NyViuPAXDfx9dzVvw3ap4xYi7uiapnvzJL/ZEBjoiKi1quyFnUBVMQNpVYnuRJfZSUqktTHgdl7IbAVmMrq6+iKjN+YEq4deXtnRG4w78fAJGu5SSrrCghafWzHGM/3mHY7UxMlfGLtB7dQ9qpAqk6Qxpo/M5qSzdupxPl4REUZXKZ4ZJegI1NKJy/sEYQGtIoG5Iba+3oekgIKLCBugxpubVogQ1655hhIqL2bKj9Hiqb+r/DZK8hbwX7KgtAnqGYqvVSP3RoaCX0Or4soMjYZqccI9/Qg/ONp8fQS5rlzOATnhfeY5cf5lLeoWDgtbIk62wKLP7/uKF2JtTJcyqX9ODfiXnVJ2/ta4Am6EroB7qpg6QrMdAiJLsb9UlnQE0WYaZt8S4ETCYaANIA1gUtEvBByw/fhy39tqHbUIJDDS816mui9KOaY3gUDnHCAZrjXHJKySSwUnv1LntoGlG4CiWqw2p2qJvQkobT+DU9LjmpHw2NQaOeqQE3avstOST8VL+w76Hewaeh53mPsj4dnqJmdcNfHq0FdW+ql6KujKZJQ1GVJaTVMyGbk1T4wDs4hSVx+eEuUfmCYrShEjbJDcftTqs7ANTwoG3nZoNq5gk=
-script: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+script: mvn clean install sonar:sonar
   -Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
   -Dsonar.projectKey=sudiamanj_TuneJar
 deploy:
