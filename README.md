@@ -4,8 +4,6 @@
 
 **TuneJar** is a Java-based music player that is lightweight, cross-platform, and best of all, open source.
 
-[![Build Status](https://travis-ci.com/sudiamanj/TuneJar.svg?branch=master)](https://travis-ci.com/sudiamanj/TuneJar) [![GitHub release](https://img.shields.io/github/release/sudiamanj/TuneJar.svg)](https://github.com/sudiamanj/TuneJar/releases/latest)
-
 ## TuneJar is...
 
 ### Elegant
